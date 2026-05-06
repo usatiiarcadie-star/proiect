@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Module {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String   @unique
+  title       String
+  order       Int
+  description String?
+  lessons     Lesson[]
+  createdAt   DateTime @default(now())
+}
+
+model Lesson {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  slug        String
+  title       String
+  order       Int
+  moduleId    String     @db.ObjectId
+  module      Module     @relation(fields: [moduleId], references: [id])
+  tasks       Task[]
+  theory      Theory[]
+  progresses  LessonProgress[]
+  createdAt   DateTime   @default(now())
+
+  @@unique([moduleId, slug])
+}
+
+model Task {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  number      Int
+  name        String   @default("")
+  question    String
+  options     String[]
+  answer      String
+  explanation String?
+  difficulty  String   @default("easy")
+  lessonId    String   @db.ObjectId
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Theory {
+  id       String @id @default(auto()) @map("_id") @db.ObjectId
+  order    Int
+  title    String
+  content  String
+  lessonId String @db.ObjectId
+  lesson   Lesson @relation(fields: [lessonId], references: [id])
+}
+
+model LessonProgress {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String
+  lessonId        String   @db.ObjectId
+  lesson          Lesson   @relation(fields: [lessonId], references: [id])
+  completedTasks  String[]
+  wrongTasks      String[]
+  currentTaskIdx  Int      @default(0)
+  currentTheoryIdx Int     @default(0)
+  completed       Boolean  @default(false)
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+}
