@@ -6,6 +6,18 @@ const { cppLessons } = require("./seed-cpp");
 const { csharpLessons, javaLessons } = require("./seed-csharp-java");
 const { cybersecLessons } = require("./seed-cybersec");
 const { csharpExtra, javaExtra, tailwindExtra } = require("./seed-extensions");
+const { pythonMore } = require("./seed-python-more");
+const { htmlMore } = require("./seed-html-more");
+const { cssMore } = require("./seed-css-more");
+const { reactMore } = require("./seed-react-more");
+const { tailwindMore } = require("./seed-tailwind-more");
+const { jsExtra } = require("./seed-js-extra");
+const { cMore } = require("./seed-c-more");
+const { cppMore } = require("./seed-cpp-more");
+const { cybersecMore } = require("./seed-cybersec-more");
+const { csharpMore } = require("./seed-csharp-more");
+const { javaMore } = require("./seed-java-more");
+const { nextjsFrontendMore, nextjsBackendMore } = require("./seed-next-more");
 const prisma = new PrismaClient();
 
 const modules = [
@@ -1477,18 +1489,39 @@ async function main() {
     }
   }
 
-  await seedLessons("javascript", jsLessons);
-  await seedLessons("nextjs-frontend", [...nextjsFrontendLessons, ...nextjsFrontendExtra]);
-  await seedLessons("nextjs-backend", [...nextjsBackendLessons, ...nextjsBackendExtra]);
-  await seedLessons("html", htmlLessons);
-  await seedLessons("css", cssLessons);
-  await seedLessons("react", reactLessons);
-  await seedLessons("c", cLessons);
-  await seedLessons("cpp", cppLessons);
-  await seedLessons("csharp", [...csharpLessons, ...csharpExtra]);
-  await seedLessons("java", [...javaLessons, ...javaExtra]);
-  await seedLessons("tailwind", [...tailwindLessons, ...tailwindExtra]);
-  await seedLessons("cybersecurity", cybersecLessons);
+  // helper: ensure unique lesson slugs for files that use the module slug as lesson slug
+  const fixSlugs = (prefix, lessons) =>
+    lessons.map(l => l.slug === prefix ? { ...l, slug: `${prefix}-lesson-${l.order}` } : l);
+
+  await seedLessons("python", pythonMore);
+  await seedLessons("javascript", [...jsLessons, ...jsExtra]);
+  await seedLessons("nextjs-frontend", [
+    ...nextjsFrontendLessons,
+    ...nextjsFrontendExtra,
+    ...fixSlugs("nextjs-frontend", nextjsFrontendMore),
+  ]);
+  await seedLessons("nextjs-backend", [
+    ...nextjsBackendLessons,
+    ...nextjsBackendExtra,
+    ...fixSlugs("nextjs-backend", nextjsBackendMore),
+  ]);
+  await seedLessons("html", [...htmlLessons, ...htmlMore]);
+  await seedLessons("css", [...cssLessons, ...cssMore]);
+  await seedLessons("react", [...reactLessons, ...reactMore]);
+  await seedLessons("c", [...cLessons, ...cMore]);
+  await seedLessons("cpp", [...cppLessons, ...cppMore]);
+  await seedLessons("csharp", [
+    ...csharpLessons,
+    ...csharpExtra,
+    ...fixSlugs("csharp", csharpMore),
+  ]);
+  await seedLessons("java", [
+    ...javaLessons,
+    ...javaExtra,
+    ...fixSlugs("java", javaMore),
+  ]);
+  await seedLessons("tailwind", [...tailwindLessons, ...tailwindExtra, ...tailwindMore]);
+  await seedLessons("cybersecurity", [...cybersecLessons, ...cybersecMore]);
 
   console.log("Done!");
 }
