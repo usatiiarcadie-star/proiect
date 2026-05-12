@@ -5,7 +5,7 @@ import Link from "next/link";
 import AIAssistant from "@/components/AIAssistant";
 import {
   ChevronLeft, BookOpen, ClipboardList, ChevronRight,
-  CheckCircle, Menu, Send, ArrowRight, RotateCcw, Trophy, Zap, Lightbulb, Brain, XCircle, Wand2
+  CheckCircle, Menu, Send, ArrowRight, RotateCcw, Trophy, Zap, Lightbulb, Brain, XCircle, Wand2, Play, RefreshCw
 } from "lucide-react";
 
 const DIFF = {
@@ -33,12 +33,20 @@ export default function LessonPage() {
   const saveTimer = useRef(null);
 
   // Review state
+  // Review state
   const [reviewTasks, setReviewTasks] = useState(null);
   const [reviewIdx, setReviewIdx] = useState(0);
   const [reviewSel, setReviewSel] = useState(null);
   const [reviewSub, setReviewSub] = useState(false);
   const [reviewScore, setReviewScore] = useState(0);
   const [reviewDone, setReviewDone] = useState(false);
+
+  // Coding task state
+  const [codeValue, setCodeValue] = useState("");
+  const [codeOutput, setCodeOutput] = useState(null);
+  const [codeRunning, setCodeRunning] = useState(false);
+  const [codeEvaluating, setCodeEvaluating] = useState(false);
+  const [codeResult, setCodeResult] = useState(null); // { correct, feedback }
 
   useEffect(() => {
     if (!lesson) return;
@@ -150,9 +158,18 @@ export default function LessonPage() {
     }
   }
 
+  function resetCodingState(newCode = "") {
+    setCodeValue(newCode);
+    setCodeOutput(null);
+    setCodeRunning(false);
+    setCodeEvaluating(false);
+    setCodeResult(null);
+  }
+
   function next() {
     if (!lesson?.tasks) return;
     setSelected(null); setSubmitted(false);
+    resetCodingState();
 
     if (retryMode) {
       const ni = retryIdx + 1;
@@ -211,6 +228,7 @@ export default function LessonPage() {
   function prev() {
     if (taskIdx > 0) {
       setSelected(null); setSubmitted(false);
+      resetCodingState();
       const pi = taskIdx - 1;
       setTaskIdx(pi); save({ currentTaskIdx: pi });
     }
@@ -218,8 +236,79 @@ export default function LessonPage() {
 
   function jumpTo(idx) {
     setSelected(null); setSubmitted(false); setFinished(false);
+    resetCodingState();
     setTaskIdx(idx); setSidebarOpen(false);
     save({ currentTaskIdx: idx });
+  }
+
+  async function runCode(code, language) {
+    setCodeRunning(true);
+    setCodeOutput(null);
+    try {
+      if (language === "javascript" || !language) {
+        const logs = [];
+        const blob = new Blob([`
+          const _log = [];
+          const console = { log: (...a) => _log.push(a.map(x => String(x)).join(" ")), error: (...a) => _log.push("ERROR: " + a.join(" ")) };
+          try {
+            ${code}
+          } catch(e) { _log.push("Eroare: " + e.message); }
+          self.postMessage({ logs: _log });
+        `], { type: "application/javascript" });
+        const url = URL.createObjectURL(blob);
+        const worker = new Worker(url);
+        const result = await new Promise((res, rej) => {
+          const t = setTimeout(() => { worker.terminate(); res({ logs: ["Timeout: codul a durat prea mult (>3s)"] }); }, 3000);
+          worker.onmessage = (e) => { clearTimeout(t); res(e.data); };
+          worker.onerror = (e) => { clearTimeout(t); res({ logs: ["Eroare: " + e.message] }); };
+        });
+        worker.terminate();
+        URL.revokeObjectURL(url);
+        setCodeOutput(result.logs.length > 0 ? result.logs.join("\n") : "(fără output)");
+      }
+    } catch {
+      setCodeOutput("Eroare la rularea codului.");
+    }
+    setCodeRunning(false);
+  }
+
+  async function submitCode(task, code) {
+    if (!code.trim()) return;
+    setCodeEvaluating(true);
+    try {
+      const res = await fetch("/api/evaluate-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          code,
+          question: task.question,
+          language: task.language || "javascript",
+          lessonTitle: lesson?.title || "",
+          explanation: task.explanation || "",
+        }),
+      });
+      const data = await res.json();
+      setCodeResult(data);
+
+      if (data.correct) {
+        const nc = completed.includes(task.id) ? completed : [...completed, task.id];
+        const nw = wrong.filter(id => id !== task.id);
+        setCompleted(nc);
+        setWrong(nw);
+        const allDone = lesson.tasks.every(tk => nc.includes(tk.id));
+        if (allDone) setFinished(true);
+        save({ completedTasks: nc, wrongTasks: nw, completed: allDone });
+      } else {
+        if (!wrong.includes(task.id) && !completed.includes(task.id)) {
+          const nw = [...wrong, task.id];
+          setWrong(nw);
+          save({ wrongTasks: nw });
+        }
+      }
+    } catch {
+      setCodeResult({ correct: false, feedback: "Eroare la evaluare. Încearcă din nou." });
+    }
+    setCodeEvaluating(false);
   }
 
   if (loading) return (
@@ -240,6 +329,7 @@ export default function LessonPage() {
   const theory = lesson?.theory ?? [];
   const task = tasks[taskIdx] ?? null;
   const diff = DIFF[task?.difficulty ?? "easy"];
+
   const totalTasks = tasks.length;
   const doneCount = completed.length;
   const rt = reviewTasks?.[reviewIdx] ?? null;
@@ -651,71 +741,151 @@ export default function LessonPage() {
                   <p className="text-slate-800 leading-relaxed whitespace-pre-wrap font-medium text-sm">{task.question}</p>
                 </div>
 
-                {/* Options */}
-                <div className="space-y-2.5 mb-5">
-                  {task.options.map(opt => {
-                    const isSel = selected === opt;
-                    const isCorrect = opt === task.answer;
-                    let cls = "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer";
-                    if (submitted) {
-                      if (isCorrect) cls = "border-emerald-400 bg-emerald-50";
-                      else if (isSel) cls = "border-red-400 bg-red-50";
-                      else cls = "border-slate-100 bg-slate-50 opacity-40";
-                    } else if (isSel) cls = "border-indigo-500 bg-indigo-50";
+                {/* CODING TASK */}
+                {task.type === "coding" ? (
+                  <>
+                    <div className="mb-3 flex items-center gap-2">
+                      <span className="text-xs font-black bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
+                        <Play className="w-3 h-3"/> {(task.language || "javascript").toUpperCase()} · Web Worker izolat
+                      </span>
+                    </div>
 
-                    return (
-                      <div key={opt} onClick={() => !submitted && setSelected(opt)}
-                        className={`flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all ${cls} ${submitted ? "cursor-default" : ""}`}>
-                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
-                          ${submitted && isCorrect ? "border-emerald-500 bg-emerald-500"
-                            : submitted && isSel ? "border-red-400 bg-red-400"
-                            : isSel ? "border-indigo-500 bg-indigo-500"
-                            : "border-slate-300"}`}>
-                          {(isSel || (submitted && isCorrect)) && <div className="w-2 h-2 rounded-full bg-white"/>}
-                        </div>
-                        <span className={`text-sm font-medium flex-1 ${submitted && isCorrect ? "text-emerald-800 font-bold" : submitted && isSel ? "text-red-700" : "text-slate-700"}`}>
-                          {opt}
-                        </span>
-                        {submitted && isCorrect && <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0"/>}
-                        {submitted && isSel && !isCorrect && <span className="text-red-500 text-lg leading-none flex-shrink-0">✗</span>}
+                    <div className="relative mb-3">
+                      <textarea
+                        value={codeValue || task.starterCode || ""}
+                        onChange={e => { setCodeValue(e.target.value); setCodeResult(null); }}
+                        spellCheck={false}
+                        disabled={codeResult?.correct}
+                        rows={10}
+                        className="w-full bg-gray-900 text-green-300 font-mono text-sm p-4 rounded-2xl border-2 border-gray-700 focus:border-indigo-500 focus:outline-none resize-y leading-relaxed disabled:opacity-70"
+                        placeholder={task.starterCode || "// scrie codul tău aici"}
+                      />
+                    </div>
+
+                    {/* Console output */}
+                    {codeOutput !== null && (
+                      <div className="mb-3 bg-gray-950 rounded-xl p-3 border border-gray-700">
+                        <p className="text-xs font-black text-gray-400 mb-1 uppercase tracking-wide">Output</p>
+                        <pre className="text-green-400 font-mono text-xs whitespace-pre-wrap">{codeOutput}</pre>
                       </div>
-                    );
-                  })}
-                </div>
+                    )}
 
-                {/* Result */}
-                {submitted && (
-                  <div className={`rounded-2xl p-4 mb-4 border-2 ${selected === task.answer ? "bg-emerald-50 border-emerald-300" : "bg-red-50 border-red-300"}`}>
-                    <p className={`font-black text-sm mb-1 flex items-center gap-1.5 ${selected === task.answer ? "text-emerald-700" : "text-red-700"}`}>
-                      {selected === task.answer
-                        ? <><CheckCircle className="w-4 h-4"/> Răspuns corect! Excelent!</>
-                        : <><span className="text-base">✗</span> Greșit. Corect: <strong>{task.answer}</strong></>}
-                    </p>
-                    {task.explanation && <p className="text-slate-600 text-sm">{task.explanation}</p>}
-                  </div>
+                    {/* AI result */}
+                    {codeResult && (
+                      <div className={`rounded-2xl p-4 mb-4 border-2 ${codeResult.correct ? "bg-emerald-50 border-emerald-300" : "bg-red-50 border-red-300"}`}>
+                        <p className={`font-black text-sm mb-1 flex items-center gap-1.5 ${codeResult.correct ? "text-emerald-700" : "text-red-700"}`}>
+                          {codeResult.correct
+                            ? <><CheckCircle className="w-4 h-4"/> Corect! AI-ul a verificat codul.</>
+                            : <><XCircle className="w-4 h-4"/> Codul nu e corect încă.</>}
+                        </p>
+                        <p className="text-slate-600 text-sm">{codeResult.feedback}</p>
+                      </div>
+                    )}
+
+                    {/* Coding action buttons */}
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <button onClick={prev} disabled={taskIdx === 0}
+                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        <ChevronLeft className="w-4 h-4"/> Anterior
+                      </button>
+
+                      <div className="flex items-center gap-2">
+                        {!codeResult?.correct && (
+                          <>
+                            <button
+                              onClick={() => runCode(codeValue || task.starterCode || "", task.language)}
+                              disabled={codeRunning || codeEvaluating}
+                              className="flex items-center gap-2 bg-gray-800 text-green-300 px-4 py-2.5 rounded-xl font-black text-sm hover:bg-gray-700 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm">
+                              {codeRunning ? <><RefreshCw className="w-4 h-4 animate-spin"/> Rulează...</> : <><Play className="w-4 h-4"/> Rulează</>}
+                            </button>
+                            <button
+                              onClick={() => submitCode(task, codeValue || task.starterCode || "")}
+                              disabled={codeEvaluating || codeRunning || !(codeValue || task.starterCode)}
+                              className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                              {codeEvaluating ? <><RefreshCw className="w-4 h-4 animate-spin"/> AI verifică...</> : <><Send className="w-4 h-4"/> Trimite răspunsul</>}
+                            </button>
+                          </>
+                        )}
+                        {codeResult?.correct && (
+                          <button onClick={next}
+                            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity shadow-md">
+                            {taskIdx + 1 >= totalTasks
+                              ? <><Trophy className="w-4 h-4"/> Finalizează</>
+                              : <>Următoarea <ChevronRight className="w-4 h-4"/></>}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* QUIZ OPTIONS */}
+                    <div className="space-y-2.5 mb-5">
+                      {task.options.map(opt => {
+                        const isSel = selected === opt;
+                        const isCorrect = opt === task.answer;
+                        let cls = "border-slate-200 bg-white hover:border-indigo-300 hover:bg-indigo-50 cursor-pointer";
+                        if (submitted) {
+                          if (isCorrect) cls = "border-emerald-400 bg-emerald-50";
+                          else if (isSel) cls = "border-red-400 bg-red-50";
+                          else cls = "border-slate-100 bg-slate-50 opacity-40";
+                        } else if (isSel) cls = "border-indigo-500 bg-indigo-50";
+
+                        return (
+                          <div key={opt} onClick={() => !submitted && setSelected(opt)}
+                            className={`flex items-center gap-3 p-3.5 rounded-xl border-2 transition-all ${cls} ${submitted ? "cursor-default" : ""}`}>
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all
+                              ${submitted && isCorrect ? "border-emerald-500 bg-emerald-500"
+                                : submitted && isSel ? "border-red-400 bg-red-400"
+                                : isSel ? "border-indigo-500 bg-indigo-500"
+                                : "border-slate-300"}`}>
+                              {(isSel || (submitted && isCorrect)) && <div className="w-2 h-2 rounded-full bg-white"/>}
+                            </div>
+                            <span className={`text-sm font-medium flex-1 ${submitted && isCorrect ? "text-emerald-800 font-bold" : submitted && isSel ? "text-red-700" : "text-slate-700"}`}>
+                              {opt}
+                            </span>
+                            {submitted && isCorrect && <CheckCircle className="w-4 h-4 text-emerald-500 flex-shrink-0"/>}
+                            {submitted && isSel && !isCorrect && <span className="text-red-500 text-lg leading-none flex-shrink-0">✗</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Result */}
+                    {submitted && (
+                      <div className={`rounded-2xl p-4 mb-4 border-2 ${selected === task.answer ? "bg-emerald-50 border-emerald-300" : "bg-red-50 border-red-300"}`}>
+                        <p className={`font-black text-sm mb-1 flex items-center gap-1.5 ${selected === task.answer ? "text-emerald-700" : "text-red-700"}`}>
+                          {selected === task.answer
+                            ? <><CheckCircle className="w-4 h-4"/> Răspuns corect! Excelent!</>
+                            : <><span className="text-base">✗</span> Greșit. Corect: <strong>{task.answer}</strong></>}
+                        </p>
+                        {task.explanation && <p className="text-slate-600 text-sm">{task.explanation}</p>}
+                      </div>
+                    )}
+
+                    {/* Action buttons */}
+                    <div className="flex items-center justify-between gap-3">
+                      <button onClick={prev} disabled={taskIdx === 0}
+                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
+                        <ChevronLeft className="w-4 h-4"/> Anterior
+                      </button>
+
+                      {!submitted ? (
+                        <button onClick={submit} disabled={!selected}
+                          className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                          <Send className="w-4 h-4"/> Trimite răspunsul
+                        </button>
+                      ) : (
+                        <button onClick={next}
+                          className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity shadow-md">
+                          {taskIdx + 1 >= totalTasks
+                            ? <><Trophy className="w-4 h-4"/> Finalizează</>
+                            : <>Următoarea <ChevronRight className="w-4 h-4"/></>}
+                        </button>
+                      )}
+                    </div>
+                  </>
                 )}
-
-                {/* Action buttons */}
-                <div className="flex items-center justify-between gap-3">
-                  <button onClick={prev} disabled={taskIdx === 0}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border-2 border-slate-200 text-slate-600 font-bold text-sm hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed">
-                    <ChevronLeft className="w-4 h-4"/> Anterior
-                  </button>
-
-                  {!submitted ? (
-                    <button onClick={submit} disabled={!selected}
-                      className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
-                      <Send className="w-4 h-4"/> Trimite răspunsul
-                    </button>
-                  ) : (
-                    <button onClick={next}
-                      className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity shadow-md">
-                      {taskIdx + 1 >= totalTasks
-                        ? <><Trophy className="w-4 h-4"/> Finalizează</>
-                        : <>Următoarea <ChevronRight className="w-4 h-4"/></>}
-                    </button>
-                  )}
-                </div>
               </div>
             )}
           </div>
