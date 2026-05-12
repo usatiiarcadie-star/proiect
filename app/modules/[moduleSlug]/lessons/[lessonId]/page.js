@@ -158,12 +158,56 @@ export default function LessonPage() {
     }
   }
 
-  function resetCodingState(newCode = "") {
-    setCodeValue(newCode);
+  function resetCodingState() {
+    setCodeValue("");
     setCodeOutput(null);
     setCodeRunning(false);
     setCodeEvaluating(false);
     setCodeResult(null);
+  }
+
+  function runInIframe(code) {
+    return new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("sandbox", "allow-scripts");
+      iframe.style.cssText = "display:none;width:0;height:0;border:none;position:absolute;";
+      document.body.appendChild(iframe);
+
+      const timer = setTimeout(() => {
+        try { document.body.removeChild(iframe); } catch {}
+        resolve("Timeout: codul a durat prea mult (>3s)");
+      }, 3000);
+
+      function handler(e) {
+        if (e.source !== iframe.contentWindow) return;
+        clearTimeout(timer);
+        window.removeEventListener("message", handler);
+        try { document.body.removeChild(iframe); } catch {}
+        const logs = e.data?.logs ?? [];
+        resolve(logs.length > 0 ? logs.join("\n") : "(fără output)");
+      }
+      window.addEventListener("message", handler);
+
+      const setup = `
+const _log=[];
+window.console={
+  log:(...a)=>_log.push(a.map(x=>x===null?'null':x===undefined?'undefined':typeof x==='object'?JSON.stringify(x):String(x)).join(' ')),
+  error:(...a)=>_log.push('ERROR: '+a.join(' ')),
+  warn:(...a)=>_log.push('WARN: '+a.join(' '))
+};
+const localStorage=(()=>{const s={};return{setItem:(k,v)=>{s[k]=String(v);},getItem:(k)=>k in s?s[k]:null,removeItem:(k)=>{delete s[k];},clear:()=>{Object.keys(s).forEach(k=>delete s[k]);},key:(i)=>Object.keys(s)[i]||null,get length(){return Object.keys(s).length;}};})();
+window.localStorage=localStorage;
+try{
+${code}
+}catch(e){_log.push('Eroare: '+e.message);}
+parent.postMessage({logs:_log},'*');
+`;
+      const html = `<!DOCTYPE html><html><head></head><body><script>${setup}<\/script></body></html>`;
+      const blob = new Blob([html], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      iframe.src = url;
+      iframe.onload = () => URL.revokeObjectURL(url);
+    });
   }
 
   function next() {
@@ -244,69 +288,49 @@ export default function LessonPage() {
   async function runCode(code, language) {
     setCodeRunning(true);
     setCodeOutput(null);
+    let out = "";
     try {
-      if (language === "javascript" || !language) {
-        const logs = [];
-        const blob = new Blob([`
-          const _log = [];
-          const console = { log: (...a) => _log.push(a.map(x => String(x)).join(" ")), error: (...a) => _log.push("ERROR: " + a.join(" ")) };
-          try {
-            ${code}
-          } catch(e) { _log.push("Eroare: " + e.message); }
-          self.postMessage({ logs: _log });
-        `], { type: "application/javascript" });
-        const url = URL.createObjectURL(blob);
-        const worker = new Worker(url);
-        const result = await new Promise((res, rej) => {
-          const t = setTimeout(() => { worker.terminate(); res({ logs: ["Timeout: codul a durat prea mult (>3s)"] }); }, 3000);
-          worker.onmessage = (e) => { clearTimeout(t); res(e.data); };
-          worker.onerror = (e) => { clearTimeout(t); res({ logs: ["Eroare: " + e.message] }); };
-        });
-        worker.terminate();
-        URL.revokeObjectURL(url);
-        setCodeOutput(result.logs.length > 0 ? result.logs.join("\n") : "(fără output)");
-      }
+      out = await runInIframe(code);
+      setCodeOutput(out);
     } catch {
-      setCodeOutput("Eroare la rularea codului.");
+      out = "Eroare la rularea codului.";
+      setCodeOutput(out);
     }
     setCodeRunning(false);
+    return out;
   }
 
   async function submitCode(task, code) {
     if (!code.trim()) return;
     setCodeEvaluating(true);
-    try {
-      const res = await fetch("/api/evaluate-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          code,
-          question: task.question,
-          language: task.language || "javascript",
-          lessonTitle: lesson?.title || "",
-          explanation: task.explanation || "",
-        }),
-      });
-      const data = await res.json();
-      setCodeResult(data);
+    const output = await runCode(code, task.language);
+    const expected = (task.expectedOutput || "").trim();
+    const actual = output.trim();
+    const correct = expected
+      ? actual.toLowerCase().includes(expected.toLowerCase())
+      : !actual.toLowerCase().startsWith("eroare") && !actual.toLowerCase().includes("timeout");
 
-      if (data.correct) {
-        const nc = completed.includes(task.id) ? completed : [...completed, task.id];
-        const nw = wrong.filter(id => id !== task.id);
-        setCompleted(nc);
+    const feedback = correct
+      ? `Output corect: "${actual}"`
+      : expected
+        ? `Output-ul trebuie să conțină "${expected}". Ai primit: "${actual}"`
+        : "Codul a returnat o eroare. Verifică logica.";
+
+    setCodeResult({ correct, feedback });
+    if (correct) {
+      const nc = completed.includes(task.id) ? completed : [...completed, task.id];
+      const nw = wrong.filter(id => id !== task.id);
+      setCompleted(nc);
+      setWrong(nw);
+      const allDone = lesson.tasks.every(tk => nc.includes(tk.id));
+      if (allDone) setFinished(true);
+      save({ completedTasks: nc, wrongTasks: nw, completed: allDone });
+    } else {
+      if (!wrong.includes(task.id) && !completed.includes(task.id)) {
+        const nw = [...wrong, task.id];
         setWrong(nw);
-        const allDone = lesson.tasks.every(tk => nc.includes(tk.id));
-        if (allDone) setFinished(true);
-        save({ completedTasks: nc, wrongTasks: nw, completed: allDone });
-      } else {
-        if (!wrong.includes(task.id) && !completed.includes(task.id)) {
-          const nw = [...wrong, task.id];
-          setWrong(nw);
-          save({ wrongTasks: nw });
-        }
+        save({ wrongTasks: nw });
       }
-    } catch {
-      setCodeResult({ correct: false, feedback: "Eroare la evaluare. Încearcă din nou." });
     }
     setCodeEvaluating(false);
   }
@@ -746,7 +770,7 @@ export default function LessonPage() {
                   <>
                     <div className="mb-3 flex items-center gap-2">
                       <span className="text-xs font-black bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full border border-indigo-200 flex items-center gap-1">
-                        <Play className="w-3 h-3"/> {(task.language || "javascript").toUpperCase()} · Web Worker izolat
+                        <Play className="w-3 h-3"/> {(task.language || "javascript").toUpperCase()} · Sandbox izolat
                       </span>
                     </div>
 
@@ -770,15 +794,15 @@ export default function LessonPage() {
                       </div>
                     )}
 
-                    {/* AI result */}
+                    {/* Result */}
                     {codeResult && (
                       <div className={`rounded-2xl p-4 mb-4 border-2 ${codeResult.correct ? "bg-emerald-50 border-emerald-300" : "bg-red-50 border-red-300"}`}>
                         <p className={`font-black text-sm mb-1 flex items-center gap-1.5 ${codeResult.correct ? "text-emerald-700" : "text-red-700"}`}>
                           {codeResult.correct
-                            ? <><CheckCircle className="w-4 h-4"/> Corect! AI-ul a verificat codul.</>
-                            : <><XCircle className="w-4 h-4"/> Codul nu e corect încă.</>}
+                            ? <><CheckCircle className="w-4 h-4"/> Corect!</>
+                            : <><XCircle className="w-4 h-4"/> Output incorect. Mai încearcă.</>}
                         </p>
-                        <p className="text-slate-600 text-sm">{codeResult.feedback}</p>
+                        <p className="text-slate-600 text-sm font-mono text-xs">{codeResult.feedback}</p>
                       </div>
                     )}
 
@@ -802,7 +826,7 @@ export default function LessonPage() {
                               onClick={() => submitCode(task, codeValue || task.starterCode || "")}
                               disabled={codeEvaluating || codeRunning || !(codeValue || task.starterCode)}
                               className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
-                              {codeEvaluating ? <><RefreshCw className="w-4 h-4 animate-spin"/> AI verifică...</> : <><Send className="w-4 h-4"/> Trimite răspunsul</>}
+                              {codeEvaluating ? <><RefreshCw className="w-4 h-4 animate-spin"/> Se verifică...</> : <><Send className="w-4 h-4"/> Trimite răspunsul</>}
                             </button>
                           </>
                         )}

@@ -25,25 +25,25 @@ const jsExtra = [
         number: 10, name: "Sleep function", question: "Scrie o funcție sleep(ms) care returnează o Promise ce se rezolvă după ms milisecunde. Testează cu: sleep(100).then(() => console.log('gata'));",
         type: "coding", language: "javascript",
         starterCode: "function sleep(ms) {\n  // returnează o Promise\n}\n\nsleep(100).then(() => console.log('gata'));",
-        options: [], answer: "", explanation: "Folosește new Promise(resolve => setTimeout(resolve, ms)).", difficulty: "medium"
+        options: [], answer: "", explanation: "Folosește new Promise(resolve => setTimeout(resolve, ms)).", difficulty: "medium", expectedOutput: ""
       },
       {
         number: 11, name: "Contor cu setInterval", question: "Scrie o funcție startCounter(n) care afișează numere de la 1 la n (câte unul pe secundă simulat). Folosește setInterval și oprește-l când ajungi la n. Testează sincron: simulează cu o funcție tick().",
         type: "coding", language: "javascript",
         starterCode: "function startCounter(n) {\n  let i = 0;\n  const id = setInterval(() => {\n    i++;\n    console.log(i);\n    if (i === n) clearInterval(id);\n  }, 1000);\n  return id;\n}\n\n// Test sincron — simulăm că setInterval a rulat de 3 ori:\nlet count = 0;\nconst testId = { cleared: false };\nfunction mockInterval(fn, n) {\n  for(let i = 0; i < n; i++) fn();\n}\nmockInterval(() => { count++; console.log(count); }, 3);",
-        options: [], answer: "", explanation: "setInterval cu clearInterval când condiția e îndeplinită.", difficulty: "medium"
+        options: [], answer: "", explanation: "setInterval cu clearInterval când condiția e îndeplinită.", difficulty: "medium", expectedOutput: "1"
       },
       {
         number: 12, name: "clearTimeout test", question: "Scrie cod care creează un setTimeout de 5000ms, salvează ID-ul, și îl anulează imediat. Afișează 'anulat' după anulare.",
         type: "coding", language: "javascript",
         starterCode: "// Creează și anulează un timeout\nconst id = setTimeout(() => {\n  console.log('nu ar trebui să apară');\n}, 5000);\n\n// anulează-l\n// afișează 'anulat'\n",
-        options: [], answer: "", explanation: "clearTimeout(id) anulează timeout-ul. console.log('anulat') confirmă.", difficulty: "easy"
+        options: [], answer: "", explanation: "clearTimeout(id) anulează timeout-ul. console.log('anulat') confirmă.", difficulty: "easy", expectedOutput: "anulat"
       },
       {
         number: 13, name: "Execuție după timeout", question: "Scrie o funcție executeAfter(fn, delay) care execută fn după delay milisecunde și returnează o funcție de anulare.",
         type: "coding", language: "javascript",
         starterCode: "function executeAfter(fn, delay) {\n  // returnează o funcție cancel\n}\n\nconst cancel = executeAfter(() => console.log('executat'), 2000);\nconsole.log(typeof cancel); // 'function'",
-        options: [], answer: "", explanation: "const id = setTimeout(fn, delay); return () => clearTimeout(id);", difficulty: "medium"
+        options: [], answer: "", explanation: "const id = setTimeout(fn, delay); return () => clearTimeout(id);", difficulty: "medium", expectedOutput: "function"
       },
       {
         number: 14, name: "Microtask vs macrotask", question: "Ce ordine de afișare produce codul următor?\nconsole.log('A');\nsetTimeout(() => console.log('B'), 0);\nPromise.resolve().then(() => console.log('C'));\nconsole.log('D');",
@@ -55,7 +55,7 @@ const jsExtra = [
         number: 15, name: "Repeat cu timeout", question: "Implementează o funcție repeat(fn, times, delay) care apelează fn de 'times' ori, cu 'delay' ms între apeluri. Afișează rezultatele în ordine.",
         type: "coding", language: "javascript",
         starterCode: "function repeat(fn, times, delay) {\n  // apelează fn de 'times' ori cu delay ms între ele\n}\n\nrepeat((i) => console.log('apel', i), 3, 500);",
-        options: [], answer: "", explanation: "Folosește setTimeout recursiv sau setInterval cu un contor.", difficulty: "hard"
+        options: [], answer: "", explanation: "Folosește setTimeout recursiv sau setInterval cu un contor.", difficulty: "hard", expectedOutput: ""
       },
     ],
   },
@@ -73,7 +73,7 @@ const jsExtra = [
       { number: 1, name: "Closure definit", question: "Ce este un closure în JavaScript?", options: ["O funcție fără parametri", "O funcție care accesează variabile din scope-ul exterior după ce acela s-a terminat", "O funcție recursivă", "O funcție anonimă"], answer: "O funcție care accesează variabile din scope-ul exterior după ce acela s-a terminat", explanation: "Closure-ul 'capturează' variabilele din scope-ul lexical exterior — ele rămân disponibile.", difficulty: "medium" },
       { number: 2, name: "Date private", question: "Cum poți simula date private în JS cu closures?", options: ["Cu keyword private", "Variabilele locale din funcția exterioară nu sunt accesibile din afară", "Cu underscore prefix", "Nu poți"], answer: "Variabilele locale din funcția exterioară nu sunt accesibile din afară", explanation: "Variabilele locale sunt closure-ate — accesibile doar prin metodele returnate, nu direct din afară.", difficulty: "medium" },
       { number: 3, name: "Currying", question: "Ce este currying?", options: ["O metodă de sortare", "Transformarea f(a,b) în f(a)(b) — funcție care returnează funcție", "O bibliotecă JS", "Un tip de loop"], answer: "Transformarea f(a,b) în f(a)(b) — funcție care returnează funcție", explanation: "Currying transformează o funcție cu mai multe argumente într-un lanț de funcții cu câte un argument.", difficulty: "medium" },
-      { number: 4, name: "Partial application", question: "const double = multiply(2). Ce face double(5)?", options: ["Eroare", "10 — 2 e fixat, aplici 5", "2", "multiply(2)(5)"], answer: "10 — 2 e fixat, aplici 5", explanation: "Partial application fixează un argument. multiply(2) returnează o funcție care înmulțește cu 2.", difficulty: "medium" },
+      { number: 4, name: "Partial application", question: "const double = multiply(2). Ce face double(5)?", options: ["Eroare", "10 — 2 e fixat, aplici 5", "2", "multiply(2)(5)"], answer: "10 — 2 e fixat, aplici 5", explanation: "Partial application fixează un argument. multiply(2) returnează o funcție care înmulțește cu 2.", difficulty: "medium", expectedOutput: "15" },
       { number: 5, name: "Memoization scop", question: "De ce folosești memoization?", options: ["Pentru cod mai scurt", "Cache-uiești rezultatele pentru a evita recalculul funcțiilor scumpe", "Pentru debugging", "Pentru async"], answer: "Cache-uiești rezultatele pentru a evita recalculul funcțiilor scumpe", explanation: "Memoization stochează rezultatele apelurilor anterioare — evită re-execuția pentru aceiași parametri.", difficulty: "medium" },
       { number: 6, name: "Bug closure loop", question: "Care e problema clasică cu closures în for loop cu var?", options: ["Nicio problemă", "Toate funcțiile captează aceeași variabilă (ultima valoare)", "Loop-ul nu se execută", "TypeError"], answer: "Toate funcțiile captează aceeași variabilă (ultima valoare)", explanation: "var e function-scoped, nu block-scoped. Toate closures captează aceeași referință. Fix: let sau IIFE.", difficulty: "hard" },
       { number: 7, name: "Closure scoping", question: "Câte closures independente creează apelarea de două ori a aceleiași factory function?", options: ["0 — se împart", "1 — aceeași referință", "2 — fiecare apel are propriul scope", "Depinde de funcție"], answer: "2 — fiecare apel are propriul scope", explanation: "Fiecare apel al funcției factory creează un nou execution context cu variabile proprii.", difficulty: "medium" },
@@ -81,49 +81,49 @@ const jsExtra = [
         number: 8, name: "Contor cu closure", question: "Implementează o funcție makeCounter() care returnează un obiect cu metodele increment(), decrement() și value(). Starea trebuie să fie privată (în closure).",
         type: "coding", language: "javascript",
         starterCode: "function makeCounter() {\n  // starea privată\n  \n  return {\n    increment() {},\n    decrement() {},\n    value() {},\n  };\n}\n\nconst c = makeCounter();\nc.increment();\nc.increment();\nc.decrement();\nconsole.log(c.value()); // 1",
-        options: [], answer: "", explanation: "let count = 0 în funcție, metodele îl accesează prin closure.", difficulty: "easy"
+        options: [], answer: "", explanation: "let count = 0 în funcție, metodele îl accesează prin closure.", difficulty: "easy", expectedOutput: "1"
       },
       {
         number: 9, name: "Curry add", question: "Implementează funcția curry add: add(a)(b) returnează a + b. Testează: console.log(add(3)(4)) // 7",
         type: "coding", language: "javascript",
         starterCode: "function add(a) {\n  // returnează o funcție\n}\n\nconsole.log(add(3)(4));  // 7\nconsole.log(add(10)(5)); // 15",
-        options: [], answer: "", explanation: "return (b) => a + b; — primul argument e capturat în closure.", difficulty: "easy"
+        options: [], answer: "", explanation: "return (b) => a + b; — primul argument e capturat în closure.", difficulty: "easy", expectedOutput: "7"
       },
       {
         number: 10, name: "Memoize simplu", question: "Implementează memoize(fn) care cacheaza rezultatele după primul argument. Testează cu o funcție lentă simulată.",
         type: "coding", language: "javascript",
         starterCode: "function memoize(fn) {\n  // cache\n  return function(x) {\n    // returnează din cache sau calculează\n  };\n}\n\nlet callCount = 0;\nconst slow = memoize((n) => { callCount++; return n * n; });\nconsole.log(slow(5)); // 25\nconsole.log(slow(5)); // 25 (din cache)\nconsole.log(callCount); // 1 (apelat o singură dată)",
-        options: [], answer: "", explanation: "Folosește un Map/obiect ca cache. Verifică dacă key-ul există înainte de a apela fn.", difficulty: "medium"
+        options: [], answer: "", explanation: "Folosește un Map/obiect ca cache. Verifică dacă key-ul există înainte de a apela fn.", difficulty: "medium", expectedOutput: "1"
       },
       {
         number: 11, name: "Partial application", question: "Scrie funcția partial(fn, ...fixedArgs) care returnează o nouă funcție cu primele argumente fixate.",
         type: "coding", language: "javascript",
         starterCode: "function partial(fn, ...fixedArgs) {\n  return function(...restArgs) {\n    // combină fixedArgs cu restArgs\n  };\n}\n\nfunction aduna(a, b, c) { return a + b + c; }\nconst aduna10 = partial(aduna, 10);\nconsole.log(aduna10(3, 2)); // 15\nconsole.log(aduna10(0, 0)); // 10",
-        options: [], answer: "", explanation: "return fn(...fixedArgs, ...restArgs) — spread ambele seturi de argumente.", difficulty: "medium"
+        options: [], answer: "", explanation: "return fn(...fixedArgs, ...restArgs) — spread ambele seturi de argumente.", difficulty: "medium", expectedOutput: "15"
       },
       {
         number: 12, name: "Factory de validatori", question: "Scrie o funcție makeValidator(min, max) care returnează o funcție ce verifică dacă un număr e în intervalul [min, max].",
         type: "coding", language: "javascript",
         starterCode: "function makeValidator(min, max) {\n  return function(value) {\n    // returnează true/false\n  };\n}\n\nconst validVarsta = makeValidator(0, 120);\nconst validScor = makeValidator(1, 10);\nconsole.log(validVarsta(25));  // true\nconsole.log(validVarsta(150)); // false\nconsole.log(validScor(7));     // true",
-        options: [], answer: "", explanation: "min și max sunt capturați în closure. return value >= min && value <= max.", difficulty: "easy"
+        options: [], answer: "", explanation: "min și max sunt capturați în closure. return value >= min && value <= max.", difficulty: "easy", expectedOutput: "true"
       },
       {
         number: 13, name: "Closure loop fix", question: "Fix-uiește codul astfel încât fiecare funcție din array să afișeze indexul corect (0, 1, 2).",
         type: "coding", language: "javascript",
         starterCode: "// Codul cu bug:\n// const fns = [];\n// for (var i = 0; i < 3; i++) {\n//   fns.push(() => console.log(i)); // toți afișează 3!\n// }\n\n// Fix-uiește folosind let sau IIFE:\nconst fns = [];\nfor (let i = 0; i < 3; i++) {\n  fns.push(() => console.log(i));\n}\n\nfns[0](); // 0\nfns[1](); // 1\nfns[2](); // 2",
-        options: [], answer: "", explanation: "let e block-scoped — fiecare iterație are propriul i în closure. Cu var, toți capturează același i.", difficulty: "medium"
+        options: [], answer: "", explanation: "let e block-scoped — fiecare iterație are propriul i în closure. Cu var, toți capturează același i.", difficulty: "medium", expectedOutput: "0"
       },
       {
         number: 14, name: "Once function", question: "Implementează once(fn) care returnează o funcție ce apelează fn MAXIM O DATĂ. Apelurile ulterioare returnează prima valoare.",
         type: "coding", language: "javascript",
         starterCode: "function once(fn) {\n  let called = false;\n  let result;\n  return function(...args) {\n    if (!called) {\n      called = true;\n      result = fn(...args);\n    }\n    return result;\n  };\n}\n\nlet n = 0;\nconst init = once(() => ++n);\nconsole.log(init()); // 1\nconsole.log(init()); // 1 (nu incrementează din nou)\nconsole.log(n);      // 1",
-        options: [], answer: "", explanation: "Variabilele called și result sunt capturate în closure și persistă între apeluri.", difficulty: "medium"
+        options: [], answer: "", explanation: "Variabilele called și result sunt capturate în closure și persistă între apeluri.", difficulty: "medium", expectedOutput: "1"
       },
       {
         number: 15, name: "Curry multiply", question: "Implementează multiply(a)(b)(c) care returnează a * b * c. Trebuie să funcționeze și ca multiply(2)(3)(4) → 24.",
         type: "coding", language: "javascript",
         starterCode: "const multiply = (a) => (b) => (c) => a * b * c;\n\nconsole.log(multiply(2)(3)(4)); // 24\nconsole.log(multiply(5)(2)(1)); // 10\n\nconst double = multiply(2);\nconst doubleThenTriple = double(3);\nconsole.log(doubleThenTriple(5)); // 30",
-        options: [], answer: "", explanation: "Fiecare arrow function captureaza argumentul anterior în closure.", difficulty: "easy"
+        options: [], answer: "", explanation: "Fiecare arrow function captureaza argumentul anterior în closure.", difficulty: "easy", expectedOutput: "24"
       },
     ],
   },
@@ -149,44 +149,44 @@ const jsExtra = [
         number: 8, name: "Object.create moștenire", question: "Creează un obiect 'vehicul' cu metoda describe() care returnează tipul. Apoi creează 'masina' care moștenește din 'vehicul' și adaugă proprietatea marca.",
         type: "coding", language: "javascript",
         starterCode: "const vehicul = {\n  tip: 'vehicul',\n  describe() {\n    return `Sunt un ${this.tip}`;\n  }\n};\n\nconst masina = Object.create(vehicul);\nmasina.tip = 'masina';\nmasina.marca = 'BMW';\n\nconsole.log(masina.describe()); // 'Sunt un masina'\nconsole.log(masina.marca);      // 'BMW'\nconsole.log(masina.hasOwnProperty('marca')); // true\nconsole.log(masina.hasOwnProperty('describe')); // false",
-        options: [], answer: "", explanation: "Object.create setează prototipul. Proprietățile proprii sunt pe obiect, metodele moștenite pe prototype.", difficulty: "easy"
+        options: [], answer: "", explanation: "Object.create setează prototipul. Proprietățile proprii sunt pe obiect, metodele moștenite pe prototype.", difficulty: "easy", expectedOutput: "Sunt un masina"
       },
       {
         number: 9, name: "Prototype method", question: "Adaugă metoda saluta() pe prototype-ul funcției constructor Persoana. Metoda să returneze 'Salut, sunt [nume]'.",
         type: "coding", language: "javascript",
         starterCode: "function Persoana(nume, varsta) {\n  this.nume = nume;\n  this.varsta = varsta;\n}\n\n// adaugă saluta() pe prototype\n\nconst p = new Persoana('Ana', 25);\nconsole.log(p.saluta()); // 'Salut, sunt Ana'\nconsole.log(p.hasOwnProperty('saluta')); // false (e pe prototype)",
-        options: [], answer: "", explanation: "Persoana.prototype.saluta = function() { return `Salut, sunt ${this.nume}`; };", difficulty: "easy"
+        options: [], answer: "", explanation: "Persoana.prototype.saluta = function() { return `Salut, sunt ${this.nume}`; };", difficulty: "easy", expectedOutput: "Salut, sunt Ana"
       },
       {
         number: 10, name: "Clasa cu extends", question: "Scrie o clasă Animal cu proprietatea nume și metoda sunet(). Extinde-o cu clasa Pisica care suprascrie sunet() să returneze 'Miau'.",
         type: "coding", language: "javascript",
         starterCode: "class Animal {\n  constructor(nume) {\n    this.nume = nume;\n  }\n  sunet() {\n    return `${this.nume} face zgomot`;\n  }\n}\n\nclass Pisica extends Animal {\n  // suprascrie sunet()\n}\n\nconst p = new Pisica('Whiskers');\nconsole.log(p.sunet());  // 'Miau'\nconsole.log(p.nume);     // 'Whiskers'\nconsole.log(p instanceof Animal); // true",
-        options: [], answer: "", explanation: "class Pisica extends Animal { sunet() { return 'Miau'; } } — super() în constructor dacă ai proprietăți extra.", difficulty: "easy"
+        options: [], answer: "", explanation: "class Pisica extends Animal { sunet() { return 'Miau'; } } — super() în constructor dacă ai proprietăți extra.", difficulty: "easy", expectedOutput: "Miau"
       },
       {
         number: 11, name: "Object.assign merge", question: "Folosind Object.assign, combină cele 3 obiecte într-unul singur fără a modifica originalele.",
         type: "coding", language: "javascript",
         starterCode: "const a = { x: 1 };\nconst b = { y: 2 };\nconst c = { z: 3 };\n\nconst merged = Object.assign({}, a, b, c);\n\nconsole.log(merged); // { x: 1, y: 2, z: 3 }\nconsole.log(a);      // { x: 1 } — neschimbat",
-        options: [], answer: "", explanation: "Object.assign({}, ...) copiază în obiect gol — originalele rămân intacte.", difficulty: "easy"
+        options: [], answer: "", explanation: "Object.assign({}, ...) copiază în obiect gol — originalele rămân intacte.", difficulty: "easy", expectedOutput: '{"x":1,"y":2,"z":3}'
       },
       {
         number: 12, name: "Iterare cu Object.entries", question: "Folosind Object.entries, calculează suma valorilor unui obiect { a: 10, b: 20, c: 30 }.",
         type: "coding", language: "javascript",
         starterCode: "const scoruri = { a: 10, b: 20, c: 30 };\n\nlet suma = 0;\nfor (const [key, value] of Object.entries(scoruri)) {\n  suma += value;\n}\n\nconsole.log(suma); // 60",
-        options: [], answer: "", explanation: "Object.entries returnează [key, value] pairs. Destructurezi în for...of și acumulezi valorile.", difficulty: "easy"
+        options: [], answer: "", explanation: "Object.entries returnează [key, value] pairs. Destructurezi în for...of și acumulezi valorile.", difficulty: "easy", expectedOutput: "60"
       },
       { number: 13, name: "Lanț prototype end", question: "Care e capătul oricărui lanț prototype în JS?", options: ["undefined", "Object.prototype, apoi null", "null direct", "Function.prototype"], answer: "Object.prototype, apoi null", explanation: "Toate obiectele moștenesc din Object.prototype. Object.getPrototypeOf(Object.prototype) === null.", difficulty: "medium" },
       {
         number: 14, name: "Object.freeze verificare", question: "Creează un obiect config, freeze-uiește-l, încearcă să modifici o proprietate și verifică că modificarea nu a avut efect.",
         type: "coding", language: "javascript",
         starterCode: "const config = Object.freeze({ apiUrl: 'https://api.example.com', timeout: 5000 });\n\nconfig.apiUrl = 'https://hacker.com'; // ignorat!\nconfig.newProp = 'test';              // ignorat!\n\nconsole.log(config.apiUrl);  // 'https://api.example.com'\nconsole.log(config.newProp); // undefined",
-        options: [], answer: "", explanation: "Object.freeze previne modificări. În non-strict mode sunt silențioase, în strict mode aruncă TypeError.", difficulty: "easy"
+        options: [], answer: "", explanation: "Object.freeze previne modificări. În non-strict mode sunt silențioase, în strict mode aruncă TypeError.", difficulty: "easy", expectedOutput: "https://api.example.com"
       },
       {
         number: 15, name: "Clasa cu metode statice", question: "Scrie o clasă MathUtils cu metoda statică sum(arr) care returnează suma elementelor unui array.",
         type: "coding", language: "javascript",
         starterCode: "class MathUtils {\n  static sum(arr) {\n    // calculează suma\n  }\n  \n  static average(arr) {\n    // calculează media\n  }\n}\n\nconsole.log(MathUtils.sum([1, 2, 3, 4]));     // 10\nconsole.log(MathUtils.average([1, 2, 3, 4])); // 2.5",
-        options: [], answer: "", explanation: "Metodele statice se apelează pe clasă, nu pe instanțe. static sum(arr) { return arr.reduce((a,b) => a+b, 0); }", difficulty: "medium"
+        options: [], answer: "", explanation: "Metodele statice se apelează pe clasă, nu pe instanțe. static sum(arr) { return arr.reduce((a,b) => a+b, 0); }", difficulty: "medium", expectedOutput: "10"
       },
     ],
   },
@@ -212,38 +212,38 @@ const jsExtra = [
         number: 8, name: "Frecvența cuvintelor cu Map", question: "Folosind un Map, numără de câte ori apare fiecare cuvânt în array-ul words.",
         type: "coding", language: "javascript",
         starterCode: "const words = ['ana', 'ion', 'ana', 'maria', 'ion', 'ana'];\n\nconst freq = new Map();\nfor (const w of words) {\n  freq.set(w, (freq.get(w) || 0) + 1);\n}\n\nfor (const [word, count] of freq) {\n  console.log(`${word}: ${count}`);\n}\n// ana: 3, ion: 2, maria: 1",
-        options: [], answer: "", explanation: "freq.get(w) || 0 returnează 0 dacă key-ul nu există. Adăugăm 1 și actualizăm.", difficulty: "medium"
+        options: [], answer: "", explanation: "freq.get(w) || 0 returnează 0 dacă key-ul nu există. Adăugăm 1 și actualizăm.", difficulty: "medium", expectedOutput: "ana: 3"
       },
       {
         number: 9, name: "Deduplicare cu Set", question: "Elimină duplicatele din array-ul nums și sortează rezultatul crescător.",
         type: "coding", language: "javascript",
         starterCode: "const nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5];\n\nconst unice = [...new Set(nums)].sort((a, b) => a - b);\nconsole.log(unice); // [1, 2, 3, 4, 5, 6, 9]",
-        options: [], answer: "", explanation: "new Set elimină duplicatele, spread converteste la array, sort() sortează numeric.", difficulty: "easy"
+        options: [], answer: "", explanation: "new Set elimină duplicatele, spread converteste la array, sort() sortează numeric.", difficulty: "easy", expectedOutput: "[1,2,3,4,5,6,9]"
       },
       {
         number: 10, name: "Set operații", question: "Implementează funcțiile intersect(a, b) și difference(a, b) pentru Set-uri.",
         type: "coding", language: "javascript",
         starterCode: "function intersect(setA, setB) {\n  return new Set([...setA].filter(x => setB.has(x)));\n}\n\nfunction difference(setA, setB) {\n  return new Set([...setA].filter(x => !setB.has(x)));\n}\n\nconst a = new Set([1, 2, 3, 4]);\nconst b = new Set([3, 4, 5, 6]);\n\nconsole.log([...intersect(a, b)]); // [3, 4]\nconsole.log([...difference(a, b)]); // [1, 2]",
-        options: [], answer: "", explanation: "Set.has() e O(1) — filtrăm un array spread din setA, verificând apartenența în setB.", difficulty: "medium"
+        options: [], answer: "", explanation: "Set.has() e O(1) — filtrăm un array spread din setA, verificând apartenența în setB.", difficulty: "medium", expectedOutput: "[3,4]"
       },
       {
         number: 11, name: "Map ca cache", question: "Implementează un cache simplu folosind Map. Funcția get(key) returnează valoarea sau null. Funcția set(key, value) adaugă/actualizează.",
         type: "coding", language: "javascript",
         starterCode: "function createCache() {\n  const store = new Map();\n  return {\n    get(key) { return store.get(key) ?? null; },\n    set(key, value) { store.set(key, value); },\n    has(key) { return store.has(key); },\n    clear() { store.clear(); },\n    size() { return store.size; },\n  };\n}\n\nconst cache = createCache();\ncache.set('user:1', { name: 'Ana' });\nconsole.log(cache.get('user:1')); // { name: 'Ana' }\nconsole.log(cache.get('user:2')); // null\nconsole.log(cache.size());        // 1",
-        options: [], answer: "", explanation: "Map e ideal pentru cache-uri — chei de orice tip, .has() O(1), ușor de iterat.", difficulty: "easy"
+        options: [], answer: "", explanation: "Map e ideal pentru cache-uri — chei de orice tip, .has() O(1), ușor de iterat.", difficulty: "easy", expectedOutput: '{"name":"Ana"}'
       },
       { number: 12, name: "WeakMap chei", question: "Ce tip de chei acceptă WeakMap?", options: ["Stringuri", "Numere", "Numai obiecte (și simboluri în unele env)", "Orice tip"], answer: "Numai obiecte (și simboluri în unele env)", explanation: "WeakMap cere chei obiect — primitives (string, number) aruncă TypeError.", difficulty: "medium" },
       {
         number: 13, name: "Map din Object", question: "Convertește obiectul config într-un Map și iterează-l afișând fiecare pereche cheie-valoare.",
         type: "coding", language: "javascript",
         starterCode: "const config = { host: 'localhost', port: 3000, debug: true };\n\nconst configMap = new Map(Object.entries(config));\n\nfor (const [key, value] of configMap) {\n  console.log(`${key} = ${value}`);\n}\n// host = localhost\n// port = 3000\n// debug = true",
-        options: [], answer: "", explanation: "Object.entries() returnează [key, value] pairs — pasate direct în constructorul Map.", difficulty: "easy"
+        options: [], answer: "", explanation: "Object.entries() returnează [key, value] pairs — pasate direct în constructorul Map.", difficulty: "easy", expectedOutput: "host = localhost"
       },
       {
         number: 14, name: "Symbol ca ID privat", question: "Folosește un Symbol ca cheie privată pentru a stoca un ID intern pe un obiect, astfel încât să nu apară în Object.keys().",
         type: "coding", language: "javascript",
         starterCode: "const _id = Symbol('id');\n\nfunction createUser(name) {\n  const user = { name };\n  user[_id] = Math.floor(Math.random() * 1000);\n  return user;\n}\n\nconst u = createUser('Ana');\nconsole.log(u.name);          // 'Ana'\nconsole.log(u[_id]);          // un număr\nconsole.log(Object.keys(u));  // ['name'] — ID-ul e ascuns",
-        options: [], answer: "", explanation: "Symbol-keys nu apar în Object.keys(), JSON.stringify(), for...in — sunt efectiv private.", difficulty: "medium"
+        options: [], answer: "", explanation: "Symbol-keys nu apar în Object.keys(), JSON.stringify(), for...in — sunt efectiv private.", difficulty: "medium", expectedOutput: "Ana"
       },
       { number: 15, name: "Set.has complexitate", question: "Set.has() și Array.includes() — care e mai rapid pentru colecții mari?", options: ["Array.includes() — e optimizat", "Set.has() — O(1) față de O(n) al array-ului", "Identic — același algoritm", "Depinde de tipul valorilor"], answer: "Set.has() — O(1) față de O(n) al array-ului", explanation: "Set folosește hash-table intern. has() e O(1). Array.includes() parcurge liniar — O(n).", difficulty: "medium" },
     ],
@@ -268,26 +268,26 @@ const jsExtra = [
         number: 6, name: "Proxy validare tip", question: "Creează un Proxy care validează că proprietatea 'age' poate fi setată doar cu valori numerice. Alte proprietăți se setează normal.",
         type: "coding", language: "javascript",
         starterCode: "function createValidatedObj() {\n  return new Proxy({}, {\n    set(target, prop, value) {\n      if (prop === 'age' && typeof value !== 'number') {\n        throw new TypeError('age trebuie să fie number');\n      }\n      target[prop] = value;\n      return true;\n    },\n  });\n}\n\nconst obj = createValidatedObj();\nobj.name = 'Ana'; // ok\nobj.age = 25;     // ok\nconsole.log(obj.name, obj.age); // 'Ana' 25\n\ntry {\n  obj.age = 'vechi';\n} catch(e) {\n  console.log(e.message); // 'age trebuie să fie number'\n}",
-        options: [], answer: "", explanation: "În set trap: verifici prop și tipul valorii. Returnezi true pentru succes.", difficulty: "medium"
+        options: [], answer: "", explanation: "În set trap: verifici prop și tipul valorii. Returnezi true pentru succes.", difficulty: "medium", expectedOutput: "Ana 25"
       },
       {
         number: 7, name: "Proxy logging", question: "Implementează un proxy 'logger' care afișează 'GET: [prop]' la fiecare citire și 'SET: [prop] = [value]' la fiecare scriere.",
         type: "coding", language: "javascript",
         starterCode: "function createLogger(obj) {\n  return new Proxy(obj, {\n    get(target, prop) {\n      console.log(`GET: ${prop}`);\n      return Reflect.get(target, prop);\n    },\n    set(target, prop, value) {\n      console.log(`SET: ${prop} = ${value}`);\n      return Reflect.set(target, prop, value);\n    },\n  });\n}\n\nconst user = createLogger({ name: 'Ana' });\nuser.name;      // GET: name\nuser.age = 25;  // SET: age = 25\nconsole.log(user.age); // GET: age → 25",
-        options: [], answer: "", explanation: "Reflect.get/set execută operațiunea normală. Tu adaugi logging înainte.", difficulty: "easy"
+        options: [], answer: "", explanation: "Reflect.get/set execută operațiunea normală. Tu adaugi logging înainte.", difficulty: "easy", expectedOutput: "GET: name"
       },
       {
         number: 8, name: "Proxy readonly", question: "Creează un proxy care face un obiect read-only: orice tentativă de set aruncă TypeError.",
         type: "coding", language: "javascript",
         starterCode: "function readOnly(obj) {\n  return new Proxy(obj, {\n    set(target, prop, value) {\n      throw new TypeError(`Obiect read-only: nu poți seta '${prop}'`);\n    },\n    deleteProperty(target, prop) {\n      throw new TypeError(`Obiect read-only: nu poți șterge '${prop}'`);\n    },\n  });\n}\n\nconst config = readOnly({ apiUrl: 'https://api.test.com', timeout: 3000 });\nconsole.log(config.apiUrl); // citire ok\n\ntry {\n  config.apiUrl = 'changed';\n} catch(e) {\n  console.log(e.message); // 'Obiect read-only: nu poți seta apiUrl'\n}",
-        options: [], answer: "", explanation: "Trap-ul set aruncă TypeError. deleteProperty de asemenea. get e nemodificat (implicit).", difficulty: "medium"
+        options: [], answer: "", explanation: "Trap-ul set aruncă TypeError. deleteProperty de asemenea. get e nemodificat (implicit).", difficulty: "medium", expectedOutput: "https://api.test.com"
       },
       { number: 9, name: "Proxy revocabil", question: "Ce face Proxy.revocable(target, handler)?", options: ["Creează proxy temporar de 1 oră", "Returnează { proxy, revoke } — revoke() dezactivează proxy-ul", "Îngheață proxy-ul", "Creează un proxy clona"], answer: "Returnează { proxy, revoke } — revoke() dezactivează proxy-ul", explanation: "Proxy.revocable permite dezactivarea explicită a proxy-ului. After revoke(), orice acces aruncă TypeError.", difficulty: "medium" },
       {
         number: 10, name: "Proxy valoare default", question: "Creează un proxy care returnează 0 pentru orice proprietate care nu există pe obiect (în loc de undefined).",
         type: "coding", language: "javascript",
         starterCode: "function withDefaults(obj, defaultValue = 0) {\n  return new Proxy(obj, {\n    get(target, prop) {\n      return prop in target ? target[prop] : defaultValue;\n    },\n  });\n}\n\nconst scoruri = withDefaults({ ana: 95, ion: 87 });\nconsole.log(scoruri.ana);   // 95\nconsole.log(scoruri.ion);   // 87\nconsole.log(scoruri.maria); // 0 (default)",
-        options: [], answer: "", explanation: "Verifici 'prop in target'. Dacă există, returnezi valoarea normală, altfel defaultValue.", difficulty: "easy"
+        options: [], answer: "", explanation: "Verifici 'prop in target'. Dacă există, returnezi valoarea normală, altfel defaultValue.", difficulty: "easy", expectedOutput: "95"
       },
       { number: 11, name: "has trap", question: "Ce operator JS activează trap-ul 'has' din Proxy?", options: ["typeof", "in", "instanceof", "delete"], answer: "in", explanation: "Operatorul 'in' (ex: 'prop' in obj) activează trap-ul has. Îl poți folosi să ascunzi/expui proprietăți.", difficulty: "hard" },
       {
@@ -300,7 +300,7 @@ const jsExtra = [
         number: 13, name: "Proxy schema validare", question: "Extinde proxy-ul de validare să verifice tipul pentru orice proprietate dintr-un schema object.",
         type: "coding", language: "javascript",
         starterCode: "function createSchemaProxy(schema) {\n  return new Proxy({}, {\n    set(target, prop, value) {\n      if (prop in schema && typeof value !== schema[prop]) {\n        throw new TypeError(`${prop} trebuie ${schema[prop]}, primit ${typeof value}`);\n      }\n      target[prop] = value;\n      return true;\n    },\n  });\n}\n\nconst user = createSchemaProxy({ name: 'string', age: 'number', active: 'boolean' });\nuser.name = 'Ana';  // ok\nuser.age = 25;      // ok\nuser.active = true; // ok\nconsole.log(user.name, user.age);\n\ntry {\n  user.age = '25'; // TypeError\n} catch(e) {\n  console.log(e.message);\n}",
-        options: [], answer: "", explanation: "Verifici 'prop in schema' și typeof value !== schema[prop]. Flexibil pentru orice schemă.", difficulty: "medium"
+        options: [], answer: "", explanation: "Verifici 'prop in schema' și typeof value !== schema[prop]. Flexibil pentru orice schemă.", difficulty: "medium", expectedOutput: "Ana 25"
       },
       {
         number: 14, name: "apply trap pe funcție", question: "Ce trap activezi pentru a intercepta apelul unei funcții prin Proxy?",
@@ -312,7 +312,7 @@ const jsExtra = [
         number: 15, name: "Proxy counter accese", question: "Creează un proxy care numără de câte ori e accesată fiecare proprietate a unui obiect.",
         type: "coding", language: "javascript",
         starterCode: "function createAccessCounter(obj) {\n  const counts = {};\n  const proxy = new Proxy(obj, {\n    get(target, prop) {\n      if (typeof prop === 'string') {\n        counts[prop] = (counts[prop] || 0) + 1;\n      }\n      return Reflect.get(target, prop);\n    },\n  });\n  return { proxy, counts };\n}\n\nconst { proxy: user, counts } = createAccessCounter({ name: 'Ana', age: 25 });\nuser.name; user.name; user.age;\nconsole.log(counts); // { name: 2, age: 1 }",
-        options: [], answer: "", explanation: "Menții un obiect counts separat. La fiecare get, incrementezi counts[prop] și returnezi valoarea normală.", difficulty: "medium"
+        options: [], answer: "", explanation: "Menții un obiect counts separat. La fiecare get, incrementezi counts[prop] și returnezi valoarea normală.", difficulty: "medium", expectedOutput: '{"name":2,"age":1}'
       },
     ],
   },
@@ -338,39 +338,39 @@ const jsExtra = [
         number: 8, name: "Extrage numere", question: "Extrage toate numerele dintr-un string și returnează-le ca array de numere.",
         type: "coding", language: "javascript",
         starterCode: "function extractNumbers(str) {\n  const matches = str.match(/\\d+/g);\n  return matches ? matches.map(Number) : [];\n}\n\nconsole.log(extractNumbers('am 3 mere și 12 pere')); // [3, 12]\nconsole.log(extractNumbers('nimic'));                 // []\nconsole.log(extractNumbers('x1y22z333'));             // [1, 22, 333]",
-        options: [], answer: "", explanation: "\\d+ match-uiește secvențe de cifre. Flag g pentru toate. matches.map(Number) converteste string→number.", difficulty: "easy"
+        options: [], answer: "", explanation: "\\d+ match-uiește secvențe de cifre. Flag g pentru toate. matches.map(Number) converteste string→number.", difficulty: "easy", expectedOutput: "[3,12]"
       },
       {
         number: 9, name: "Validare email simplu", question: "Scrie o funcție isValidEmail(email) care returnează true dacă string-ul pare un email valid (format simplu: ceva@ceva.domeniu).",
         type: "coding", language: "javascript",
         starterCode: "function isValidEmail(email) {\n  return /^[\\w.+-]+@[\\w-]+\\.[a-z]{2,}$/i.test(email);\n}\n\nconsole.log(isValidEmail('ana@test.com'));    // true\nconsole.log(isValidEmail('ion@firma.ro'));    // true\nconsole.log(isValidEmail('invalid'));         // false\nconsole.log(isValidEmail('lipseste@'));       // false",
-        options: [], answer: "", explanation: "Regex: ^[\\w.+-]+ = username, @, [\\w-]+ = domeniu, \\. = punct, [a-z]{2,}$ = TLD.", difficulty: "medium"
+        options: [], answer: "", explanation: "Regex: ^[\\w.+-]+ = username, @, [\\w-]+ = domeniu, \\. = punct, [a-z]{2,}$ = TLD.", difficulty: "medium", expectedOutput: "true"
       },
       {
         number: 10, name: "Replace cu funcție", question: "Capitalizează primul caracter al fiecărui cuvânt din string (Title Case).",
         type: "coding", language: "javascript",
         starterCode: "function toTitleCase(str) {\n  return str.replace(/\\b\\w/g, c => c.toUpperCase());\n}\n\nconsole.log(toTitleCase('hello world'));     // 'Hello World'\nconsole.log(toTitleCase('ana are mere'));    // 'Ana Are Mere'\nconsole.log(toTitleCase('javascript is fun')); // 'Javascript Is Fun'",
-        options: [], answer: "", explanation: "\\b = word boundary, \\w = primul caracter al cuvântului. Replace cu funcție care face toUpperCase.", difficulty: "easy"
+        options: [], answer: "", explanation: "\\b = word boundary, \\w = primul caracter al cuvântului. Replace cu funcție care face toUpperCase.", difficulty: "easy", expectedOutput: "Hello World"
       },
       {
         number: 11, name: "Extrage data", question: "Extrage ziua, luna și anul dintr-un string de tipul 'dd/mm/yyyy' folosind named groups.",
         type: "coding", language: "javascript",
         starterCode: "function parseDate(str) {\n  const m = str.match(/(?<zi>\\d{2})\\/(?<luna>\\d{2})\\/(?<an>\\d{4})/);\n  if (!m) return null;\n  return { zi: m.groups.zi, luna: m.groups.luna, an: m.groups.an };\n}\n\nconsole.log(parseDate('15/01/2025')); // { zi: '15', luna: '01', an: '2025' }\nconsole.log(parseDate('invalid'));    // null",
-        options: [], answer: "", explanation: "Named groups (?<name>pattern) stocate în match.groups. Verifici că match există înainte de .groups.", difficulty: "medium"
+        options: [], answer: "", explanation: "Named groups (?<name>pattern) stocate în match.groups. Verifici că match există înainte de .groups.", difficulty: "medium", expectedOutput: '{"zi":"15","luna":"01","an":"2025"}'
       },
       { number: 12, name: "Flag i", question: "Ce face /hello/i.test('HELLO')?", options: ["false — case sensitive", "true — flag i = case insensitive", "Eroare", "undefined"], answer: "true — flag i = case insensitive", explanation: "Flag-ul i face regex case insensitive. /hello/i match-uiește 'hello', 'HELLO', 'Hello' etc.", difficulty: "easy" },
       {
         number: 13, name: "Înlocuiește spații", question: "Înlocuiește toate spațiile multiple (2 sau mai multe) dintr-un string cu un singur spațiu.",
         type: "coding", language: "javascript",
         starterCode: "function normalizeSpaces(str) {\n  return str.replace(/\\s{2,}/g, ' ').trim();\n}\n\nconsole.log(normalizeSpaces('ana   are   mere'));    // 'ana are mere'\nconsole.log(normalizeSpaces('  hello   world  '));  // 'hello world'",
-        options: [], answer: "", explanation: "\\s{2,} match-uiește 2+ whitespace-uri. g pentru toate aparițiile. trim() elimină spații de la capete.", difficulty: "easy"
+        options: [], answer: "", explanation: "\\s{2,} match-uiește 2+ whitespace-uri. g pentru toate aparițiile. trim() elimină spații de la capete.", difficulty: "easy", expectedOutput: "ana are mere"
       },
       { number: 14, name: "Non-greedy", question: "Care e diferența dintre /a.+b/ și /a.+?b/ aplicat pe 'aXXbYYb'?", options: ["Identice", "/a.+b/ match 'aXXbYYb' (greedy), /a.+?b/ match 'aXXb' (non-greedy)", "/a.+?b/ e mai rapid", "/a.+b/ aruncă eroare"], answer: "/a.+b/ match 'aXXbYYb' (greedy), /a.+?b/ match 'aXXb' (non-greedy)", explanation: "+ e greedy (ia cât mai mult). +? e lazy/non-greedy (ia cât mai puțin). Important la parsare HTML/JSON.", difficulty: "hard" },
       {
         number: 15, name: "Validare parolă", question: "Scrie isStrongPassword(pwd): returnează true dacă parola are minim 8 caractere, cel puțin o literă mare, o literă mică și o cifră.",
         type: "coding", language: "javascript",
         starterCode: "function isStrongPassword(pwd) {\n  return pwd.length >= 8 &&\n    /[A-Z]/.test(pwd) &&\n    /[a-z]/.test(pwd) &&\n    /[0-9]/.test(pwd);\n}\n\nconsole.log(isStrongPassword('Parola1!'));  // true\nconsole.log(isStrongPassword('parola1!'));  // false (fără majusculă)\nconsole.log(isStrongPassword('PAROLA1!'));  // false (fără minusculă)\nconsole.log(isStrongPassword('Parola!'));   // false (fără cifră)\nconsole.log(isStrongPassword('Pa1'));       // false (prea scurtă)",
-        options: [], answer: "", explanation: "Verifici separat fiecare condiție cu test(). Alternativ un singur regex complicat cu lookaheads.", difficulty: "medium"
+        options: [], answer: "", explanation: "Verifici separat fiecare condiție cu test(). Alternativ un singur regex complicat cu lookaheads.", difficulty: "medium", expectedOutput: "true"
       },
     ],
   },
@@ -396,39 +396,39 @@ const jsExtra = [
         number: 8, name: "Range generator", question: "Scrie un generator range(start, end, step=1) care produce numere de la start la end cu pasul step.",
         type: "coding", language: "javascript",
         starterCode: "function* range(start, end, step = 1) {\n  for (let i = start; i <= end; i += step) {\n    yield i;\n  }\n}\n\nconsole.log([...range(1, 5)]);      // [1, 2, 3, 4, 5]\nconsole.log([...range(0, 10, 2)]);  // [0, 2, 4, 6, 8, 10]\nconsole.log([...range(5, 5)]);      // [5]",
-        options: [], answer: "", explanation: "Bucla for cu yield — generatorul e pausat la fiecare yield și reia de unde a rămas.", difficulty: "easy"
+        options: [], answer: "", explanation: "Bucla for cu yield — generatorul e pausat la fiecare yield și reia de unde a rămas.", difficulty: "easy", expectedOutput: "[1,2,3,4,5]"
       },
       {
         number: 9, name: "Fibonacci generator", question: "Implementează un generator infinit fibonacci() care produce șirul Fibonacci: 0, 1, 1, 2, 3, 5, 8, ...",
         type: "coding", language: "javascript",
         starterCode: "function* fibonacci() {\n  let [a, b] = [0, 1];\n  while (true) {\n    yield a;\n    [a, b] = [b, a + b];\n  }\n}\n\nconst fib = fibonacci();\nconst primele10 = [];\nfor (let i = 0; i < 10; i++) primele10.push(fib.next().value);\nconsole.log(primele10); // [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]",
-        options: [], answer: "", explanation: "Destructurare simultană [a, b] = [b, a+b] actualizează amândouă variabile fără temp.", difficulty: "medium"
+        options: [], answer: "", explanation: "Destructurare simultană [a, b] = [b, a+b] actualizează amândouă variabile fără temp.", difficulty: "medium", expectedOutput: "[0,1,1,2,3,5,8,13,21,34]"
       },
       {
         number: 10, name: "Take helper", question: "Scrie funcția take(iterable, n) care returnează un array cu primele n valori din orice iterable (array, generator, etc.).",
         type: "coding", language: "javascript",
         starterCode: "function take(iterable, n) {\n  const result = [];\n  for (const val of iterable) {\n    result.push(val);\n    if (result.length === n) break;\n  }\n  return result;\n}\n\nfunction* naturals() { let n = 1; while(true) yield n++; }\n\nconsole.log(take(naturals(), 5));   // [1, 2, 3, 4, 5]\nconsole.log(take([10,20,30], 2));   // [10, 20]",
-        options: [], answer: "", explanation: "for...of funcționează cu orice iterable. break oprește iterarea fără a consuma tot generator-ul infinit.", difficulty: "medium"
+        options: [], answer: "", explanation: "for...of funcționează cu orice iterable. break oprește iterarea fără a consuma tot generator-ul infinit.", difficulty: "medium", expectedOutput: "[1,2,3,4,5]"
       },
       {
         number: 11, name: "Generator map", question: "Implementează un generator map*(iterable, fn) care aplică fn pe fiecare element, lazy.",
         type: "coding", language: "javascript",
         starterCode: "function* mapGen(iterable, fn) {\n  for (const val of iterable) {\n    yield fn(val);\n  }\n}\n\nconst doubled = mapGen([1, 2, 3, 4, 5], x => x * 2);\nconsole.log([...doubled]); // [2, 4, 6, 8, 10]\n\n// Funcționează și cu generator infinit + take:\nfunction* naturals() { let n = 1; while(true) yield n++; }\nconst squares = mapGen(naturals(), x => x * x);\nconst first5 = [];\nfor (let i = 0; i < 5; i++) first5.push(squares.next().value);\nconsole.log(first5); // [1, 4, 9, 16, 25]",
-        options: [], answer: "", explanation: "Generator lazy: produce valori doar când e consumat. Compozabil cu alți generatori.", difficulty: "medium"
+        options: [], answer: "", explanation: "Generator lazy: produce valori doar când e consumat. Compozabil cu alți generatori.", difficulty: "medium", expectedOutput: "[2,4,6,8,10]"
       },
       { number: 12, name: "Generator return", question: "Ce returnează gen.next() după ce generatorul a terminat (nu mai sunt yield-uri)?", options: ["Eroare", "{ value: undefined, done: true }", "null", "{ value: null, done: true }"], answer: "{ value: undefined, done: true }", explanation: "Când generatorul termină, next() returnează { value: undefined, done: true } pentru orice apel ulterior.", difficulty: "easy" },
       {
         number: 13, name: "Flatten cu generator", question: "Implementează un generator flatten(arr) care 'aplatizează' un array nested de adâncime 1.",
         type: "coding", language: "javascript",
         starterCode: "function* flatten(arr) {\n  for (const item of arr) {\n    if (Array.isArray(item)) {\n      yield* item;\n    } else {\n      yield item;\n    }\n  }\n}\n\nconsole.log([...flatten([1, [2, 3], 4, [5, 6]])]); // [1, 2, 3, 4, 5, 6]\nconsole.log([...flatten([1, 2, 3])]);               // [1, 2, 3]",
-        options: [], answer: "", explanation: "yield* item deleagă la sub-array. yield item pentru valori simple.", difficulty: "medium"
+        options: [], answer: "", explanation: "yield* item deleagă la sub-array. yield item pentru valori simple.", difficulty: "medium", expectedOutput: "[1,2,3,4,5,6]"
       },
       { number: 14, name: "for...of pe generator", question: "Poți folosi for...of direct pe un generator?", options: ["Nu, trebuie să apelezi next() manual", "Da — generatoarele implementează Symbol.iterator", "Doar cu [...gen]", "Nu, generatoarele nu sunt iterabile"], answer: "Da — generatoarele implementează Symbol.iterator", explanation: "Generatoarele sunt atât iterator cât și iterable. for...of, spread [...gen], și destructurare funcționează direct.", difficulty: "medium" },
       {
         number: 15, name: "ID generator unic", question: "Implementează un generator makeId(prefix) care produce ID-uri unice: 'prefix-1', 'prefix-2', etc.",
         type: "coding", language: "javascript",
         starterCode: "function* makeId(prefix = 'id') {\n  let n = 1;\n  while (true) {\n    yield `${prefix}-${n++}`;\n  }\n}\n\nconst userId = makeId('user');\nconsole.log(userId.next().value); // 'user-1'\nconsole.log(userId.next().value); // 'user-2'\nconsole.log(userId.next().value); // 'user-3'\n\nconst postId = makeId('post');\nconsole.log(postId.next().value); // 'post-1'",
-        options: [], answer: "", explanation: "Generator infinit cu prefix capturat. Fiecare apel al makeId() are propriul contor n.", difficulty: "easy"
+        options: [], answer: "", explanation: "Generator infinit cu prefix capturat. Fiecare apel al makeId() are propriul contor n.", difficulty: "easy", expectedOutput: "user-1"
       },
     ],
   },
@@ -452,20 +452,20 @@ const jsExtra = [
         number: 6, name: "Custom error class", question: "Scrie o clasă AppError care extinde Error și adaugă câmpurile code (string) și statusCode (number). Testează cu un throw.",
         type: "coding", language: "javascript",
         starterCode: "class AppError extends Error {\n  constructor(message, code, statusCode = 500) {\n    super(message);\n    this.name = 'AppError';\n    this.code = code;\n    this.statusCode = statusCode;\n  }\n}\n\ntry {\n  throw new AppError('User not found', 'NOT_FOUND', 404);\n} catch (e) {\n  console.log(e.message);    // 'User not found'\n  console.log(e.code);       // 'NOT_FOUND'\n  console.log(e.statusCode); // 404\n  console.log(e instanceof AppError); // true\n  console.log(e instanceof Error);    // true\n}",
-        options: [], answer: "", explanation: "super(message) inițializează Error-ul. Câmpurile extra sunt pe this. instanceof funcționează pe lanțul de prototipuri.", difficulty: "medium"
+        options: [], answer: "", explanation: "super(message) inițializează Error-ul. Câmpurile extra sunt pe this. instanceof funcționează pe lanțul de prototipuri.", difficulty: "medium", expectedOutput: "User not found"
       },
       { number: 7, name: "error.message", question: "Cum accesezi mesajul unei erori în catch?", options: ["e.text", "e.description", "e.message", "e.toString()"], answer: "e.message", explanation: "Error.prototype.message stochează string-ul pasat la constructor. e.name = tipul, e.stack = stack trace.", difficulty: "easy" },
       {
         number: 8, name: "Try-catch async", question: "Scrie o funcție fetchUser(id) care face fetch simulat (poate eșua) cu try/catch și returnează user-ul sau null la eroare.",
         type: "coding", language: "javascript",
         starterCode: "async function fetchUser(id) {\n  try {\n    // simulăm fetch - aruncă eroare dacă id < 0\n    if (id < 0) throw new Error('Invalid ID');\n    return { id, name: `User ${id}` };\n  } catch (err) {\n    console.error('fetchUser error:', err.message);\n    return null;\n  }\n}\n\nasync function main() {\n  const u1 = await fetchUser(1);\n  console.log(u1); // { id: 1, name: 'User 1' }\n  \n  const u2 = await fetchUser(-1);\n  console.log(u2); // null\n}\n\nmain();",
-        options: [], answer: "", explanation: "try/catch în funcții async prinde și erorile din await. Returnezi null ca fallback sigur.", difficulty: "easy"
+        options: [], answer: "", explanation: "try/catch în funcții async prinde și erorile din await. Returnezi null ca fallback sigur.", difficulty: "easy", expectedOutput: ""
       },
       {
         number: 9, name: "Result type", question: "Implementează safeParseJSON(str) care returnează { ok: true, value } sau { ok: false, error } fără a arunca excepții.",
         type: "coding", language: "javascript",
         starterCode: "function safeParseJSON(str) {\n  try {\n    return { ok: true, value: JSON.parse(str) };\n  } catch (e) {\n    return { ok: false, error: e.message };\n  }\n}\n\nconst r1 = safeParseJSON('{\"name\":\"Ana\"}');\nconsole.log(r1.ok, r1.value); // true { name: 'Ana' }\n\nconst r2 = safeParseJSON('invalid json');\nconsole.log(r2.ok, r2.error); // false 'Unexpected token...'",
-        options: [], answer: "", explanation: "Result type pattern evită exceptions propagate. Callerul verifică .ok înainte de a folosi .value.", difficulty: "medium"
+        options: [], answer: "", explanation: "Result type pattern evită exceptions propagate. Callerul verifică .ok înainte de a folosi .value.", difficulty: "medium", expectedOutput: "true"
       },
       {
         number: 10, name: "Error în chain", question: "Ce se întâmplă dacă arunci o eroare în .then() și există un .catch() la final?",
@@ -477,21 +477,21 @@ const jsExtra = [
         number: 11, name: "Retry logic", question: "Implementează retry(fn, times) care apelează fn de maxim 'times' ori și returnează primul succes. Aruncă ultima eroare dacă toate eșuează.",
         type: "coding", language: "javascript",
         starterCode: "function retry(fn, times) {\n  let lastError;\n  for (let i = 0; i < times; i++) {\n    try {\n      return fn();\n    } catch (e) {\n      lastError = e;\n    }\n  }\n  throw lastError;\n}\n\nlet attempts = 0;\nconst result = retry(() => {\n  attempts++;\n  if (attempts < 3) throw new Error(`Fail ${attempts}`);\n  return 'succes';\n}, 5);\nconsole.log(result);   // 'succes'\nconsole.log(attempts); // 3",
-        options: [], answer: "", explanation: "Loop de times ori. La succes returnezi imediat. La final throw lastError pentru ultimul eșec.", difficulty: "medium"
+        options: [], answer: "", explanation: "Loop de times ori. La succes returnezi imediat. La final throw lastError pentru ultimul eșec.", difficulty: "medium", expectedOutput: "succes"
       },
       { number: 12, name: "RangeError", question: "new Array(-1) aruncă ce tip de eroare?", options: ["TypeError", "RangeError", "ValueError", "SyntaxError"], answer: "RangeError", explanation: "RangeError apare când o valoare e în afara intervalului permis — ca dimensiuni negative pentru Array.", difficulty: "medium" },
       {
         number: 13, name: "Multiple error types", question: "Scrie un handler care diferențiază ValidationError de NetworkError și le gestionează diferit.",
         type: "coding", language: "javascript",
         starterCode: "class ValidationError extends Error {\n  constructor(msg) { super(msg); this.name = 'ValidationError'; }\n}\nclass NetworkError extends Error {\n  constructor(msg) { super(msg); this.name = 'NetworkError'; }\n}\n\nfunction handle(err) {\n  if (err instanceof ValidationError) {\n    console.log('Validare:', err.message);\n  } else if (err instanceof NetworkError) {\n    console.log('Rețea:', err.message);\n  } else {\n    throw err; // re-throw necunoscute\n  }\n}\n\nhandle(new ValidationError('Email invalid')); // Validare: Email invalid\nhandle(new NetworkError('Timeout'));          // Rețea: Timeout",
-        options: [], answer: "", explanation: "instanceof verifică tipul. Re-throw pentru erori necunoscute — nu le 'înghiți'.", difficulty: "medium"
+        options: [], answer: "", explanation: "instanceof verifică tipul. Re-throw pentru erori necunoscute — nu le 'înghiți'.", difficulty: "medium", expectedOutput: "Validare: Email invalid"
       },
       { number: 14, name: "Error.prototype.stack", question: "Ce conține error.stack?", options: ["Lista de apeluri care au dus la eroare", "Memoria ocupată", "Numărul de erori anterioare", "Cod HTML"], answer: "Lista de apeluri care au dus la eroare", explanation: "error.stack e un string cu stack trace-ul — numele funcțiilor și liniile de cod care au dus la eroare.", difficulty: "easy" },
       {
         number: 15, name: "Finally cleanup", question: "Scrie o funcție withResource(fn) care 'deschide' o resursă, apelează fn cu ea și garantează că resursele sunt eliberate chiar dacă fn aruncă eroare.",
         type: "coding", language: "javascript",
         starterCode: "function withResource(fn) {\n  const resource = { open: true, data: 'date importante' };\n  console.log('Resursă deschisă');\n  try {\n    return fn(resource);\n  } finally {\n    resource.open = false;\n    console.log('Resursă eliberată');\n  }\n}\n\n// Funcționează normal:\nconst result = withResource(r => r.data);\nconsole.log(result); // 'date importante'\n\n// Funcționează și la eroare:\ntry {\n  withResource(r => { throw new Error('ceva'); });\n} catch(e) {\n  console.log('Eroare prinsă:', e.message);\n}\n// 'Resursă eliberată' se afișează în ambele cazuri!",
-        options: [], answer: "", explanation: "finally garantează cleanup indiferent de succes/eroare — pattern esențial pentru resurse (DB, fișiere, locks).", difficulty: "medium"
+        options: [], answer: "", explanation: "finally garantează cleanup indiferent de succes/eroare — pattern esențial pentru resurse (DB, fișiere, locks).", difficulty: "medium", expectedOutput: "Resurs"
       },
     ],
   },
@@ -544,35 +544,35 @@ const jsExtra = [
         number: 7, name: "Funcție pură testabilă", question: "Scrie funcția pură filterEven(arr) care returnează doar numerele pare. Testează-o manual cu assert simplu (fără Jest).",
         type: "coding", language: "javascript",
         starterCode: "function filterEven(arr) {\n  return arr.filter(n => n % 2 === 0);\n}\n\n// 'Teste' manuale:\nconst r1 = filterEven([1, 2, 3, 4, 5, 6]);\nconsole.log(JSON.stringify(r1) === '[2,4,6]' ? 'PASS' : 'FAIL'); // PASS\n\nconst r2 = filterEven([1, 3, 5]);\nconsole.log(r2.length === 0 ? 'PASS' : 'FAIL'); // PASS\n\nconst r3 = filterEven([]);\nconsole.log(r3.length === 0 ? 'PASS' : 'FAIL'); // PASS",
-        options: [], answer: "", explanation: "Funcțiile pure (fără side effects, output determinat de input) sunt ușor de testat.", difficulty: "easy"
+        options: [], answer: "", explanation: "Funcțiile pure (fără side effects, output determinat de input) sunt ușor de testat.", difficulty: "easy", expectedOutput: "PASS"
       },
       { number: 8, name: "toBeCloseTo", question: "De ce 0.1 + 0.2 necesită toBeCloseTo în loc de toBe(0.3)?", options: ["E un bug în Jest", "Floating point imprecision: 0.1+0.2 = 0.30000000000000004", "toBeCloseTo e mai rapid", "toBe nu funcționează cu numere"], answer: "Floating point imprecision: 0.1+0.2 = 0.30000000000000004", explanation: "IEEE 754 floating point are imprecizii. toBeCloseTo compară cu toleranță, evitând false failures.", difficulty: "medium" },
       {
         number: 9, name: "TDD ciclu", question: "Implementează suma(a, b) urmând TDD: mai întâi verifici că 2+2=4, apoi că 0+0=0, apoi că -1+1=0.",
         type: "coding", language: "javascript",
         starterCode: "// TDD: Scrie codul minim ca 'testele' să treacă\nfunction suma(a, b) {\n  return a + b;\n}\n\n// 'Teste' inline:\nconsole.log(suma(2, 2) === 4 ? 'PASS: 2+2' : 'FAIL: 2+2');\nconsole.log(suma(0, 0) === 0 ? 'PASS: 0+0' : 'FAIL: 0+0');\nconsole.log(suma(-1, 1) === 0 ? 'PASS: -1+1' : 'FAIL: -1+1');\nconsole.log(suma(-5, -3) === -8 ? 'PASS: -5+-3' : 'FAIL: -5+-3');",
-        options: [], answer: "", explanation: "TDD: Red (test fail) → Green (cod minim) → Refactor. Funcțiile simple sunt ușor testate inline.", difficulty: "easy"
+        options: [], answer: "", explanation: "TDD: Red (test fail) → Green (cod minim) → Refactor. Funcțiile simple sunt ușor testate inline.", difficulty: "easy", expectedOutput: "PASS: 2+2"
       },
       { number: 10, name: "Spy vs Mock", question: "Diferența dintre jest.spyOn și jest.fn?", options: ["Identice", "spyOn wrappează o funcție EXISTENTĂ, fn creează una nouă", "fn e mai precis", "spyOn e deprecated"], answer: "spyOn wrappează o funcție EXISTENTĂ, fn creează una nouă", explanation: "jest.spyOn(obj, 'method') interceptează metoda reală, permitând și restaurarea ei. jest.fn() creează mock de la zero.", difficulty: "medium" },
       {
         number: 11, name: "Testare edge cases", question: "Scrie funcția divide(a, b) care returnează a/b sau aruncă Error('Cannot divide by zero'). Testează edge cases manual.",
         type: "coding", language: "javascript",
         starterCode: "function divide(a, b) {\n  if (b === 0) throw new Error('Cannot divide by zero');\n  return a / b;\n}\n\n// Edge cases:\nconsole.log(divide(10, 2) === 5 ? 'PASS' : 'FAIL');  // normal\nconsole.log(divide(0, 5) === 0 ? 'PASS' : 'FAIL');   // zero dividend\n\ntry {\n  divide(1, 0);\n  console.log('FAIL: ar trebui eroare');\n} catch(e) {\n  console.log(e.message === 'Cannot divide by zero' ? 'PASS: throws' : 'FAIL');\n}",
-        options: [], answer: "", explanation: "Edge cases: zero dividend (ok), zero divisor (throw), numere normale. Testezi și calea de eroare.", difficulty: "medium"
+        options: [], answer: "", explanation: "Edge cases: zero dividend (ok), zero divisor (throw), numere normale. Testezi și calea de eroare.", difficulty: "medium", expectedOutput: "PASS"
       },
       { number: 12, name: "describe bloc", question: "La ce servește describe() în Jest?", options: ["Importă modulul de testat", "Grupează teste înrudite și izolează beforeEach/afterEach", "Rulează testele în paralel", "Definește mock-uri globale"], answer: "Grupează teste înrudite și izolează beforeEach/afterEach", explanation: "describe() creează un bloc de organizare. beforeEach/afterEach din interior afectează doar testele din acel describe.", difficulty: "easy" },
       {
         number: 13, name: "Funcție cu side effects testabilă", question: "Refactorizează logger-ul astfel încât să fie testabil (injectezi funcția de output).",
         type: "coding", language: "javascript",
         starterCode: "// Versiunea originală — greu testabilă:\n// function log(msg) { console.log(`[LOG] ${msg}`); }\n\n// Versiunea testabilă — injectezi output function:\nfunction createLogger(output = console.log) {\n  return function log(msg) {\n    output(`[LOG] ${msg}`);\n  };\n}\n\n// Test manual:\nconst messages = [];\nconst testLog = createLogger(msg => messages.push(msg));\ntestLog('hello');\ntestLog('world');\nconsole.log(messages); // ['[LOG] hello', '[LOG] world']",
-        options: [], answer: "", explanation: "Dependency injection face funcțiile testabile — injectezi un colector în loc de console.log real.", difficulty: "medium"
+        options: [], answer: "", explanation: "Dependency injection face funcțiile testabile — injectezi un colector în loc de console.log real.", difficulty: "medium", expectedOutput: '["[LOG] hello","[LOG] world"]'
       },
       { number: 14, name: "Code coverage", question: "Ce înseamnă 100% branch coverage?", options: ["Toate liniile sunt executate", "Toate ramurile if/else/ternary sunt testate (both true și false)", "Toate funcțiile sunt apelate", "Niciun bug"], answer: "Toate ramurile if/else/ternary sunt testate (both true și false)", explanation: "Branch coverage verifică că fiecare decizie (if/else, ternary, switch) e testată pe ambele căi.", difficulty: "medium" },
       {
         number: 15, name: "Mock simplu", question: "Implementează un mini sistem de mock: o funcție mockFn() care trackează apelurile și poate verifica dacă a fost apelată.",
         type: "coding", language: "javascript",
         starterCode: "function createMock() {\n  const calls = [];\n  function mock(...args) {\n    calls.push(args);\n    return mock._returnValue;\n  }\n  mock.calls = calls;\n  mock.callCount = () => calls.length;\n  mock.calledWith = (...args) => calls.some(\n    c => JSON.stringify(c) === JSON.stringify(args)\n  );\n  mock.returns = (val) => { mock._returnValue = val; return mock; };\n  return mock;\n}\n\nconst fn = createMock().returns(42);\nfn('a', 1);\nfn('b', 2);\nconsole.log(fn.callCount());       // 2\nconsole.log(fn.calledWith('a', 1)); // true\nconsole.log(fn.calledWith('c', 3)); // false",
-        options: [], answer: "", explanation: "Un mock tracking: array de apeluri, metodă callCount(), calledWith() cu comparare JSON.", difficulty: "hard"
+        options: [], answer: "", explanation: "Un mock tracking: array de apeluri, metodă callCount(), calledWith() cu comparare JSON.", difficulty: "hard", expectedOutput: "2"
       },
     ],
   },
@@ -596,46 +596,46 @@ const jsExtra = [
         number: 6, name: "Implementare debounce", question: "Implementează funcția debounce(fn, delay). Apeluri repetate în interval < delay trebuie să reseteze timer-ul.",
         type: "coding", language: "javascript",
         starterCode: "function debounce(fn, delay) {\n  let timeoutId;\n  return function(...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => fn.apply(this, args), delay);\n  };\n}\n\n// Test:\nlet callCount = 0;\nconst debounced = debounce(() => callCount++, 100);\n\n// Simulăm 3 apeluri rapide — doar ultimul ar trebui să execute:\ndebounced(); debounced(); debounced();\n\nsetTimeout(() => {\n  console.log(callCount); // 1 (nu 3)\n}, 200);",
-        options: [], answer: "", explanation: "clearTimeout resetează. setTimeout re-setează. fn se execută doar după ce trece delay-ul fără noi apeluri.", difficulty: "medium"
+        options: [], answer: "", explanation: "clearTimeout resetează. setTimeout re-setează. fn se execută doar după ce trece delay-ul fără noi apeluri.", difficulty: "medium", expectedOutput: ""
       },
       {
         number: 7, name: "Implementare throttle", question: "Implementează throttle(fn, interval). Fn trebuie executat cel mult o dată per interval, indiferent de câte apeluri vin.",
         type: "coding", language: "javascript",
         starterCode: "function throttle(fn, interval) {\n  let lastTime = 0;\n  return function(...args) {\n    const now = Date.now();\n    if (now - lastTime >= interval) {\n      lastTime = now;\n      return fn.apply(this, args);\n    }\n  };\n}\n\nlet count = 0;\nconst throttled = throttle(() => count++, 100);\n\nthrottled(); // executat (t=0)\nthrottled(); // ignorat (prea devreme)\nthrottled(); // ignorat\nconsole.log(count); // 1",
-        options: [], answer: "", explanation: "Compar Date.now() cu lastTime. Dacă a trecut intervalul, execut și actualizez lastTime.", difficulty: "medium"
+        options: [], answer: "", explanation: "Compar Date.now() cu lastTime. Dacă a trecut intervalul, execut și actualizez lastTime.", difficulty: "medium", expectedOutput: "1"
       },
       {
         number: 8, name: "Memoize cu Map", question: "Implementează memoize(fn) care funcționează pentru funcții cu orice număr de argumente.",
         type: "coding", language: "javascript",
         starterCode: "function memoize(fn) {\n  const cache = new Map();\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) return cache.get(key);\n    const result = fn.apply(this, args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nlet calls = 0;\nconst expensiveAdd = memoize((a, b) => { calls++; return a + b; });\n\nconsole.log(expensiveAdd(1, 2)); // 3\nconsole.log(expensiveAdd(1, 2)); // 3 (cache)\nconsole.log(expensiveAdd(3, 4)); // 7\nconsole.log(calls); // 2 (nu 3)",
-        options: [], answer: "", explanation: "JSON.stringify(args) creează o cheie unică pentru orice combinație de argumente.", difficulty: "medium"
+        options: [], answer: "", explanation: "JSON.stringify(args) creează o cheie unică pentru orice combinație de argumente.", difficulty: "medium", expectedOutput: "3"
       },
       { number: 9, name: "Event Emitter off", question: "De ce e important să dezabonezi (off) listenerii la distrugerea componentei?", options: ["Performance marginală", "Prevenirea memory leaks — listeners rețin referințe la componente distruse", "E opțional estetic", "Sunt șterse automat"], answer: "Prevenirea memory leaks — listeners rețin referințe la componente distruse", explanation: "Listeners active = referințe = obiectele nu sunt garbage collected. În SPA-uri acesta duce la memory leaks.", difficulty: "medium" },
       {
         number: 10, name: "EventEmitter simplu", question: "Implementează un EventEmitter cu metodele on(event, fn), off(event, fn) și emit(event, ...args).",
         type: "coding", language: "javascript",
         starterCode: "class EventEmitter {\n  constructor() {\n    this.listeners = {};\n  }\n  \n  on(event, fn) {\n    if (!this.listeners[event]) this.listeners[event] = [];\n    this.listeners[event].push(fn);\n  }\n  \n  off(event, fn) {\n    if (!this.listeners[event]) return;\n    this.listeners[event] = this.listeners[event].filter(l => l !== fn);\n  }\n  \n  emit(event, ...args) {\n    (this.listeners[event] || []).forEach(fn => fn(...args));\n  }\n}\n\nconst emitter = new EventEmitter();\nconst handler = (msg) => console.log('Received:', msg);\nemitter.on('message', handler);\nemitter.emit('message', 'hello'); // Received: hello\nemitter.off('message', handler);\nemitter.emit('message', 'bye');   // nimic",
-        options: [], answer: "", explanation: "listeners e un Map de arrays. emit iterează listeners[event]. off filtrează handler-ul.", difficulty: "medium"
+        options: [], answer: "", explanation: "listeners e un Map de arrays. emit iterează listeners[event]. off filtrează handler-ul.", difficulty: "medium", expectedOutput: "Received: hello"
       },
       {
         number: 11, name: "Singleton pattern", question: "Implementează pattern-ul Singleton: o clasă Database care permite doar O SINGURĂ instanță.",
         type: "coding", language: "javascript",
         starterCode: "class Database {\n  static #instance = null;\n  \n  constructor(url) {\n    if (Database.#instance) return Database.#instance;\n    this.url = url;\n    this.connected = false;\n    Database.#instance = this;\n  }\n  \n  connect() {\n    this.connected = true;\n    console.log(`Connected to ${this.url}`);\n  }\n}\n\nconst db1 = new Database('mongodb://localhost');\nconst db2 = new Database('mongodb://other');\n\nconsole.log(db1 === db2); // true — aceeași instanță\nconsole.log(db2.url);     // 'mongodb://localhost' (prima URL)",
-        options: [], answer: "", explanation: "Static #instance reține singura instanță. Constructor returnează instanța existentă dacă există.", difficulty: "hard"
+        options: [], answer: "", explanation: "Static #instance reține singura instanță. Constructor returnează instanța existentă dacă există.", difficulty: "hard", expectedOutput: "true"
       },
       { number: 12, name: "LRU cache concept", question: "Ce face un LRU (Least Recently Used) cache când e plin?", options: ["Aruncă eroare", "Șterge cel mai vechi item indiferent de utilizare", "Șterge item-ul cel mai puțin recent accesat", "Dublează capacitatea"], answer: "Șterge item-ul cel mai puțin recent accesat", explanation: "LRU evicts item-ul care nu a fost folosit cel mai mult timp — items populare rămân în cache.", difficulty: "medium" },
       {
         number: 13, name: "Pipeline de funcții", question: "Implementează pipe(...fns) care compune funcții: pipe(f, g, h)(x) = h(g(f(x))).",
         type: "coding", language: "javascript",
         starterCode: "function pipe(...fns) {\n  return function(x) {\n    return fns.reduce((acc, fn) => fn(acc), x);\n  };\n}\n\nconst process = pipe(\n  x => x * 2,\n  x => x + 10,\n  x => x.toString(),\n  x => `Result: ${x}`\n);\n\nconsole.log(process(5)); // 'Result: 20' (5*2=10, 10+10=20, '20', 'Result: 20')",
-        options: [], answer: "", explanation: "reduce aplică funcțiile în ordine, fiecare primind output-ul precedentei. Compoziție funcțională.", difficulty: "medium"
+        options: [], answer: "", explanation: "reduce aplică funcțiile în ordine, fiecare primind output-ul precedentei. Compoziție funcțională.", difficulty: "medium", expectedOutput: "Result: 20"
       },
       { number: 14, name: "Module pattern", question: "Ce avantaj oferă Module pattern (IIFE care returnează obiect) față de variabile globale?", options: ["E mai rapid", "Încapsulare — evită poluarea namespace-ului global, date private", "Funcționează fără browser", "E mai scurt"], answer: "Încapsulare — evită poluarea namespace-ului global, date private", explanation: "Module pattern creează un scope privat. Doar ce returnezi e public. Previne conflicte de nume globale.", difficulty: "medium" },
       {
         number: 15, name: "Compose funcții", question: "Implementează compose(...fns) = opusul lui pipe: compose(f, g, h)(x) = f(g(h(x))) — aplică de la dreapta la stânga.",
         type: "coding", language: "javascript",
         starterCode: "function compose(...fns) {\n  return function(x) {\n    return fns.reduceRight((acc, fn) => fn(acc), x);\n  };\n}\n\nconst transform = compose(\n  x => `[${x}]`,\n  x => x.toUpperCase(),\n  x => x.trim()\n);\n\nconsole.log(transform('  hello  ')); // '[HELLO]'",
-        options: [], answer: "", explanation: "reduceRight aplică funcțiile de la dreapta la stânga — opusul lui reduce (pipe). Convenit în programare funcțională.", difficulty: "medium"
+        options: [], answer: "", explanation: "reduceRight aplică funcțiile de la dreapta la stânga — opusul lui reduce (pipe). Convenit în programare funcțională.", difficulty: "medium", expectedOutput: "[HELLO]"
       },
     ],
   },
@@ -661,44 +661,44 @@ const jsExtra = [
         number: 8, name: "TodoStore simplu", question: "Implementează un mini TodoStore cu metodele add(text), remove(id) și getAll(). Stochează todos în array privat.",
         type: "coding", language: "javascript",
         starterCode: "class TodoStore {\n  #todos = [];\n  #nextId = 1;\n  \n  add(text) {\n    const todo = { id: this.#nextId++, text, done: false };\n    this.#todos.push(todo);\n    return todo;\n  }\n  \n  remove(id) {\n    this.#todos = this.#todos.filter(t => t.id !== id);\n  }\n  \n  toggle(id) {\n    const t = this.#todos.find(t => t.id === id);\n    if (t) t.done = !t.done;\n  }\n  \n  getAll() { return [...this.#todos]; }\n}\n\nconst store = new TodoStore();\nstore.add('Învață JS');\nstore.add('Fă exerciții');\nstore.toggle(1);\nconsole.log(store.getAll());\n// [{ id:1, text:'Învață JS', done:true }, { id:2, ... done:false }]",
-        options: [], answer: "", explanation: "Array privat #todos. add() push, remove() filter, toggle() find+flip, getAll() returnează copie.", difficulty: "medium"
+        options: [], answer: "", explanation: "Array privat #todos. add() push, remove() filter, toggle() find+flip, getAll() returnează copie.", difficulty: "medium", expectedOutput: '"done":true'
       },
       {
         number: 9, name: "Filtrare todos", question: "Scrie funcția filterTodos(todos, filter) care returnează todos filtrate: 'all', 'active', 'done'.",
         type: "coding", language: "javascript",
         starterCode: "function filterTodos(todos, filter) {\n  if (filter === 'active') return todos.filter(t => !t.done);\n  if (filter === 'done') return todos.filter(t => t.done);\n  return todos; // 'all'\n}\n\nconst todos = [\n  { id: 1, text: 'A', done: true },\n  { id: 2, text: 'B', done: false },\n  { id: 3, text: 'C', done: true },\n];\n\nconsole.log(filterTodos(todos, 'all').length);    // 3\nconsole.log(filterTodos(todos, 'active').length); // 1\nconsole.log(filterTodos(todos, 'done').length);   // 2",
-        options: [], answer: "", explanation: "Switch pe filter — filter() cu condiția corespunzătoare sau returnezi direct array-ul.", difficulty: "easy"
+        options: [], answer: "", explanation: "Switch pe filter — filter() cu condiția corespunzătoare sau returnezi direct array-ul.", difficulty: "easy", expectedOutput: "3"
       },
       {
         number: 10, name: "LocalStorage persistence", question: "Implementează saveTodos(todos) și loadTodos() pentru persistare în localStorage.",
         type: "coding", language: "javascript",
         starterCode: "function saveTodos(todos) {\n  localStorage.setItem('todos', JSON.stringify(todos));\n}\n\nfunction loadTodos() {\n  try {\n    return JSON.parse(localStorage.getItem('todos') || '[]');\n  } catch {\n    return [];\n  }\n}\n\n// Test:\nconst todos = [{ id: 1, text: 'Test', done: false }];\nsaveTodos(todos);\nconst loaded = loadTodos();\nconsole.log(loaded[0].text); // 'Test'\nconsole.log(loaded.length);  // 1",
-        options: [], answer: "", explanation: "JSON.stringify la save, JSON.parse la load. try/catch pentru JSON invalid sau localStorage indisponibil.", difficulty: "easy"
+        options: [], answer: "", explanation: "JSON.stringify la save, JSON.parse la load. try/catch pentru JSON invalid sau localStorage indisponibil.", difficulty: "easy", expectedOutput: "Test"
       },
       {
         number: 11, name: "Stats calculator", question: "Scrie getTodoStats(todos) care returnează { total, done, active, percent }.",
         type: "coding", language: "javascript",
         starterCode: "function getTodoStats(todos) {\n  const total = todos.length;\n  const done = todos.filter(t => t.done).length;\n  const active = total - done;\n  const percent = total === 0 ? 0 : Math.round((done / total) * 100);\n  return { total, done, active, percent };\n}\n\nconst todos = [\n  { done: true }, { done: true }, { done: false }, { done: false }, { done: false }\n];\nconst stats = getTodoStats(todos);\nconsole.log(stats.total);   // 5\nconsole.log(stats.done);    // 2\nconsole.log(stats.active);  // 3\nconsole.log(stats.percent); // 40",
-        options: [], answer: "", explanation: "Calcule simple: filter().length, aritmetică. Math.round pentru procente întregi.", difficulty: "easy"
+        options: [], answer: "", explanation: "Calcule simple: filter().length, aritmetică. Math.round pentru procente întregi.", difficulty: "easy", expectedOutput: "5"
       },
       { number: 12, name: "e.preventDefault scop", question: "De ce apelezi e.preventDefault() pe form submit?", options: ["E obligatoriu în JS", "Previne reîncărcarea paginii (comportament default al formularelor)", "Previne propagarea evenimentului", "Oprește validarea"], answer: "Previne reîncărcarea paginii (comportament default al formularelor)", explanation: "Form-urile HTML reîncarcă pagina la submit by default. preventDefault() permite handlerea custom în JS.", difficulty: "easy" },
       {
         number: 13, name: "Observer pattern subscribe", question: "Implementează un sistem simple subscribe/notify: subscribe(fn) → returnează unsubscribe; notify(data) → apelează toți subscribers.",
         type: "coding", language: "javascript",
         starterCode: "function createStore(initialState) {\n  let state = initialState;\n  const subscribers = [];\n  \n  return {\n    getState() { return state; },\n    setState(newState) {\n      state = newState;\n      subscribers.forEach(fn => fn(state));\n    },\n    subscribe(fn) {\n      subscribers.push(fn);\n      return () => {\n        const idx = subscribers.indexOf(fn);\n        if (idx > -1) subscribers.splice(idx, 1);\n      };\n    },\n  };\n}\n\nconst store = createStore({ count: 0 });\nconst unsub = store.subscribe(s => console.log('State:', s.count));\nstore.setState({ count: 1 }); // State: 1\nstore.setState({ count: 2 }); // State: 2\nunsub();\nstore.setState({ count: 3 }); // nimic (dezabonat)",
-        options: [], answer: "", explanation: "subscribers array. subscribe push + returnează cleanup. setState actualizează și notifică toți subscribers.", difficulty: "medium"
+        options: [], answer: "", explanation: "subscribers array. subscribe push + returnează cleanup. setState actualizează și notifică toți subscribers.", difficulty: "medium", expectedOutput: "State: 1"
       },
       {
         number: 14, name: "Sort todos", question: "Sortează todos: mai întâi cele neterminate (active), apoi terminate (done), fiecare grup în ordinea creării.",
         type: "coding", language: "javascript",
         starterCode: "function sortTodos(todos) {\n  return [...todos].sort((a, b) => {\n    if (a.done !== b.done) return a.done ? 1 : -1;\n    return a.createdAt - b.createdAt;\n  });\n}\n\nconst todos = [\n  { id: 1, done: true,  createdAt: 100, text: 'A' },\n  { id: 2, done: false, createdAt: 200, text: 'B' },\n  { id: 3, done: true,  createdAt: 50,  text: 'C' },\n  { id: 4, done: false, createdAt: 150, text: 'D' },\n];\n\nconst sorted = sortTodos(todos);\nconsole.log(sorted.map(t => t.text)); // ['B', 'D', 'C', 'A']",
-        options: [], answer: "", explanation: "Sort: done false < done true (active first). La egalitate, sort by createdAt ascending.", difficulty: "medium"
+        options: [], answer: "", explanation: "Sort: done false < done true (active first). La egalitate, sort by createdAt ascending.", difficulty: "medium", expectedOutput: '["B","D","C","A"]'
       },
       {
         number: 15, name: "Todo app complet", question: "Implementează o funcție createTodoApp() care gestionează o lista de todos cu add, toggle, remove și returnează starea curentă.",
         type: "coding", language: "javascript",
         starterCode: "function createTodoApp() {\n  let todos = [];\n  let nextId = 1;\n  \n  return {\n    add(text) {\n      todos = [...todos, { id: nextId++, text, done: false }];\n      return this;\n    },\n    toggle(id) {\n      todos = todos.map(t => t.id === id ? { ...t, done: !t.done } : t);\n      return this;\n    },\n    remove(id) {\n      todos = todos.filter(t => t.id !== id);\n      return this;\n    },\n    getStats() {\n      return { total: todos.length, done: todos.filter(t => t.done).length };\n    },\n    toArray() { return [...todos]; },\n  };\n}\n\nconst app = createTodoApp();\napp.add('Lecția 1').add('Lecția 2').add('Lecția 3');\napp.toggle(1).toggle(2);\napp.remove(3);\nconsole.log(app.getStats()); // { total: 2, done: 2 }\nconsole.log(app.toArray().map(t => t.text)); // ['Lecția 1', 'Lecția 2']",
-        options: [], answer: "", explanation: "Closure pentru state privat. Imutabilitate: spread pentru add/toggle. Fluent API (return this) permite chaining.", difficulty: "hard"
+        options: [], answer: "", explanation: "Closure pentru state privat. Imutabilitate: spread pentru add/toggle. Fluent API (return this) permite chaining.", difficulty: "hard", expectedOutput: '{"total":2,"done":2}'
       },
     ],
   },

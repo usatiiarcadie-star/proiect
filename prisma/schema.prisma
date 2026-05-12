@@ -41,9 +41,10 @@ model Task {
   answer      String
   explanation String?
   difficulty  String   @default("easy")
-  type        String   @default("quiz")
-  starterCode String?
-  language    String?
+  type           String   @default("quiz")
+  starterCode    String?
+  language       String?
+  expectedOutput String?
   lessonId    String   @db.ObjectId
   lesson      Lesson   @relation(fields: [lessonId], references: [id])
   createdAt   DateTime @default(now())
