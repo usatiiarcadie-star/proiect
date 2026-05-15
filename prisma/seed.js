@@ -18,6 +18,8 @@ const { cybersecMore } = require("./seed-cybersec-more");
 const { csharpMore } = require("./seed-csharp-more");
 const { javaMore } = require("./seed-java-more");
 const { nextjsFrontendMore, nextjsBackendMore } = require("./seed-next-more");
+const { sqlLessons } = require("./seed-sql");
+const { phpLessons } = require("./seed-php");
 const prisma = new PrismaClient();
 
 const modules = [
@@ -34,6 +36,8 @@ const modules = [
   { slug: "csharp", title: "C#", order: 11, description: "Programare în C#" },
   { slug: "java", title: "Java", order: 12, description: "Programare în Java" },
   { slug: "cybersecurity", title: "Cybersecurity", order: 13, description: "Securitate informatică" },
+  { slug: "sql", title: "SQL", order: 14, description: "Baze de date cu SQL" },
+  { slug: "php", title: "PHP", order: 15, description: "Programare web server-side cu PHP" },
 ];
 
 const pythonLessons = [
@@ -42,21 +46,21 @@ const pythonLessons = [
     title: "1. Introducere + print()",
     order: 1,
     theory: [
-      { order: 1, title: "Ce este Python?", content: "Python este un limbaj de programare simplu și puternic, folosit în:\n• Dezvoltare web\n• Inteligență artificială\n• Analiză de date\n• Automatizare\n\nPython pune accent pe **lizibilitate** — codul arată aproape ca pseudocod." },
-      { order: 2, title: "Primul program: print()", content: "Cea mai folosită funcție în Python este `print()` — afișează text pe ecran:\n\n```python\nprint(\"Salut, lume!\")\nprint(\"Python e mișto\")\nprint(42)\n```\n\nFiecare `print()` afișează pe o linie nouă." },
-      { order: 3, title: "Ghilimele: simple vs duble", content: "Poți folosi ghilimele simple sau duble — ambele funcționează:\n\n```python\nprint(\"Salut\")   # ghilimele duble\nprint('Salut')   # ghilimele simple\n```\n\nImportant: trebuie să deschizi și să închizi cu **același tip**." },
-      { order: 4, title: "Comentarii cu #", content: "Comentariile sunt ignorate de Python — folosite pentru explicații:\n\n```python\n# Acesta este un comentariu\nprint(\"Salut\")  # și acesta e comentariu\n\n# Python ignoră tot ce vine după #\n```" },
+      { order: 1, title: "Ce este Python și de ce e popular?", content: "Imaginează-ți că vrei să tai un copac. Poți folosi un topor (C/C++) — merge, dar e greu și lent. Sau poți folosi o drujbă (Python) — mai rapid, mai ușor, face același lucru.\n\n**Python** e un limbaj creat în 1991 care pune accent pe simplitate. Codul arată aproape ca engleza normală:\n\n```python\nprint(\"Salut, lume!\")\n```\n\nComparație cu alte limbaje pentru același lucru:\n```java\n// Java:\npublic class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Salut\");\n    }\n}\n```\n```python\n# Python:\nprint(\"Salut\")\n```\n\n**Unde se folosește Python:**\n• **Web** — Instagram, YouTube, Pinterest sunt construite cu Python\n• **AI/ML** — ChatGPT, TensorFlow, PyTorch rulează pe Python\n• **Automatizare** — scripturi care fac muncă repetitivă automat\n• **Analiză de date** — pandas, numpy pentru statistici\n• **Cybersecurity** — cele mai multe tool-uri de hacking etic sunt în Python\n\nPython e primul limbaj recomandat pentru începători tocmai pentru că poți face lucruri utile din prima zi." },
+      { order: 2, title: "Primul program: funcția print()", content: "`print()` este comanda principală pentru a afișa ceva pe ecran. E ca și cum ai scrie pe o foaie de hârtie.\n\n```python\nprint(\"Salut, lume!\")     # afișează: Salut, lume!\nprint(\"Python e simplu\")  # afișează: Python e simplu\nprint(42)                  # afișează: 42\nprint(3.14)                # afișează: 3.14\nprint(True)                # afișează: True\n```\n\n**Fiecare print() afișează pe o linie nouă:**\n```python\nprint(\"Linia 1\")\nprint(\"Linia 2\")\nprint(\"Linia 3\")\n# Output:\n# Linia 1\n# Linia 2\n# Linia 3\n```\n\n**print() cu mai multe valori** — le separă cu spațiu:\n```python\nprint(\"Ana\", \"are\", 25, \"ani\")\n# Output: Ana are 25 ani\n```\n\n**print() gol** — afișează o linie goală:\n```python\nprint(\"Sus\")\nprint()        # linie goală\nprint(\"Jos\")\n```\n\n**Expresii matematice** în print:\n```python\nprint(5 > 3)   # True\nprint(2 + 2)   # 4\nprint(10 / 3)  # 3.3333...\n```" },
+      { order: 3, title: "Ghilimele: simple, duble și ce se întâmplă fără ele", content: "În Python, textul (numit **string**) trebuie pus întotdeauna între ghilimele. Fără ele, Python crede că e vorba de o variabilă sau comandă.\n\n**Ambele tipuri funcționează identic:**\n```python\nprint(\"Salut\")   # ghilimele duble ✓\nprint('Salut')   # ghilimele simple ✓\n# Ambele afișează: Salut\n```\n\n**Trebuie să închidem cu același tip:**\n```python\nprint(\"Salut\")   # ✓ corect\nprint('Salut')   # ✓ corect\n# print(\"Salut') ← greșit! Nu se poate amesteca\n```\n\n**Ce se întâmplă fără ghilimele?**\n```python\nprint(Salut)     # ← Python caută o variabilă numită Salut\n                 # Dacă nu există → eroare!\n```\n\nE ca și cum ai spune unui prieten: \"Dă-mi cartea roșie\" vs \"Dă-mi roșie\" (fără \"cartea\"). Primul e clar ce vrei. Al doilea e ambiguu.\n\n**Ghilimelele înăuntrul textului** — folosești tipul celălalt:\n```python\nprint(\"El a spus 'salut'\")\nprint('Ea a zis \"bună ziua\"')\n```" },
+      { order: 4, title: "Comentarii + cum rulezi Python", content: "**Comentariile** sunt note pentru programator, ignorate complet de Python:\n\n```python\n# Acesta este un comentariu — Python îl ignoră\nprint(\"Salut\")  # comentariu pe aceeași linie\n\n# Comentariile ajută să explici codul:\n# Calculez vârsta din anul nașterii\nan_nastere = 1998\nvarsta = 2024 - an_nastere\nprint(varsta)  # 26\n```\n\n**Cum rulezi un script Python:**\n```bash\n# Salvezi fișierul ca: program.py\npython program.py\n# sau\npython3 program.py\n```\n\n**Online (fără instalare):**\n• replit.com\n• programiz.com/python-programming/online-compiler\n• Google Colab\n\n**Separator și end în print:**\n```python\n# sep — schimbă separatorul dintre valori:\nprint(\"a\", \"b\", \"c\", sep=\"-\")  # a-b-c\nprint(1, 2, 3, sep=\", \")       # 1, 2, 3\n\n# end — schimbă ce vine la final (default e \\n):\nprint(\"Salut\", end=\" \")\nprint(\"lume!\")  # Salut lume! (pe aceeași linie)\n```" },
     ],
     tasks: [
-      { number: 1, name: "Prima afișare", question: "Ce afișează `print(\"Salut, lume!\")`?", options: ["salut, lume!", "Salut, lume!", "\"Salut, lume!\"", "Eroare"], answer: "Salut, lume!", explanation: "print() afișează conținutul dintre ghilimele exact cum e scris.", difficulty: "easy" },
+      { number: 1, name: "Prima afișare", question: "Ce afișează codul următor?\n```python\nprint(\"Salut, lume!\")\n```", options: ["salut, lume!", "Salut, lume!", "\"Salut, lume!\"", "print(Salut, lume!)"], answer: "Salut, lume!", explanation: "print() afișează conținutul dintre ghilimele exact cum e scris, fără ghilimele în output.", difficulty: "easy" },
       { number: 2, name: "Ghilimele duble", question: "Care variantă afișează corect text în Python?", options: ["print(Salut)", "print(\"Salut\")", "echo \"Salut\"", "console.log(\"Salut\")"], answer: "print(\"Salut\")", explanation: "În Python textul trebuie pus între ghilimele și folosim print().", difficulty: "easy" },
-      { number: 3, name: "Fără ghilimele", question: "Ce se întâmplă la `print(Salut)`?", options: ["Afișează Salut", "Afișează 'Salut'", "NameError", "SyntaxError"], answer: "NameError", explanation: "Fără ghilimele, Python crede că 'Salut' e o variabilă nedefinită.", difficulty: "easy" },
+      { number: 3, name: "Fără ghilimele", question: "Ce se întâmplă la: print(Salut) — fără nicio ghilimea?", options: ["Afișează Salut", "Afișează 'Salut'", "Eroare — Python crede că Salut e o variabilă nedefinită", "Nu afișează nimic"], answer: "Eroare — Python crede că Salut e o variabilă nedefinită", explanation: "Fără ghilimele, Python tratează Salut ca o variabilă. Dacă variabila nu există, apare eroare.", difficulty: "easy" },
       { number: 4, name: "Număr direct", question: "Ce afișează `print(100)`?", options: ["\"100\"", "100", "Eroare", "0"], answer: "100", explanation: "print() poate afișa și numere direct, fără ghilimele.", difficulty: "easy" },
       { number: 5, name: "Comentariu", question: "Ce face `# acesta e un comentariu`?", options: ["Afișează textul", "Produce eroare", "Este ignorat de Python", "Definește o variabilă"], answer: "Este ignorat de Python", explanation: "# marchează un comentariu — Python îl ignoră complet.", difficulty: "easy" },
       { number: 6, name: "Virgulă în print", question: "Ce afișează `print(\"Ana\", \"Ion\")`?", options: ["AnaIon", "Ana,Ion", "Ana Ion", "Eroare"], answer: "Ana Ion", explanation: "Virgula în print() separă valorile cu un spațiu.", difficulty: "easy" },
       { number: 7, name: "Linii afișate", question: "Câte linii afișează 3 instrucțiuni print() diferite?", options: ["1", "2", "3", "0"], answer: "3", explanation: "Fiecare print() afișează pe o linie nouă.", difficulty: "easy" },
       { number: 8, name: "print gol", question: "Ce face `print()`?", options: ["Eroare", "Afișează None", "Afișează o linie goală", "Nu face nimic"], answer: "Afișează o linie goală", explanation: "print() fără argumente afișează doar un rând gol.", difficulty: "easy" },
-      { number: 9, name: "Apostrofe", question: "Este corect `print('Salut')`?", options: ["Da, funcționează", "Nu, trebuie ghilimele duble", "Nu, trebuie backtick", "Depinde de sistem"], answer: "Da, funcționează", explanation: "Atât ghilimelele simple cât și cele duble sunt valide în Python.", difficulty: "easy" },
+      { number: 9, name: "Apostrofe", question: "Care afirmație despre ghilimelele simple în Python este corectă?", options: ["Sunt echivalente cu ghilimelele duble — ambele definesc text", "Nu sunt valide, doar ghilimelele duble funcționează", "Se folosesc doar pentru caractere, nu pentru text lung", "Funcționează doar în Python 3"], answer: "Sunt echivalente cu ghilimelele duble — ambele definesc text", explanation: "Python acceptă atât ghilimele simple ('text') cât și duble (\"text\"). Sunt identice ca funcționalitate.", difficulty: "easy" },
       { number: 10, name: "Boolean afișat", question: "Ce afișează `print(5 > 3)`?", options: ["5 > 3", "True", "False", "Eroare"], answer: "True", explanation: "5 > 3 este o expresie care se evaluează la True.", difficulty: "medium" },
     ],
   },
@@ -1522,6 +1526,8 @@ async function main() {
   ]);
   await seedLessons("tailwind", [...tailwindLessons, ...tailwindExtra, ...tailwindMore]);
   await seedLessons("cybersecurity", [...cybersecLessons, ...cybersecMore]);
+  await seedLessons("sql", sqlLessons);
+  await seedLessons("php", phpLessons);
 
   console.log("Done!");
 }

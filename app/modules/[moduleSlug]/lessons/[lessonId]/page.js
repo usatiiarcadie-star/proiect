@@ -210,20 +210,32 @@ parent.postMessage({logs:_log},'*');
     });
   }
 
+  function restoreTaskState(idx, taskList, completedList) {
+    const t = taskList[idx];
+    if (t && completedList.includes(t.id)) {
+      setSelected(t.answer);
+      setSubmitted(true);
+    } else {
+      setSelected(null);
+      setSubmitted(false);
+    }
+  }
+
   function next() {
     if (!lesson?.tasks) return;
-    setSelected(null); setSubmitted(false);
     resetCodingState();
 
     if (retryMode) {
       const ni = retryIdx + 1;
       if (ni < retryQueue.length) {
         setRetryIdx(ni);
+        setSelected(null); setSubmitted(false);
       } else {
         setRetryMode(false);
         setRetryQueue([]);
         setRetryIdx(0);
         setFinished(true);
+        setSelected(null); setSubmitted(false);
       }
       return;
     }
@@ -232,8 +244,10 @@ parent.postMessage({logs:_log},'*');
     if (ni < lesson.tasks.length) {
       setTaskIdx(ni);
       save({ currentTaskIdx: ni });
+      restoreTaskState(ni, tasks, completed);
     } else {
       setFinished(true);
+      setSelected(null); setSubmitted(false);
       save({ completed: true });
     }
   }
@@ -271,18 +285,21 @@ parent.postMessage({logs:_log},'*');
 
   function prev() {
     if (taskIdx > 0) {
-      setSelected(null); setSubmitted(false);
       resetCodingState();
       const pi = taskIdx - 1;
-      setTaskIdx(pi); save({ currentTaskIdx: pi });
+      setTaskIdx(pi);
+      save({ currentTaskIdx: pi });
+      restoreTaskState(pi, tasks, completed);
     }
   }
 
   function jumpTo(idx) {
-    setSelected(null); setSubmitted(false); setFinished(false);
+    setFinished(false);
     resetCodingState();
-    setTaskIdx(idx); setSidebarOpen(false);
+    setSidebarOpen(false);
+    setTaskIdx(idx);
     save({ currentTaskIdx: idx });
+    restoreTaskState(idx, tasks, completed);
   }
 
   async function runCode(code, language) {
@@ -574,7 +591,7 @@ parent.postMessage({logs:_log},'*');
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${tDiff.cls}`}>{tDiff.label}</span>
                   </div>
                   <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-slate-100">
-                    <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap font-medium">{t.question}</p>
+                    <p className="text-slate-800 text-sm leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: fmtQuestion(t.question) }}/>
                   </div>
 
                   <div className="space-y-2.5 mb-4">
@@ -669,7 +686,7 @@ parent.postMessage({logs:_log},'*');
                     <span className={`text-xs font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${rtDiff.cls}`}>{rtDiff.label}</span>
                   </div>
                   <div className="bg-white rounded-2xl p-4 mb-4 shadow-sm border border-slate-100">
-                    <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap font-medium">{rt?.question}</p>
+                    <p className="text-slate-800 text-sm leading-relaxed font-medium" dangerouslySetInnerHTML={{ __html: fmtQuestion(rt?.question || "") }}/>
                   </div>
 
                   {/* Options */}
@@ -762,7 +779,7 @@ parent.postMessage({logs:_log},'*');
 
                 {/* Question */}
                 <div className="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-slate-100">
-                  <p className="text-slate-800 leading-relaxed whitespace-pre-wrap font-medium text-sm">{task.question}</p>
+                  <p className="text-slate-800 leading-relaxed font-medium text-sm" dangerouslySetInnerHTML={{ __html: fmtQuestion(task.question) }}/>
                 </div>
 
                 {/* CODING TASK */}
@@ -960,4 +977,20 @@ function fmt(t) {
   return t
     .replace(/\*\*(.+?)\*\*/g, "<strong class='text-slate-900'>$1</strong>")
     .replace(/`(.+?)`/g, "<code class='bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-xs'>$1</code>");
+}
+
+function fmtQuestion(text) {
+  // Render ```code blocks``` as pre, then inline `code`, then **bold**
+  const parts = [];
+  const re = /```(?:\w*)\n?([\s\S]*?)```/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {
+      parts.push(`<span>${fmt(text.slice(last, m.index))}</span>`);
+    }
+    parts.push(`<pre class="bg-gray-900 text-green-300 rounded-xl p-3 text-xs font-mono overflow-x-auto my-2 leading-relaxed whitespace-pre">${m[1].trim()}</pre>`);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(`<span>${fmt(text.slice(last))}</span>`);
+  return parts.join("");
 }

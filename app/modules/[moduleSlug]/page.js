@@ -12,6 +12,7 @@ const MOD_BG = {
   c: "from-purple-500 to-violet-600", cpp: "from-violet-500 to-pink-600",
   csharp: "from-indigo-500 to-purple-700", java: "from-red-500 to-orange-600",
   cybersecurity: "from-emerald-500 to-green-700",
+  sql: "from-blue-600 to-cyan-700", php: "from-violet-600 to-indigo-700",
 };
 
 export default function ModulePage() {
