@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "!../../prisma/**";
 
 :root {
   --background: #f0f4ff;
