@@ -33,8 +33,9 @@ export default function AIAssistant({ task, lessonTitle }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           messages: next,
-          taskQuestion: task?.question || `Lecție: ${lessonTitle || "generală"}`,
+          taskQuestion: task?.question || "",
           taskOptions: task?.options || [],
+          lessonTitle: lessonTitle || "",
         }),
       });
       const data = await res.json();

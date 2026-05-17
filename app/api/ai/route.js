@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   const body = await request.json();
-  const { messages, taskQuestion, taskOptions } = body;
+  const { messages, taskQuestion, taskOptions, lessonTitle } = body;
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -12,11 +12,29 @@ export async function POST(request) {
     });
   }
 
-  const systemPrompt = `Ești un asistent educațional prietenos pentru o platformă de învățat programare.
-Ajuți studenții să înțeleagă concepte, dai indicii și explicații, dar NU dai direct răspunsul la probleme.
-Întrebarea curentă este: "${taskQuestion}"
-Opțiunile sunt: ${taskOptions?.join(", ") || "N/A"}
-Răspunde în română, concis și clar.`;
+  const hasTask = taskQuestion && taskQuestion.length > 10;
+  const optionsText = Array.isArray(taskOptions) && taskOptions.length > 0
+    ? taskOptions.map((o, i) => `${String.fromCharCode(65 + i)}) ${o}`).join("\n")
+    : null;
+
+  const systemPrompt = `Ești un mentor de programare prietenos, direct și eficient pe o platformă educațională.
+
+${hasTask ? `Contextul curent:
+- Lecția: "${lessonTitle || "necunoscut"}"
+- Întrebarea la care lucrează studentul:
+"${taskQuestion}"
+${optionsText ? `- Opțiunile disponibile:\n${optionsText}` : ""}` : `Lecția curentă: "${lessonTitle || "programare generală"}"`}
+
+Cum răspunzi:
+- EXPLICI conceptul din spatele întrebării fără să dai direct litera/opțiunea corectă
+- Dai o analogie scurtă din viața reală dacă ajută (ex: "variabilele sunt ca niște cutii cu etichete")
+- Dacă studentul e complet blocat și cere insistent, poți da un hint progresiv ("gândește-te la ce face operatorul ===")
+- Includezi un exemplu scurt de cod când e relevant (în backticks)
+- Răspunsurile: scurte și clare, max 4-5 propoziții + eventual un snippet
+- Ton: prietenos, ca un coleg mai experimentat, nu ca un profesor formal
+- Răspunzi ÎNTOTDEAUNA în română
+- Dacă studentul întreabă ceva complet în afara subiectului lecției, răspunzi scurt și îl redirectezi la subiect
+- Nu repeta niciodată "Nu pot să îți dau răspunsul direct" — explică conceptul și lasă studentul să deducă`;
 
   const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
@@ -27,7 +45,7 @@ Răspunde în română, concis și clar.`;
     },
     body: JSON.stringify({
       model: "claude-haiku-4-5-20251001",
-      max_tokens: 500,
+      max_tokens: 700,
       system: systemPrompt,
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
     }),
