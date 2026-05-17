@@ -59,7 +59,7 @@ export default function AIAssistant({ task, lessonTitle }) {
             <div className="flex-1 min-w-0">
               <p className="font-black text-sm">Asistent AI</p>
               <p className="text-xs text-purple-200 truncate">
-                {task ? task.question.slice(0, 45) + "…" : (lessonTitle || "Gata să te ajut")}
+                {task ? (task.question.length > 45 ? task.question.slice(0, 45) + "…" : task.question) : (lessonTitle || "Gata să te ajut")}
               </p>
             </div>
             <button onClick={() => setOpen(false)} className="text-white/70 hover:text-white transition-colors ml-1 flex-shrink-0">

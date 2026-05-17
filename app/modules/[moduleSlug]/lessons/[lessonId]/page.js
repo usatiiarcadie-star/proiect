@@ -138,7 +138,7 @@ export default function LessonPage() {
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [view, submitted, selected, finished, retryMode, taskIdx, task]);
+  }, [view, submitted, selected, finished, retryMode, taskIdx]);
 
   function submit() {
     if (!selected || submitted || !lesson) return;
@@ -709,7 +709,7 @@ parent.postMessage({logs:_log},'*');
                   {/* Progress bar review */}
                   <div className="w-full bg-violet-100 rounded-full h-1.5 mb-5">
                     <div className="h-1.5 rounded-full bg-gradient-to-r from-violet-500 to-purple-500 transition-all"
-                      style={{ width: `${(reviewIdx / reviewTasks.length) * 100}%` }}/>
+                      style={{ width: `${((reviewIdx + 1) / reviewTasks.length) * 100}%` }}/>
                   </div>
 
                   {/* Question */}

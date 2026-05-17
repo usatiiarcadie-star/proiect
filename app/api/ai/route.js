@@ -36,25 +36,29 @@ Cum răspunzi:
 - Dacă studentul întreabă ceva complet în afara subiectului lecției, răspunzi scurt și îl redirectezi la subiect
 - Nu repeta niciodată "Nu pot să îți dau răspunsul direct" — explică conceptul și lasă studentul să deducă`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-    },
-    body: JSON.stringify({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 700,
-      system: systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
-    }),
-  });
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 700,
+        system: systemPrompt,
+        messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      }),
+    });
 
-  if (!response.ok) {
-    return NextResponse.json({ reply: "Eroare la conectarea cu AI-ul. Încearcă din nou." });
+    if (!response.ok) {
+      return NextResponse.json({ reply: "Eroare la conectarea cu AI-ul. Încearcă din nou." });
+    }
+
+    const data = await response.json();
+    return NextResponse.json({ reply: data.content[0].text });
+  } catch {
+    return NextResponse.json({ reply: "Eroare de rețea. Încearcă din nou." });
   }
-
-  const data = await response.json();
-  return NextResponse.json({ reply: data.content[0].text });
 }
