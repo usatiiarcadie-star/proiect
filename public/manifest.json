@@ -1,6 +1,6 @@
 {
-  "name": "TaskForge",
-  "short_name": "TaskForge",
+  "name": "DevZone",
+  "short_name": "DevZone",
   "description": "Platformă personală de învățare programare",
   "start_url": "/",
   "display": "standalone",

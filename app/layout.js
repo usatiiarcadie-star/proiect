@@ -12,8 +12,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "TaskForge",
-  description: "Platformă personală de învățare",
+  title: "DevZone",
+  description: "Platformă personală de învățare programare",
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },

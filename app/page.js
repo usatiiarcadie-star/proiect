@@ -90,8 +90,8 @@ export default function Home() {
       <header className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-lg sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/favicon.svg" alt="TaskForge" className="w-9 h-9 rounded-xl"/>
-            <span className="font-black text-lg tracking-tight">TaskForge</span>
+            <img src="/favicon.svg" alt="DevZone" className="w-10 h-10 rounded-xl shadow-lg"/>
+            <span className="font-black text-lg tracking-tight">DevZone</span>
           </div>
           <button onClick={() => setModal(true)}
             className="bg-yellow-400 text-yellow-900 px-5 py-2 rounded-full font-black text-sm hover:bg-yellow-300 transition-colors shadow flex items-center gap-2">
@@ -106,8 +106,8 @@ export default function Home() {
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-black shadow-inner">C</div>
             <div className="flex-1">
-              <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-0.5">Spațiul tău</p>
-              <h1 className="text-2xl font-black">Salut, Cristi!</h1>
+              <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-0.5">Bine ai venit în</p>
+              <h1 className="text-2xl font-black">DevZone, Cristi!</h1>
               <p className="text-indigo-200 text-sm">{totalDone + totalInProgress} lecții active</p>
             </div>
             <div className="hidden sm:grid grid-cols-2 gap-3 text-center">

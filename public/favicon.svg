@@ -1,47 +1,109 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0d1228"/>
-      <stop offset="100%" stop-color="#1a0635"/>
-    </linearGradient>
-    <linearGradient id="bracket" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#a855f7"/>
+    <radialGradient id="bg" cx="40%" cy="35%" r="75%">
+      <stop offset="0%" stop-color="#12063a"/>
+      <stop offset="60%" stop-color="#080c24"/>
+      <stop offset="100%" stop-color="#020510"/>
+    </radialGradient>
+    <linearGradient id="purpleBracket" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc"/>
       <stop offset="100%" stop-color="#7c3aed"/>
     </linearGradient>
-    <linearGradient id="slash" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#22d3ee"/>
+    <linearGradient id="cyanSlash" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#67e8f9"/>
       <stop offset="100%" stop-color="#06b6d4"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
+    <filter id="softGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dotGlow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="bgGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="22" result="blur"/>
       <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
     </filter>
   </defs>
 
   <!-- Background -->
-  <rect width="512" height="512" rx="88" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
 
-  <!-- Subtle purple inner glow -->
-  <ellipse cx="256" cy="256" rx="220" ry="180" fill="#6d28d9" opacity="0.08"/>
+  <!-- Subtle background glow behind symbol -->
+  <ellipse cx="256" cy="260" rx="170" ry="130" fill="#5b21b6" opacity="0.18" filter="url(#bgGlow)"/>
 
-  <!-- Circuit dot accents -->
-  <circle cx="80" cy="80" r="6" fill="#7c3aed" opacity="0.5"/>
-  <circle cx="432" cy="80" r="6" fill="#06b6d4" opacity="0.5"/>
-  <circle cx="80" cy="432" r="6" fill="#06b6d4" opacity="0.5"/>
-  <circle cx="432" cy="432" r="6" fill="#7c3aed" opacity="0.5"/>
+  <!-- Circuit board lines -->
+  <g stroke="#3730a3" stroke-width="1.5" opacity="0.35" fill="none">
+    <line x1="0"   y1="130" x2="110" y2="130"/>
+    <line x1="110" y1="130" x2="110" y2="72"/>
+    <line x1="402" y1="130" x2="512" y2="130"/>
+    <line x1="402" y1="130" x2="402" y2="72"/>
+    <line x1="0"   y1="382" x2="110" y2="382"/>
+    <line x1="110" y1="382" x2="110" y2="440"/>
+    <line x1="402" y1="382" x2="512" y2="382"/>
+    <line x1="402" y1="382" x2="402" y2="440"/>
+    <line x1="256" y1="0"   x2="256" y2="72"/>
+    <line x1="256" y1="440" x2="256" y2="512"/>
+    <line x1="180" y1="72"  x2="332" y2="72"/>
+    <line x1="180" y1="440" x2="332" y2="440"/>
+  </g>
+
+  <!-- Language dots — positioned like in the promo image -->
+  <!-- Python blue -->
+  <circle cx="110" cy="72"  r="22" fill="#3776AB" filter="url(#dotGlow)"/>
+  <circle cx="110" cy="72"  r="22" fill="#3776AB" opacity="0.6"/>
+  <!-- HTML orange -->
+  <circle cx="402" cy="72"  r="22" fill="#E34F26" filter="url(#dotGlow)"/>
+  <circle cx="402" cy="72"  r="22" fill="#E34F26" opacity="0.6"/>
+  <!-- JS yellow -->
+  <rect   x="234" y="50"   width="44" height="44" rx="8" fill="#F7DF1E" filter="url(#dotGlow)"/>
+  <rect   x="234" y="50"   width="44" height="44" rx="8" fill="#F7DF1E" opacity="0.7"/>
+  <!-- C++ blue -->
+  <circle cx="60"  cy="256" r="20" fill="#00599C" filter="url(#dotGlow)"/>
+  <!-- Java orange -->
+  <circle cx="452" cy="256" r="20" fill="#F89820" filter="url(#dotGlow)"/>
+  <!-- React cyan -->
+  <circle cx="402" cy="440" r="22" fill="#61DAFB" filter="url(#dotGlow)"/>
+  <circle cx="402" cy="440" r="22" fill="#61DAFB" opacity="0.6"/>
+  <!-- SQL blue -->
+  <circle cx="110" cy="440" r="22" fill="#336791" filter="url(#dotGlow)"/>
+  <circle cx="110" cy="440" r="22" fill="#336791" opacity="0.6"/>
+  <!-- Tailwind cyan -->
+  <circle cx="256" cy="452" r="20" fill="#06B6D4" filter="url(#dotGlow)"/>
+  <!-- Cybersecurity green -->
+  <circle cx="60"  cy="160" r="16" fill="#22c55e" filter="url(#dotGlow)"/>
+  <!-- PHP purple -->
+  <circle cx="452" cy="160" r="16" fill="#8892BF" filter="url(#dotGlow)"/>
+  <!-- C# indigo -->
+  <circle cx="60"  cy="352" r="16" fill="#9B59B6" filter="url(#dotGlow)"/>
+  <!-- Next.js white -->
+  <circle cx="452" cy="352" r="16" fill="#e5e7eb" filter="url(#dotGlow)"/>
+
+  <!-- Small circuit nodes -->
+  <g fill="#6366f1" opacity="0.55">
+    <circle cx="110" cy="130" r="5"/>
+    <circle cx="402" cy="130" r="5"/>
+    <circle cx="110" cy="382" r="5"/>
+    <circle cx="402" cy="382" r="5"/>
+    <circle cx="256" cy="72"  r="4"/>
+    <circle cx="256" cy="440" r="4"/>
+  </g>
 
   <!-- < bracket -->
-  <path d="M 150 170 L 76 256 L 150 342"
-        stroke="url(#bracket)" stroke-width="40" stroke-linecap="round"
-        stroke-linejoin="round" fill="none" filter="url(#glow)"/>
+  <path d="M 165 185 L 88 256 L 165 327"
+        stroke="url(#purpleBracket)" stroke-width="42"
+        stroke-linecap="round" stroke-linejoin="round"
+        fill="none" filter="url(#softGlow)"/>
 
   <!-- > bracket -->
-  <path d="M 362 170 L 436 256 L 362 342"
-        stroke="url(#bracket)" stroke-width="40" stroke-linecap="round"
-        stroke-linejoin="round" fill="none" filter="url(#glow)"/>
+  <path d="M 347 185 L 424 256 L 347 327"
+        stroke="url(#purpleBracket)" stroke-width="42"
+        stroke-linecap="round" stroke-linejoin="round"
+        fill="none" filter="url(#softGlow)"/>
 
   <!-- / slash -->
-  <line x1="300" y1="152" x2="212" y2="360"
-        stroke="url(#slash)" stroke-width="40" stroke-linecap="round"
-        filter="url(#glow)"/>
+  <line x1="306" y1="165" x2="206" y2="347"
+        stroke="url(#cyanSlash)" stroke-width="40"
+        stroke-linecap="round" filter="url(#softGlow)"/>
 </svg>
