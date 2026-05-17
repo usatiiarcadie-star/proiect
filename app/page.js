@@ -90,7 +90,7 @@ export default function Home() {
       <header className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-lg sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/favicon.svg" alt="DevZone" className="w-10 h-10 rounded-xl shadow-lg"/>
+            <img src="/logo.png" alt="DevZone" className="w-12 h-12 rounded-xl shadow-lg"/>
             <span className="font-black text-lg tracking-tight">DevZone</span>
           </div>
           <button onClick={() => setModal(true)}
