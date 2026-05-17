@@ -1,1341 +1,2155 @@
 const sqlLessons = [
   {
-    slug: "sql-introducere-select",
-    title: "1. Introducere SQL + SELECT",
-    order: 1,
-    theory: [
+    "slug": "sql-introducere-select",
+    "title": "1. Introducere SQL + SELECT de bază",
+    "order": 1,
+    "theory": [
       {
-        order: 1,
-        title: "Ce este SQL și de ce e obligatoriu pentru orice developer",
-        content: "**SQL** (Structured Query Language) e limbajul cu care comunici cu bazele de date relaționale. E ca o limbă universală — dacă știi SQL, poți lucra cu MySQL, PostgreSQL, SQLite, SQL Server, Oracle fără a schimba aproape nimic.\n\nGândește-ți aplicația ca un **restaurant**:\n• **Baza de date** = depozitul cu ingrediente și rețete\n• **Tabelele** = rafturile (clienți, comenzi, produse)\n• **SQL** = comenzile pe care le dai chelnerului (cauta, adaugă, actualizează, șterge)\n\n**Unde e folosit SQL în practică:**\n```\nMySQL       → WordPress, Laravel, e-commerce (cel mai popular)\nPostgreSQL  → Heroku, startup-uri moderne, date complexe\nSQLite      → Aplicații mobile, browser-e, fișiere locale\nSQL Server  → Ecosistem Microsoft, .NET\nOracle      → Banking, corporații mari, sisteme enterprise\n```\n\n**La interviuri** — ORICINE în tech va fi întrebat SQL:\n• Frontend? „Scrie un query care returnează userii activi sortat după dată\"\n• Backend? „Explică diferența dintre INNER JOIN și LEFT JOIN\"\n• Data Analyst? 80% din job e SQL\n\n```sql\n-- Primul tău query:\nSELECT * FROM utilizatori;\n-- Citit: \"Selectează toate coloanele din tabela utilizatori\"\n-- * = toate coloanele, fără WHERE = toate rândurile\n```",
+        "order": 1,
+        "title": "Ce este SQL și unde îl folosești în viața reală",
+        "content": "SQL (Structured Query Language) este limbajul cu care vorbești cu bazele de date relaționale. E ca o limbă universală — dacă știi SQL, poți lucra cu MySQL, PostgreSQL, SQLite, SQL Server și Oracle fără să schimbi aproape nimic.\n\nGândește-ți aplicația ca un restaurant:\n- Baza de date = depozitul cu ingrediente și rețete\n- Tabelele = rafturile (clienți, comenzi, produse)\n- SQL = comenzile pe care le dai ospătarului\n\nUNDE E FOLOSIT SQL:\n```\nMySQL       → WordPress, Laravel, e-commerce\nPostgreSQL  → startup-uri moderne, date complexe\nSQLite      → aplicații mobile, browser-e\nSQL Server  → ecosistem Microsoft, .NET\nOracle      → banking, corporații mari\n```\n\nPrimul tău query:\n```sql\nSELECT * FROM utilizatori;\n-- * = toate coloanele, fara WHERE = toate randurile\n```"
       },
       {
-        order: 2,
-        title: "Structura unei tabele și SELECT fundament",
-        content: "O **tabelă** e ca un Excel: coloane (câmpuri) + rânduri (înregistrări). Fiecare rând are un ID unic (Primary Key).\n\n**Tabela `produse` — exemplu cu care lucrăm:**\n```\n┌────┬─────────────────┬────────┬─────────────┬──────┐\n│ id │ nume            │ pret   │ categorie   │ stoc │\n├────┼─────────────────┼────────┼─────────────┼──────┤\n│  1 │ Laptop Dell     │ 3500   │ electronics │   15 │\n│  2 │ Mouse Logitech  │   120  │ electronics │   50 │\n│  3 │ Birou IKEA      │   800  │ furniture   │    8 │\n│  4 │ Scaun Gaming    │  1200  │ furniture   │    3 │\n│  5 │ Monitor 27\"     │  1800  │ electronics │   12 │\n└────┴─────────────────┴────────┴─────────────┴──────┘\n```\n\n**SELECT — alege ce vrei să vezi:**\n```sql\n-- Toate coloanele (evită în producție — trafic inutil):\nSELECT * FROM produse;\n\n-- Coloane specifice (recomandat):\nSELECT id, nume, pret FROM produse;\n\n-- Alias (redenumire în rezultat):\nSELECT \n    id,\n    nume AS produs,\n    pret AS cost_ron\nFROM produse;\n\n-- Expresii și calcule:\nSELECT \n    nume,\n    pret,\n    pret * 1.19         AS pret_cu_tva,\n    pret * 0.9          AS pret_dupa_reducere,\n    ROUND(pret * 1.19, 2) AS tva_rotunjit\nFROM produse;\n```\n\n**Ordinea clauzelor SQL — trebuie memorată:**\n```sql\nSELECT   -- ce coloane\nFROM     -- din ce tabelă\nJOIN     -- combinate cu ce alte tabele\nWHERE    -- filtrat cum\nGROUP BY -- grupat după ce\nHAVING   -- grupul filtrat cum\nORDER BY -- sortat cum\nLIMIT    -- câte rânduri maximum\n```",
+        "order": 2,
+        "title": "Structura unei tabele și SELECT fundament",
+        "content": "O tabelă e ca un Excel: coloane + rânduri. Fiecare rând are un ID unic (Primary Key).\n\nTabela produse:\n```\nid | nume            | pret | categorie   | stoc\n1  | Laptop Dell     | 3500 | electronics | 15\n2  | Mouse Logitech  |  120 | electronics | 50\n3  | Birou IKEA      |  800 | furniture   |  8\n4  | Scaun Gaming    | 1200 | furniture   |  3\n5  | Monitor 27inch  | 1800 | electronics | 12\n```\n\nSELECT — alege ce vrei să vezi:\n```sql\n-- Toate coloanele (evita in productie):\nSELECT * FROM produse;\n\n-- Coloane specifice (recomandat):\nSELECT id, nume, pret FROM produse;\n\n-- Alias — redenumesti coloana in rezultat:\nSELECT id, nume AS produs, pret AS cost_ron FROM produse;\n\n-- Calcule in SELECT:\nSELECT nume, pret, pret * 1.19 AS pret_cu_tva FROM produse;\n```"
       },
       {
-        order: 3,
-        title: "WHERE — filtrarea datelor",
-        content: "**WHERE** e filtrul tău — ca un portar care lasă să treacă doar ce vrei:\n\n```sql\n-- Condiție simplă:\nSELECT * FROM produse WHERE pret > 500;\n\n-- String cu ghilimele SIMPLE (obligatoriu în SQL):\nSELECT * FROM produse WHERE categorie = 'electronics';\n\n-- Multiple condiții:\nSELECT * FROM produse\nWHERE categorie = 'electronics'\n  AND pret < 200;       -- AND: ambele condiții trebuie adevărate\n\nSELECT * FROM produse\nWHERE stoc = 0\n   OR pret > 3000;      -- OR: cel puțin una adevărată\n\nSELECT * FROM produse\nWHERE NOT categorie = 'furniture';\n```\n\n**Operatori speciali:**\n```sql\n-- BETWEEN — interval incluziv (include capetele!):\nSELECT * FROM produse WHERE pret BETWEEN 100 AND 1000;\n-- Echivalent cu: pret >= 100 AND pret <= 1000\n\n-- IN — lista de valori acceptate:\nSELECT * FROM produse WHERE id IN (1, 3, 5);\nSELECT * FROM produse WHERE categorie IN ('electronics', 'furniture');\n\n-- LIKE — pattern matching cu wildcards:\nSELECT * FROM produse WHERE nume LIKE '%gaming%'; -- conține 'gaming'\nSELECT * FROM produse WHERE nume LIKE 'L%';       -- începe cu L\nSELECT * FROM produse WHERE cod LIKE 'AB___';     -- AB + exact 3 caractere\n\n-- NULL — valori lipsă (ATENȚIE: nu poți folosi = null!):\nSELECT * FROM produse WHERE descriere IS NULL;     -- corect\nSELECT * FROM produse WHERE descriere IS NOT NULL;\n-- GREȘIT: WHERE descriere = NULL (nu returnează nimic!)\n```\n\n**La interviu:** *„De ce nu funcționează WHERE col = NULL?\"* — Răspuns: NULL nu e o valoare, e absența valorii. NULL nu e egal cu nimic, nici măcar cu el însuși. Trebuie IS NULL.",
+        "order": 3,
+        "title": "WHERE — filtrezi datele",
+        "content": "WHERE e filtrul tau — lasi sa treaca doar randurile care respecta conditia.\n\n```sql\n-- Conditie simpla:\nSELECT * FROM produse WHERE pret > 500;\nSELECT * FROM produse WHERE categorie = 'electronics';\n\n-- Combinare conditii:\nSELECT * FROM produse\nWHERE categorie = 'electronics' AND pret < 200;\n\nSELECT * FROM produse\nWHERE stoc = 0 OR pret > 3000;\n\n-- BETWEEN (include capetele):\nSELECT * FROM produse WHERE pret BETWEEN 100 AND 1000;\n\n-- IN — lista de valori:\nSELECT * FROM produse WHERE categorie IN ('electronics', 'furniture');\n\n-- LIKE — pattern matching:\nSELECT * FROM produse WHERE nume LIKE '%gaming%'; -- contine gaming\nSELECT * FROM produse WHERE nume LIKE 'L%';       -- incepe cu L\n\n-- NULL:\nSELECT * FROM produse WHERE descriere IS NULL;\n-- GREȘIT: WHERE descriere = NULL (nu returneaza nimic!)\n```"
       },
       {
-        order: 4,
-        title: "ORDER BY, LIMIT, DISTINCT — sortare și paginare",
-        content: "**ORDER BY** — sortarea rezultatelor:\n```sql\n-- Crescător (default = ASC):\nSELECT * FROM produse ORDER BY pret;       -- idem cu ASC\nSELECT * FROM produse ORDER BY pret ASC;\n\n-- Descrescător:\nSELECT * FROM produse ORDER BY pret DESC;\n\n-- Multiple coloane — sortare ierarhică:\nSELECT * FROM produse\nORDER BY categorie ASC, pret DESC;\n-- Sortează categoriile alfabetic,\n-- iar în cadrul aceleași categorii: prețul descrescător\n\n-- Sortare după alias:\nSELECT nume, pret * 1.19 AS pret_tva\nFROM produse\nORDER BY pret_tva DESC;\n```\n\n**LIMIT + OFFSET — paginare:**\n```sql\n-- Primele 10:\nSELECT * FROM produse LIMIT 10;\n\n-- Paginare (pagina 3, 10 pe pagină):\nSELECT * FROM produse\nORDER BY id\nLIMIT 10 OFFSET 20;\n-- OFFSET = sari primele 20, ia următoarele 10\n-- Formula: OFFSET = (pagina - 1) * per_pagina\n\n-- Top 3 cele mai scumpe:\nSELECT * FROM produse\nORDER BY pret DESC\nLIMIT 3;\n```\n\n**DISTINCT — valori unice:**\n```sql\n-- Lista de categorii (fără duplicate):\nSELECT DISTINCT categorie FROM produse;\n-- Fără DISTINCT ar apărea 'electronics' de 3 ori\n\n-- DISTINCT pe multiple coloane:\nSELECT DISTINCT categorie, producator FROM produse;\n```\n\n**La interviu:** Diferența dintre LIMIT și TOP? MySQL/PostgreSQL folosesc LIMIT, SQL Server folosește TOP 10, Oracle folosește ROWNUM sau FETCH FIRST 10 ROWS ONLY.",
-      },
+        "order": 4,
+        "title": "ORDER BY, LIMIT, DISTINCT",
+        "content": "ORDER BY sorteaza rezultatele. LIMIT limiteaza cate randuri iei. DISTINCT elimina duplicatele.\n\n```sql\n-- Sortare descrescatoare:\nSELECT * FROM produse ORDER BY pret DESC;\n\n-- Sortare pe mai multe coloane:\nSELECT * FROM produse ORDER BY categorie ASC, pret DESC;\n\n-- Top 3 cele mai scumpe:\nSELECT * FROM produse ORDER BY pret DESC LIMIT 3;\n\n-- Paginare (pagina 3, 10 produse pe pagina):\nSELECT * FROM produse ORDER BY id LIMIT 10 OFFSET 20;\n-- Formula: OFFSET = (pagina - 1) * produse_per_pagina\n\n-- Valori unice:\nSELECT DISTINCT categorie FROM produse;\n-- Returneaza: electronics, furniture (fara repetare)\n```\n\nLA INTERVIU: MySQL/PostgreSQL folosesc LIMIT. SQL Server foloseste TOP 10. Oracle foloseste FETCH FIRST 10 ROWS ONLY."
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "SELECT *",
-        question: "Ce returnează `SELECT * FROM produse`?",
-        options: [
-          "Primul rând",
-          "Toate coloanele și toate rândurile din tabelă",
-          "Doar coloana id",
-          "Numărul de rânduri",
+        "number": 1,
+        "name": "Primul SELECT",
+        "question": "Ce afișează `SELECT * FROM produse;`?",
+        "options": [
+          "Toate coloanele și toate rândurile din tabela produse",
+          "Doar prima coloană din tabela produse",
+          "Un singur rând din tabela produse",
+          "Returnează eroare dacă tabela e goală"
         ],
-        answer: "Toate coloanele și toate rândurile din tabelă",
-        explanation: "* = toate coloanele. Fără WHERE = toate rândurile. Evită SELECT * în producție — specifică coloanele necesare.",
-        difficulty: "easy",
+        "answer": "Toate coloanele și toate rândurile din tabela produse",
+        "explanation": "* înseamnă toate coloanele, iar fără WHERE iei toate rândurile.",
+        "difficulty": "easy"
       },
       {
-        number: 2,
-        name: "SELECT coloane",
-        question: "Cum selectezi doar `nume` și `pret` din tabela `produse`?",
-        options: [
-          "SELECT produse(nume, pret)",
-          "SELECT nume, pret FROM produse",
-          "GET nume, pret FROM produse",
-          "SELECT FROM produse WHERE col IN (nume, pret)",
+        "number": 2,
+        "name": "Coloane specifice",
+        "question": "Cum selectezi doar coloanele `id` și `nume` din tabela `produse`?",
+        "options": [
+          "SELECT id, nume FROM produse;",
+          "SELECT produse(id, nume);",
+          "GET id, nume FROM produse;",
+          "SELECT id AND nume FROM produse;"
         ],
-        answer: "SELECT nume, pret FROM produse",
-        explanation: "Specifici coloanele după SELECT separate prin virgulă, apoi FROM tabelă.",
-        difficulty: "easy",
+        "answer": "SELECT id, nume FROM produse;",
+        "explanation": "Listezi coloanele separate prin virgulă după SELECT.",
+        "difficulty": "easy"
       },
       {
-        number: 3,
-        name: "WHERE egal",
-        question: "Cum filtrezi produsele din categoria 'electronics'?",
-        options: [
-          "SELECT * FROM produse IF categorie = 'electronics'",
-          "SELECT * FROM produse WHERE categorie = 'electronics'",
-          "SELECT * FROM produse FILTER categorie = 'electronics'",
-          "FIND * FROM produse WHERE categorie IS 'electronics'",
+        "number": 3,
+        "name": "Alias coloană",
+        "question": "Ce face `SELECT pret AS cost FROM produse`?",
+        "options": [
+          "Redenumește coloana pret în cost în rezultat",
+          "Creează o nouă coloană numită cost",
+          "Modifică numele coloanei în baza de date",
+          "Copiază coloana pret în cost"
         ],
-        answer: "SELECT * FROM produse WHERE categorie = 'electronics'",
-        explanation: "WHERE filtrează rândurile. String-urile în SQL se pun între ghilimele SIMPLE (nu duble).",
-        difficulty: "easy",
+        "answer": "Redenumește coloana pret în cost în rezultat",
+        "explanation": "AS redenumește coloana doar în rezultatul afișat, nu în baza de date.",
+        "difficulty": "easy"
       },
       {
-        number: 4,
-        name: "ORDER BY DESC",
-        question: "Cum selectezi produsele sortate de la cel mai scump la cel mai ieftin?",
-        options: [
-          "SELECT * FROM produse ORDER BY pret",
-          "SELECT * FROM produse SORT pret DESC",
-          "SELECT * FROM produse ORDER BY pret DESC",
-          "SELECT * FROM produse ORDER DESC pret",
+        "number": 4,
+        "name": "Filtrare numerică",
+        "question": "Cum selectezi produsele cu prețul mai mare de 1000?",
+        "options": [
+          "SELECT * FROM produse WHERE pret > 1000;",
+          "SELECT * FROM produse IF pret > 1000;",
+          "SELECT * FROM produse HAVING pret > 1000;",
+          "SELECT * FROM produse FILTER pret > 1000;"
         ],
-        answer: "SELECT * FROM produse ORDER BY pret DESC",
-        explanation: "ORDER BY coloana DESC = descrescător (de la mare la mic). ASC (default) = crescător.",
-        difficulty: "easy",
+        "answer": "SELECT * FROM produse WHERE pret > 1000;",
+        "explanation": "WHERE filtrează rândurile. HAVING se folosește cu GROUP BY.",
+        "difficulty": "easy"
       },
       {
-        number: 5,
-        name: "LIMIT",
-        question: "Cum obții primele 10 produse?",
-        options: [
-          "SELECT * FROM produse TOP 10",
-          "SELECT * FROM produse LIMIT 10",
-          "SELECT FIRST 10 FROM produse",
-          "SELECT * FROM produse WHERE count <= 10",
+        "number": 5,
+        "name": "Filtrare text",
+        "question": "Care query găsește produsele din categoria 'electronics'?",
+        "options": [
+          "SELECT * FROM produse WHERE categorie = 'electronics';",
+          "SELECT * FROM produse WHERE categorie == 'electronics';",
+          "SELECT * FROM produse WHERE categorie EQUALS 'electronics';",
+          "SELECT * FROM produse WHERE categorie IS 'electronics';"
         ],
-        answer: "SELECT * FROM produse LIMIT 10",
-        explanation: "LIMIT N restricționează la N rânduri. SQL Server folosește TOP 10, Oracle FETCH FIRST 10 ROWS ONLY.",
-        difficulty: "easy",
+        "answer": "SELECT * FROM produse WHERE categorie = 'electronics';",
+        "explanation": "În SQL folosești = (egal simplu) pentru comparare, nu ==.",
+        "difficulty": "easy"
       },
       {
-        number: 6,
-        name: "LIKE pattern",
-        question: "Ce face `WHERE nume LIKE '%gaming%'`?",
-        options: [
-          "Caută exact 'gaming'",
-          "Caută rânduri unde nume conține 'gaming' oriunde în șir",
-          "Caută rânduri care încep cu 'gaming'",
-          "Returnează eroare",
+        "number": 6,
+        "name": "AND operator",
+        "question": "Care query găsește produsele din 'electronics' cu prețul sub 200?",
+        "options": [
+          "SELECT * FROM produse WHERE categorie = 'electronics' AND pret < 200;",
+          "SELECT * FROM produse WHERE categorie = 'electronics' OR pret < 200;",
+          "SELECT * FROM produse WHERE categorie = 'electronics' THEN pret < 200;",
+          "SELECT * FROM produse WHERE (categorie = 'electronics') + (pret < 200);"
         ],
-        answer: "Caută rânduri unde nume conține 'gaming' oriunde în șir",
-        explanation: "% = orice șir (0+ caractere). '%gaming%' = gaming oriunde. 'gaming%' = începe cu gaming. '_aming' = 1 caracter + aming.",
-        difficulty: "medium",
+        "answer": "SELECT * FROM produse WHERE categorie = 'electronics' AND pret < 200;",
+        "explanation": "AND cere ca ambele condiții să fie adevărate simultan.",
+        "difficulty": "medium"
       },
       {
-        number: 7,
-        name: "BETWEEN",
-        question: "Ce face `WHERE pret BETWEEN 100 AND 500`?",
-        options: [
-          "Prețuri sub 100 sau peste 500",
-          "Prețuri exact 100 sau 500",
-          "Prețuri inclusiv între 100 și 500 (100 <= pret <= 500)",
+        "number": 7,
+        "name": "LIKE pattern",
+        "question": "Care query găsește produsele al căror nume conține 'gaming'?",
+        "options": [
+          "SELECT * FROM produse WHERE nume LIKE '%gaming%';",
+          "SELECT * FROM produse WHERE nume CONTAINS 'gaming';",
+          "SELECT * FROM produse WHERE nume = '*gaming*';",
+          "SELECT * FROM produse WHERE nume LIKE 'gaming';"
+        ],
+        "answer": "SELECT * FROM produse WHERE nume LIKE '%gaming%';",
+        "explanation": "% e wildcard pentru orice număr de caractere. '%gaming%' înseamnă orice text care conține gaming.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 8,
+        "name": "NULL check",
+        "question": "Cum găsești produsele fără descriere (NULL)?",
+        "options": [
+          "SELECT * FROM produse WHERE descriere IS NULL;",
+          "SELECT * FROM produse WHERE descriere = NULL;",
+          "SELECT * FROM produse WHERE descriere == NULL;",
+          "SELECT * FROM produse WHERE ISNULL(descriere);"
+        ],
+        "answer": "SELECT * FROM produse WHERE descriere IS NULL;",
+        "explanation": "NULL nu se poate compara cu =. Trebuie IS NULL sau IS NOT NULL.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 9,
+        "name": "ORDER BY DESC",
+        "question": "Cum sortezi produsele de la cel mai scump la cel mai ieftin?",
+        "options": [
+          "SELECT * FROM produse ORDER BY pret DESC;",
+          "SELECT * FROM produse ORDER BY pret ASC;",
+          "SELECT * FROM produse SORT BY pret DESC;",
+          "SELECT * FROM produse ORDER pret DESC;"
+        ],
+        "answer": "SELECT * FROM produse ORDER BY pret DESC;",
+        "explanation": "DESC = descrescător (de la mare la mic). ASC = crescător (implicit).",
+        "difficulty": "easy"
+      },
+      {
+        "number": 10,
+        "name": "LIMIT paginare",
+        "question": "Ce face `LIMIT 10 OFFSET 20`?",
+        "options": [
+          "Sare primele 20 de rânduri și returnează următoarele 10",
+          "Returnează primele 10 rânduri și ultimele 20",
+          "Returnează rândurile de la 10 la 20",
+          "Limitează la 20 și sare 10"
+        ],
+        "answer": "Sare primele 20 de rânduri și returnează următoarele 10",
+        "explanation": "OFFSET sare primele N rânduri. LIMIT ia maxim N rânduri. Util pentru paginare.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 11,
+        "name": "DISTINCT",
+        "question": "Ce returnează `SELECT DISTINCT categorie FROM produse`?",
+        "options": [
+          "Lista unică de categorii, fără duplicate",
+          "Toate rândurile cu categoria lor",
+          "Numărul de categorii distincte",
+          "Produsele cu categorie unică"
+        ],
+        "answer": "Lista unică de categorii, fără duplicate",
+        "explanation": "DISTINCT elimină duplicatele din rezultat.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 12,
+        "name": "BETWEEN",
+        "question": "Ce face `WHERE pret BETWEEN 100 AND 500`?",
+        "options": [
+          "Returnează produse cu pret >= 100 AND pret <= 500",
+          "Returnează produse cu pret > 100 AND pret < 500",
+          "Returnează produse cu pret = 100 sau pret = 500",
+          "Returnează produse cu pret intre 100 si 500 exclusiv"
+        ],
+        "answer": "Returnează produse cu pret >= 100 AND pret <= 500",
+        "explanation": "BETWEEN include capetele (100 și 500 sunt incluse).",
+        "difficulty": "medium"
+      },
+      {
+        "number": 13,
+        "name": "IN operator",
+        "question": "Ce face `WHERE id IN (1, 3, 5)`?",
+        "options": [
+          "Returnează rândurile cu id egal cu 1, 3 sau 5",
+          "Returnează rândurile cu id diferit de 1, 3 și 5",
+          "Returnează primele 3 rânduri",
+          "Returnează rândul cu id suma 9"
+        ],
+        "answer": "Returnează rândurile cu id egal cu 1, 3 sau 5",
+        "explanation": "IN verifică dacă valoarea se află în lista dată. Echivalent cu id=1 OR id=3 OR id=5.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 14,
+        "name": "Calcul în SELECT",
+        "question": "Ce returnează `SELECT pret * 1.19 AS pret_tva FROM produse`?",
+        "options": [
+          "Prețul fiecărui produs cu TVA de 19% adăugat",
+          "Prețul fiecărui produs împărțit la 1.19",
+          "Eroare — nu poți face calcule în SELECT",
+          "Prețul original, alias-ul nu face calcule"
+        ],
+        "answer": "Prețul fiecărui produs cu TVA de 19% adăugat",
+        "explanation": "Poți face orice calcul aritmetic direct în SELECT. Rezultatul apare sub denumirea alias-ului.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: catalog produse",
+        "question": "Query-ul care afișează numele și prețul cu TVA al produselor din 'electronics', sortate de la ieftin la scump, primele 5:",
+        "options": [
+          "SELECT nume, pret*1.19 AS pret_tva FROM produse WHERE categorie='electronics' ORDER BY pret ASC LIMIT 5;",
+          "SELECT * FROM produse WHERE categorie='electronics' ORDER BY pret LIMIT 5;",
+          "SELECT nume, pret FROM produse LIMIT 5 WHERE categorie='electronics';",
+          "SELECT TOP 5 nume, pret*1.19 FROM produse WHERE categorie='electronics' ORDER BY pret;"
+        ],
+        "answer": "SELECT nume, pret*1.19 AS pret_tva FROM produse WHERE categorie='electronics' ORDER BY pret ASC LIMIT 5;",
+        "explanation": "Ordinea corectă: SELECT → FROM → WHERE → ORDER BY → LIMIT. TOP este SQL Server, LIMIT este MySQL/PostgreSQL.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "slug": "sql-where-avansat",
+    "title": "2. WHERE avansat — filtrare complexă",
+    "order": 2,
+    "theory": [
+      {
+        "order": 1,
+        "title": "Operatori logici și precedența lor",
+        "content": "AND, OR, NOT se combina la fel ca in matematica — AND are prioritate mai mare ca OR.\n\n```sql\n-- Operatori de comparare:\n-- =  egal       <> sau != diferit\n-- <  mai mic    >  mai mare\n-- <= mai mic sau egal    >= mai mare sau egal\n\n-- NOT inverseza orice conditie:\nSELECT * FROM produse WHERE NOT categorie = 'furniture';\nSELECT * FROM produse WHERE id NOT IN (1, 2, 3);\n\n-- PRIORITATEA: NOT > AND > OR\n-- ATENTIE: A OR B AND C = A OR (B AND C)\n-- Cu paranteze: (A OR B) AND C — diferit!\n\nSELECT * FROM produse\nWHERE (categorie = 'electronics' OR categorie = 'furniture')\n  AND pret > 500;\n-- Toate produsele din ambele categorii, dar doar cele scumpe\n\n-- Fara paranteze ar fi:\nWHERE categorie = 'electronics' OR (categorie = 'furniture' AND pret > 500)\n-- Electronics toate + doar furniture scumpe\n```\n\nFoloseste INTOTDEAUNA paranteze cand combini AND cu OR!"
+      },
+      {
+        "order": 2,
+        "title": "LIKE avansat și pattern matching",
+        "content": "LIKE e util pentru bara de search de pe orice site.\n\n```sql\n-- Wildcards:\n-- %  = orice numar de caractere (inclusiv 0)\n-- _  = exact un singur caracter\n\nSELECT * FROM produse WHERE nume LIKE 'L%';        -- incepe cu L\nSELECT * FROM produse WHERE nume LIKE '%ing';       -- se termina in ing\nSELECT * FROM produse WHERE cod LIKE 'AB__';        -- AB + exact 2 caractere\n\n-- Case sensitivity:\n-- MySQL: LIKE e case-insensitive implicit\n-- PostgreSQL: LIKE e case-sensitive, folosesti ILIKE\n\n-- Bara de cautare dintr-o aplicatie:\nSELECT id, nume, pret\nFROM produse\nWHERE nume LIKE CONCAT('%', :searchTerm, '%')\nORDER BY nume LIMIT 20;\n```\n\nATENTIE: LIKE cu % la inceput ('%smith') nu foloseste indexul — full table scan pe date mari. Pentru search serios se foloseste Full Text Search."
+      },
+      {
+        "order": 3,
+        "title": "NULL — capcanele care strica query-urile",
+        "content": "NULL inseamna valoare necunoscuta. Se comporta ciudat fata de orice alt limbaj.\n\nREGULI:\n- NULL nu e egal cu nimic (nici cu 0, nici cu string gol, nici cu NULL)\n- Orice comparatie cu NULL returneaza NULL (nu true, nu false)\n\n```sql\n-- CORECT:\nSELECT * FROM produse WHERE descriere IS NULL;\nSELECT * FROM produse WHERE descriere IS NOT NULL;\n\n-- GRESIT (nu returneaza nimic):\nSELECT * FROM produse WHERE descriere = NULL;\n\n-- COALESCE — returneaza prima valoare non-NULL:\nSELECT nume, COALESCE(reducere, 0) AS reducere\nFROM produse;\n-- Daca reducere e NULL, afiseaza 0\n\n-- NULLIF — returneaza NULL daca doua valori sunt egale:\nSELECT vanzari / NULLIF(vizitatori, 0) AS rata_conversie\nFROM statistici;\n-- Evita impartirea la zero (NULLIF(0,0) = NULL, nu eroare)\n```"
+      },
+      {
+        "order": 4,
+        "title": "Subquery-uri simple în WHERE",
+        "content": "Un subquery e un SELECT in interiorul altui SELECT. Util cand nu stii exact valorile de filtrat.\n\n```sql\n-- Produse mai scumpe decat media:\nSELECT * FROM produse\nWHERE pret > (SELECT AVG(pret) FROM produse);\n\n-- Produse comandate cel putin o data:\nSELECT * FROM produse\nWHERE id IN (SELECT DISTINCT produs_id FROM comenzi);\n\n-- Produse NICIODATA comandate:\nSELECT * FROM produse\nWHERE id NOT IN (\n    SELECT produs_id FROM comenzi WHERE produs_id IS NOT NULL\n);\n-- ATENTIE: adauga WHERE IS NOT NULL!\n-- Daca subquery returneaza vreun NULL, NOT IN returneaza 0 randuri!\n\n-- EXISTS — mai eficient decat IN pe date mari:\nSELECT * FROM clienti c\nWHERE EXISTS (\n    SELECT 1 FROM comenzi o WHERE o.client_id = c.id\n);\n```"
+      }
+    ],
+    "tasks": [
+      {
+        "number": 1,
+        "name": "Operatorul !=",
+        "question": "Cum găsești produsele care NU sunt din categoria 'furniture'?",
+        "options": [
+          "SELECT * FROM produse WHERE categorie != 'furniture';",
+          "SELECT * FROM produse WHERE NOT categorie = furniture;",
+          "SELECT * FROM produse EXCEPT categorie = 'furniture';",
+          "SELECT * FROM produse WHERE categorie IS NOT 'furniture';"
+        ],
+        "answer": "SELECT * FROM produse WHERE categorie != 'furniture';",
+        "explanation": "!= sau <> înseamnă 'diferit de'.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 2,
+        "name": "NOT IN",
+        "question": "Care query exclude produsele cu id 1, 2 și 3?",
+        "options": [
+          "SELECT * FROM produse WHERE id NOT IN (1, 2, 3);",
+          "SELECT * FROM produse WHERE id != (1, 2, 3);",
+          "SELECT * FROM produse EXCLUDE id IN (1, 2, 3);",
+          "SELECT * FROM produse WHERE id NOT = 1, 2, 3;"
+        ],
+        "answer": "SELECT * FROM produse WHERE id NOT IN (1, 2, 3);",
+        "explanation": "NOT IN verifică că valoarea nu se află în lista dată.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 3,
+        "name": "Precedență AND/OR",
+        "question": "Ce returnează: `WHERE a=1 OR b=2 AND c=3`?",
+        "options": [
+          "WHERE a=1 OR (b=2 AND c=3) — AND are prioritate față de OR",
+          "WHERE (a=1 OR b=2) AND c=3 — OR are prioritate față de AND",
+          "WHERE (a=1 OR b=2) AND (b=2 OR c=3)",
+          "Eroare de sintaxă"
+        ],
+        "answer": "WHERE a=1 OR (b=2 AND c=3) — AND are prioritate față de OR",
+        "explanation": "AND are prioritate mai mare decât OR, exact ca înmulțirea față de adunare în matematică.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 4,
+        "name": "LIKE wildcard _",
+        "question": "Ce returnează `WHERE cod LIKE 'A_3'`?",
+        "options": [
+          "Coduri de 3 caractere care încep cu A și se termină cu 3 (ex: AB3, AC3)",
+          "Orice cod care conține A și 3",
+          "Coduri care încep cu A_3 literal",
+          "Coduri cu A urmat de orice până la 3"
+        ],
+        "answer": "Coduri de 3 caractere care încep cu A și se termină cu 3 (ex: AB3, AC3)",
+        "explanation": "_ înseamnă exact un singur caracter. A_3 = A, orice un caracter, 3.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 5,
+        "name": "NULL comportament",
+        "question": "Ce returnează `WHERE pret = NULL`?",
+        "options": [
+          "0 rânduri — comparația cu NULL e mereu false",
+          "Rândurile cu prețul NULL",
           "Eroare de sintaxă",
+          "Depinde de baza de date"
         ],
-        answer: "Prețuri inclusiv între 100 și 500 (100 <= pret <= 500)",
-        explanation: "BETWEEN include AMBELE capete. Echivalent cu pret >= 100 AND pret <= 500.",
-        difficulty: "medium",
+        "answer": "0 rânduri — comparația cu NULL e mereu false",
+        "explanation": "Orice comparație cu = NULL returnează NULL (nu true). Trebuie IS NULL.",
+        "difficulty": "medium"
       },
       {
-        number: 8,
-        name: "DISTINCT",
-        question: "Ce face `SELECT DISTINCT categorie FROM produse`?",
-        options: [
-          "Selectează toate categoriile inclusiv duplicate",
-          "Returnează lista unică de categorii — fără duplicate",
-          "Sortează categoriile alfabetic",
-          "Numără câte categorii există",
+        "number": 6,
+        "name": "COALESCE",
+        "question": "Ce face `SELECT COALESCE(reducere, 0) FROM produse`?",
+        "options": [
+          "Returnează reducerea dacă există, altfel 0",
+          "Returnează 0 dacă reducerea există, altfel reducerea",
+          "Returnează NULL dacă reducerea e 0",
+          "Sumă reducere + 0"
         ],
-        answer: "Returnează lista unică de categorii — fără duplicate",
-        explanation: "DISTINCT elimină duplicatele. Dacă sunt 50 produse în 3 categorii, DISTINCT returnează 3 rânduri.",
-        difficulty: "medium",
+        "answer": "Returnează reducerea dacă există, altfel 0",
+        "explanation": "COALESCE returnează primul argument non-NULL din lista sa.",
+        "difficulty": "medium"
       },
       {
-        number: 9,
-        name: "NULL comparare",
-        question: "De ce `WHERE email = NULL` nu returnează nimic?",
-        options: [
-          "Sintaxă greșită",
-          "NULL nu e o valoare — nu poți compara cu =. Folosește IS NULL",
-          "Email nu poate fi NULL",
-          "= NULL funcționează doar în MySQL",
+        "number": 7,
+        "name": "NOT LIKE",
+        "question": "Cum găsești produsele al căror nume NU conține 'gaming'?",
+        "options": [
+          "SELECT * FROM produse WHERE nume NOT LIKE '%gaming%';",
+          "SELECT * FROM produse WHERE nume LIKE NOT '%gaming%';",
+          "SELECT * FROM produse WHERE NOT (nume = '%gaming%');",
+          "SELECT * FROM produse EXCLUDE WHERE nume LIKE '%gaming%';"
         ],
-        answer: "NULL nu e o valoare — nu poți compara cu =. Folosește IS NULL",
-        explanation: "NULL reprezintă absența valorii. NULL != NULL chiar și NULL. Singurul mod corect: IS NULL sau IS NOT NULL.",
-        difficulty: "medium",
+        "answer": "SELECT * FROM produse WHERE nume NOT LIKE '%gaming%';",
+        "explanation": "NOT LIKE inversează condiția LIKE.",
+        "difficulty": "easy"
       },
       {
-        number: 10,
-        name: "Paginare OFFSET",
-        question: "Cum obții rândurile 21-30 (pagina 3, 10 pe pagină)?",
-        options: [
-          "SELECT * FROM t LIMIT 10 PAGE 3",
-          "SELECT * FROM t LIMIT 10 OFFSET 20",
-          "SELECT * FROM t LIMIT 20, 10",
-          "SELECT * FROM t SKIP 20 TAKE 10",
+        "number": 8,
+        "name": "Subquery simplu",
+        "question": "Cum găsești produsele mai scumpe decât media tuturor prețurilor?",
+        "options": [
+          "SELECT * FROM produse WHERE pret > (SELECT AVG(pret) FROM produse);",
+          "SELECT * FROM produse WHERE pret > AVG(pret);",
+          "SELECT * FROM produse WHERE pret > AVERAGE;",
+          "SELECT * FROM produse HAVING pret > AVG(pret);"
         ],
-        answer: "SELECT * FROM t LIMIT 10 OFFSET 20",
-        explanation: "OFFSET 20 sare primele 20 rânduri, LIMIT 10 ia următoarele 10. Formula: OFFSET = (pagina-1) × per_pagina.",
-        difficulty: "medium",
+        "answer": "SELECT * FROM produse WHERE pret > (SELECT AVG(pret) FROM produse);",
+        "explanation": "AVG nu poate fi folosit direct în WHERE — trebuie într-un subquery sau cu HAVING după GROUP BY.",
+        "difficulty": "medium"
       },
-    ],
+      {
+        "number": 9,
+        "name": "NOT IN cu NULL",
+        "question": "De ce `WHERE id NOT IN (SELECT produs_id FROM comenzi)` poate returna 0 rânduri?",
+        "options": [
+          "Dacă subquery-ul conține vreun NULL, NOT IN returnează 0 rânduri",
+          "NOT IN nu funcționează cu subquery-uri",
+          "Subquery-ul trebuie să aibă DISTINCT",
+          "Ordinea clauzelor e greșită"
+        ],
+        "answer": "Dacă subquery-ul conține vreun NULL, NOT IN returnează 0 rânduri",
+        "explanation": "NULL în lista NOT IN face ca toată condiția să fie NULL (necunoscut), deci niciun rând nu trece.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 10,
+        "name": "Paranteze în WHERE",
+        "question": "Ce diferență face `(A OR B) AND C` față de `A OR B AND C`?",
+        "options": [
+          "Prima filtrează pe ambele A/B și apoi pe C; a doua filtrează A separat și (B AND C) separat",
+          "Nu există diferență, OR și AND au aceeași prioritate",
+          "Prima e greșită sintactic",
+          "A doua filtrează (A OR B) și C"
+        ],
+        "answer": "Prima filtrează pe ambele A/B și apoi pe C; a doua filtrează A separat și (B AND C) separat",
+        "explanation": "Parantezele schimbă ordinea evaluării. Fără paranteze, AND are prioritate față de OR.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 11,
+        "name": "BETWEEN cu date",
+        "question": "Ce face `WHERE data_comanda BETWEEN '2024-01-01' AND '2024-12-31'`?",
+        "options": [
+          "Returnează comenzile din anul 2024 inclusiv ambele capete",
+          "Returnează comenzile din 2024 exclusiv capetele",
+          "Eroare — BETWEEN nu funcționează cu date calendaristice",
+          "Returnează comenzile dinaintea lui 2024"
+        ],
+        "answer": "Returnează comenzile din anul 2024 inclusiv ambele capete",
+        "explanation": "BETWEEN funcționează cu orice tip ordonat: numere, date, șiruri. Capetele sunt incluse.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 12,
+        "name": "LIKE case sensitivity",
+        "question": "În PostgreSQL, `WHERE nume LIKE 'laptop%'` găsește și 'Laptop Dell'?",
+        "options": [
+          "Nu — LIKE în PostgreSQL e case-sensitive, trebuie ILIKE",
+          "Da — LIKE e mereu case-insensitive",
+          "Da, dar doar pe PostgreSQL 14+",
+          "Depinde de configurarea serverului"
+        ],
+        "answer": "Nu — LIKE în PostgreSQL e case-sensitive, trebuie ILIKE",
+        "explanation": "PostgreSQL: LIKE e case-sensitive. Folosești ILIKE pentru insensitiv. MySQL: LIKE e insensitiv implicit.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 13,
+        "name": "Filtrare complexă",
+        "question": "Cum găsești produsele din 'electronics' cu preț între 100 și 2000 și care au stoc?",
+        "options": [
+          "WHERE categorie='electronics' AND pret BETWEEN 100 AND 2000 AND stoc > 0;",
+          "WHERE categorie='electronics' OR pret BETWEEN 100 AND 2000 OR stoc > 0;",
+          "WHERE categorie='electronics' AND (pret BETWEEN 100 AND 2000) OR stoc > 0;",
+          "WHERE categorie='electronics' HAVING pret BETWEEN 100 AND 2000 AND stoc > 0;"
+        ],
+        "answer": "WHERE categorie='electronics' AND pret BETWEEN 100 AND 2000 AND stoc > 0;",
+        "explanation": "Toate condițiile sunt legate cu AND pentru că vrei ca toate să fie adevărate simultan.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 14,
+        "name": "NULLIF",
+        "question": "Ce face `SELECT vanzari / NULLIF(vizitatori, 0) AS rata_conversie`?",
+        "options": [
+          "Împarte vanzari la vizitatori, dar evită împărțirea la 0 returnând NULL",
+          "Returnează NULL dacă vanzari e 0",
+          "Returnează 0 când vizitatori e 0",
+          "Eroare — NULLIF nu poate fi folosit în expresii aritmetice"
+        ],
+        "answer": "Împarte vanzari la vizitatori, dar evită împărțirea la 0 returnând NULL",
+        "explanation": "NULLIF(x, 0) returnează NULL dacă x=0, altfel x. NULL/orice = NULL, nu eroare. Perfect pentru rate/procentaje.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: motor de căutare",
+        "question": "Query pentru bara de căutare: caută produse după termen parțial în nume, exclude fără stoc, sortează potrivirile exacte primele:",
+        "options": [
+          "SELECT * FROM produse WHERE nume LIKE '%:term%' AND stoc > 0 ORDER BY CASE WHEN nume = ':term' THEN 0 ELSE 1 END, nume;",
+          "SELECT * FROM produse WHERE LIKE(:term) AND stoc != 0;",
+          "SELECT * FROM produse SEARCH(:term) WHERE stoc > 0;",
+          "SELECT * FROM produse WHERE CONTAINS(nume, :term) ORDER BY relevance;"
+        ],
+        "answer": "SELECT * FROM produse WHERE nume LIKE '%:term%' AND stoc > 0 ORDER BY CASE WHEN nume = ':term' THEN 0 ELSE 1 END, nume;",
+        "explanation": "CASE în ORDER BY permite sortare complexă: potrivirile exacte sus, restul alfabetic.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-insert-update-delete",
-    title: "2. INSERT, UPDATE, DELETE și tranzacții",
-    order: 2,
-    theory: [
+    "slug": "sql-insert-update-delete",
+    "title": "3. INSERT, UPDATE, DELETE și Tranzacții",
+    "order": 3,
+    "theory": [
       {
-        order: 1,
-        title: "INSERT — adaugă date noi",
-        content: "**INSERT** adaugă rânduri noi într-o tabelă. E ca un formular de înregistrare — completezi câmpurile și salvezi.\n\n```sql\n-- INSERT clasic — specifici coloanele și valorile:\nINSERT INTO produse (nume, pret, categorie, stoc)\nVALUES ('Tastatura Mecanica', 350, 'electronics', 25);\n\n-- Fără a specifica coloanele — PERICULOASĂ:\n-- trebuie să pui TOATE valorile în ordinea exactă a coloanelor:\nINSERT INTO produse\nVALUES (NULL, 'Tastatura Mecanica', 350, 'electronics', 25);\n-- NULL = generează ID automat (AUTO_INCREMENT)\n\n-- INSERT multiple rânduri simultan (mai eficient!):\nINSERT INTO produse (nume, pret, categorie, stoc)\nVALUES\n    ('Tastatura Mecanica', 350, 'electronics', 25),\n    ('Webcam HD', 200, 'electronics', 18),\n    ('Suport Monitor', 150, 'accessories', 40);\n\n-- INSERT cu SELECT — copiezi date dintr-o altă tabelă:\nINSERT INTO arhiva_produse (id, nume, pret)\nSELECT id, nume, pret FROM produse WHERE stoc = 0;\n```\n\n**RETURNING** (PostgreSQL) — returnează datele inserate:\n```sql\nINSERT INTO produse (nume, pret)\nVALUES ('Noua placa video', 2500)\nRETURNING id, nume;  -- returnează id-ul generat automat\n```",
+        "order": 1,
+        "title": "INSERT — adaugi date noi",
+        "content": "INSERT adaugă rânduri noi într-o tabelă. E operația prin care orice formular de pe site salvează date.\n\n```sql\n-- Un singur rand:\nINSERT INTO produse (nume, pret, categorie, stoc)\nVALUES ('Tastatura Mecanica', 450, 'electronics', 25);\n\n-- Mai multe randuri (mult mai eficient!):\nINSERT INTO produse (nume, pret, categorie, stoc)\nVALUES\n    ('Webcam HD', 280, 'electronics', 30),\n    ('Pad Mouse XL', 80, 'accessories', 100),\n    ('Hub USB-C', 150, 'electronics', 45);\n-- Insertarea in bulk e de 10-100x mai rapida!\n\n-- INSERT din SELECT (copiezi date):\nINSERT INTO produse_arhiva (nume, pret, categorie)\nSELECT nume, pret, categorie\nFROM produse WHERE stoc = 0;\n\n-- Evita duplicate:\nINSERT INTO useri (email, nume)\nVALUES ('ion@email.com', 'Ion Popescu')\nON CONFLICT (email) DO NOTHING; -- PostgreSQL\n-- MySQL: INSERT IGNORE INTO ...\n```"
       },
       {
-        order: 2,
-        title: "UPDATE și DELETE — modificare și ștergere",
-        content: "**UPDATE** — modifică rânduri existente. **ATENȚIE MAXIMĂ: fără WHERE, actualizezi TOATĂ tabela!**\n\n```sql\n-- Actualizare cu WHERE (corect):\nUPDATE produse\nSET pret = 3200, stoc = 10\nWHERE id = 1;\n\n-- Actualizare bazată pe valoare curentă:\nUPDATE produse\nSET pret = pret * 0.9   -- reducere 10%\nWHERE categorie = 'electronics';\n\n-- DEZASTRU — fără WHERE modifici TOATE rândurile!\nUPDATE produse SET pret = 0;   -- toate prețurile → 0!\n\n-- Pattern sigur: testezi cu SELECT înainte:\nSELECT * FROM produse WHERE id = 5;  -- verifici ce vei modifica\nUPDATE produse SET stoc = 0 WHERE id = 5;  -- acum modifici\n```\n\n**DELETE — ștergere:**\n```sql\n-- Șterge un rând specific:\nDELETE FROM produse WHERE id = 5;\n\n-- Șterge cu condiție:\nDELETE FROM produse WHERE stoc = 0 AND categorie = 'accessories';\n\n-- DEZASTRU — șterge TOATE rândurile!\nDELETE FROM produse;  -- tabela rămâne goală!\n\n-- TRUNCATE — mai rapid decât DELETE ALL, resetează și AUTO_INCREMENT:\nTRUNCATE TABLE produse;  -- nu se poate face ROLLBACK!\n```\n\n**La interviu:** *Diferența DELETE vs TRUNCATE?*\n```\nDELETE:   filtreaza cu WHERE, logat în tranzacție, poate ROLLBACK\nTRUNCATE: șterge tot, mai rapid, resetează auto_increment, fără ROLLBACK\n```",
+        "order": 2,
+        "title": "UPDATE — modifici date existente",
+        "content": "UPDATE schimba valori in randurile existente. FARA WHERE modifici TOATE randurile!\n\n```sql\n-- Corect — cu WHERE:\nUPDATE produse SET pret = 3200 WHERE id = 1;\n\n-- Mai multe coloane:\nUPDATE produse\nSET\n    pret = 3200,\n    stoc = stoc - 1,\n    ultima_modificare = NOW()\nWHERE id = 1;\n\n-- Reducere 10% la toata categoria:\nUPDATE produse\nSET pret = pret * 0.9\nWHERE categorie = 'furniture';\n\n-- Update cu subquery:\nUPDATE produse\nSET pret = pret * 1.05\nWHERE id IN (\n    SELECT produs_id FROM comenzi\n    WHERE data_comanda > '2024-01-01'\n);\n```\n\nREGULA DE AUR: Inainte de orice UPDATE, ruleaza SELECT cu acelasi WHERE ca sa verifici ce vei modifica!"
       },
       {
-        order: 3,
-        title: "Tranzacții — ACID și atomicitate",
-        content: "O **tranzacție** e un grup de operații care fie se execută TOT, fie NIMIC. E ca transferul bancar:\n\n```\n// Transfer de 100 RON de la Ana la Ion:\nScade 100 din contul Anei     → \nAdaugă 100 în contul lui Ion  →  Dacă al 2-lea pică, primul trebuie anulat!\n```\n\n**Comenzi de tranzacție:**\n```sql\nBEGIN;  -- sau START TRANSACTION; — deschide tranzacția\n\n-- Operațiile tale:\nUPDATE conturi SET sold = sold - 100 WHERE user_id = 1;\nUPDATE conturi SET sold = sold + 100 WHERE user_id = 2;\n\nCOMMIT;  -- confirmi — salvează toate modificările\n-- SAU\nROLLBACK;  -- anulezi — revii la starea inițială\n```\n\n**Exemplu practic cu tratare erori:**\n```sql\nBEGIN;\n\nUPDATE stoc SET cantitate = cantitate - 5 WHERE produs_id = 1;\n\n-- Verifici dacă stocul a ajuns negativ:\nSELECT cantitate FROM stoc WHERE produs_id = 1;\n-- Dacă cantitate < 0:\nROLLBACK;  -- anulezi comanda\n-- Altfel:\nINSERT INTO comenzi (user_id, produs_id, cant) VALUES (42, 1, 5);\nCOMMIT;  -- confirmi\n```\n\n**ACID — proprietățile unei tranzacții corecte:**\n```\nA — Atomicity:   Tot sau nimic (COMMIT/ROLLBACK)\nC — Consistency: Baza de date trece dintr-o stare validă în alta\nI — Isolation:   Tranzacțiile paralele nu se interferează\nD — Durability:  Ce e COMMIT-at rămâne salvat chiar și la crash\n```\n\n**La interviu:** ACID e întrebat clasic la orice job backend/DB.",
+        "order": 3,
+        "title": "DELETE — stergi date cu mare grija",
+        "content": "DELETE sterge randuri. Fara WHERE stergi TOATA tabela. E ireversibil fara backup.\n\n```sql\n-- Sterge un singur rand:\nDELETE FROM produse WHERE id = 5;\n\n-- Sterge mai multe:\nDELETE FROM produse WHERE stoc = 0;\n\n-- TRUNCATE — sterge TOT, mult mai rapid:\nTRUNCATE TABLE produse_temp;\n-- Diferenta: reseteaza auto-increment, nu poate fi rollback-at in unele DB\n\n-- Soft delete (recomandat in aplicatii reale):\nALTER TABLE produse ADD COLUMN deleted_at DATETIME;\n\nUPDATE produse SET deleted_at = NOW() WHERE id = 5;\n-- Nu stergi fizic, marchezi ca sters\n-- Avantaje: poti restaura, pastezi istoricul, GDPR\n-- Dezavantaje: tabela creste, queries trebuie sa filtreze mereu\n```"
       },
       {
-        order: 4,
-        title: "Constrângeri — integritatea datelor",
-        content: "**Constrângerile** (constraints) sunt reguli care protejează calitatea datelor. Baza de date refuză orice operație care le încalcă:\n\n```sql\nCREATE TABLE utilizatori (\n    id       INT PRIMARY KEY AUTO_INCREMENT,\n    email    VARCHAR(255) UNIQUE NOT NULL,     -- unic, obligatoriu\n    username VARCHAR(50)  UNIQUE NOT NULL,\n    varsta   INT          CHECK(varsta >= 0),  -- trebuie să fie pozitiv\n    rol      ENUM('user','admin') DEFAULT 'user',\n    creat_la TIMESTAMP    DEFAULT CURRENT_TIMESTAMP\n);\n```\n\n**Tipuri de constrângeri:**\n```sql\nPRIMARY KEY    -- identificator unic al rândului, nu poate fi NULL\nFOREIGN KEY    -- referință la alt tabel (integritate referențială)\nUNIQUE         -- valorile trebuie să fie unice în coloană\nNOT NULL       -- câmpul nu poate fi NULL\nCHECK          -- condiție personalizată (CHECK(pret > 0))\nDEFAULT        -- valoare implicită dacă nu e furnizată\n```\n\n**FOREIGN KEY cu CASCADE:**\n```sql\nCREATE TABLE comenzi (\n    id        INT PRIMARY KEY AUTO_INCREMENT,\n    user_id   INT NOT NULL,\n    FOREIGN KEY (user_id) REFERENCES utilizatori(id)\n        ON DELETE CASCADE   -- șterge comenzile dacă userul e șters\n        ON UPDATE CASCADE   -- actualizează id dacă userul e redenumit\n);\n\n-- Opțiuni ON DELETE:\n-- CASCADE     — șterge și rândurile copil\n-- RESTRICT    — nu permite ștergerea dacă există copii (implicit)\n-- SET NULL    — setează FK la NULL\n-- SET DEFAULT — setează la valoarea default\n```",
-      },
+        "order": 4,
+        "title": "Tranzacții — ACID și de ce contează",
+        "content": "O tranzactie grupeaza mai multe operatii ca un singur tot. Fie toate reusesc, fie nicio una.\n\nSCENARIU: Transfer bancar 1000 RON.\n```sql\nSTART TRANSACTION;\n\nUPDATE conturi SET sold = sold - 1000 WHERE id = 1;  -- scade de la Ion\nUPDATE conturi SET sold = sold + 1000 WHERE id = 2;  -- adauga la Maria\n\nCOMMIT;   -- salveaza ambele modificari\n\n-- Daca ceva merge prost:\nROLLBACK; -- anuleaza TOTUL din tranzactie\n```\n\nACID — proprietatile unei tranzactii corecte:\n- Atomicity: totul sau nimic\n- Consistency: baza de date trece dintr-o stare valida in alta\n- Isolation: tranzactiile paralele nu se vad intre ele pana la COMMIT\n- Durability: dupa COMMIT, datele sunt salvate permanent\n\nSAVEPOINT — rollback partial:\n```sql\nSTART TRANSACTION;\nINSERT INTO comenzi ...;\nSAVEPOINT dupa_insert;\nUPDATE produse ...;  -- ceva merge rau\nROLLBACK TO SAVEPOINT dupa_insert; -- revii fara a pierde insert-ul\nCOMMIT;\n```"
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "INSERT syntax",
-        question: "Cum inserezi un produs nou cu nume='Mouse' și pret=80 în tabela produse?",
-        options: [
-          "ADD INTO produse VALUES ('Mouse', 80)",
-          "INSERT INTO produse (nume, pret) VALUES ('Mouse', 80)",
-          "INSERT produse SET nume='Mouse', pret=80",
-          "CREATE ROW produse (nume='Mouse', pret=80)",
+        "number": 1,
+        "name": "INSERT sintaxă",
+        "question": "Care este sintaxa corectă pentru INSERT?",
+        "options": [
+          "INSERT INTO tabela (col1, col2) VALUES (val1, val2);",
+          "INSERT INTO tabela VALUES (col1=val1, col2=val2);",
+          "ADD INTO tabela (col1, col2) VALUES (val1, val2);",
+          "INSERT tabela SET col1=val1, col2=val2;"
         ],
-        answer: "INSERT INTO produse (nume, pret) VALUES ('Mouse', 80)",
-        explanation: "Sintaxa INSERT INTO tabel (col1, col2) VALUES (val1, val2). Specifică coloanele explicit — mai sigur dacă se adaugă coloane noi.",
-        difficulty: "easy",
+        "answer": "INSERT INTO tabela (col1, col2) VALUES (val1, val2);",
+        "explanation": "INSERT INTO urmat de tabelă, lista de coloane în paranteze, VALUES și valorile.",
+        "difficulty": "easy"
       },
       {
-        number: 2,
-        name: "UPDATE cu WHERE",
-        question: "Ce se întâmplă dacă scrii `UPDATE produse SET pret = 0` fără WHERE?",
-        options: [
+        "number": 2,
+        "name": "INSERT multiple",
+        "question": "Cum inserezi 3 rânduri cu un singur INSERT?",
+        "options": [
+          "INSERT INTO t (c) VALUES (1), (2), (3);",
+          "INSERT INTO t (c) VALUES (1); VALUES (2); VALUES (3);",
+          "INSERT 3 INTO t (c) VALUES (1), (2), (3);",
+          "INSERT INTO t (c) MULTIPLE VALUES (1), (2), (3);"
+        ],
+        "answer": "INSERT INTO t (c) VALUES (1), (2), (3);",
+        "explanation": "Listezi mai multe seturi de valori separate prin virgulă după VALUES.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 3,
+        "name": "UPDATE fără WHERE",
+        "question": "Ce se întâmplă dacă faci UPDATE fără WHERE?",
+        "options": [
+          "Se modifică TOATE rândurile din tabelă",
+          "Se modifică primul rând",
           "Eroare — UPDATE necesită WHERE",
-          "Actualizează primul rând",
-          "Actualizează TOATE rândurile din tabelă",
-          "Nu face nimic",
+          "Nu se modifică nimic"
         ],
-        answer: "Actualizează TOATE rândurile din tabelă",
-        explanation: "Fără WHERE, UPDATE afectează TOATE rândurile. Toate prețurile devin 0 — dezastru! Testează întotdeauna cu SELECT înainte.",
-        difficulty: "easy",
+        "answer": "Se modifică TOATE rândurile din tabelă",
+        "explanation": "UPDATE fără WHERE este periculos — modifică fiecare rând din tabelă. Rulează SELECT mai întâi.",
+        "difficulty": "medium"
       },
       {
-        number: 3,
-        name: "DELETE vs TRUNCATE",
-        question: "Care e diferența principală dintre DELETE și TRUNCATE?",
-        options: [
-          "DELETE e mai rapid",
-          "TRUNCATE poate fi filtrat cu WHERE",
-          "DELETE poate fi ROLLBACK-at, TRUNCATE nu. DELETE filtrează cu WHERE, TRUNCATE șterge tot",
-          "Nu există diferență",
+        "number": 4,
+        "name": "UPDATE calcul",
+        "question": "Cum aplici o reducere de 15% la toate produsele din 'furniture'?",
+        "options": [
+          "UPDATE produse SET pret = pret * 0.85 WHERE categorie = 'furniture';",
+          "UPDATE produse SET pret = pret - 15% WHERE categorie = 'furniture';",
+          "UPDATE produse SET pret = pret * 15 / 100 WHERE categorie = 'furniture';",
+          "UPDATE produse (pret * 0.85) WHERE categorie = 'furniture';"
         ],
-        answer: "DELETE poate fi ROLLBACK-at, TRUNCATE nu. DELETE filtrează cu WHERE, TRUNCATE șterge tot",
-        explanation: "TRUNCATE e DDL (nu DML) — nu se poate anula. DELETE e DML — e în tranzacție, poate fi anulat. TRUNCATE resetează și AUTO_INCREMENT.",
-        difficulty: "medium",
+        "answer": "UPDATE produse SET pret = pret * 0.85 WHERE categorie = 'furniture';",
+        "explanation": "0.85 = 100% - 15% = 85% din prețul original.",
+        "difficulty": "easy"
       },
       {
-        number: 4,
-        name: "COMMIT",
-        question: "Ce face `COMMIT` la finalul unei tranzacții?",
-        options: [
-          "Anulează modificările",
-          "Salvează definitiv toate modificările din tranzacție",
-          "Deschide o nouă tranzacție",
-          "Verifică erorile",
+        "number": 5,
+        "name": "DELETE vs TRUNCATE",
+        "question": "Care este diferența principală între DELETE și TRUNCATE?",
+        "options": [
+          "DELETE poate fi filtrat cu WHERE și rollback-at; TRUNCATE șterge tot mai rapid fără rollback",
+          "TRUNCATE poate fi filtrat cu WHERE; DELETE șterge tot",
+          "Sunt identice dar TRUNCATE e mai nou",
+          "DELETE funcționează pe tabele mari, TRUNCATE pe mici"
         ],
-        answer: "Salvează definitiv toate modificările din tranzacție",
-        explanation: "COMMIT confirmă tranzacția — modificările sunt scrise permanent pe disk. Opusul e ROLLBACK care le anulează.",
-        difficulty: "easy",
+        "answer": "DELETE poate fi filtrat cu WHERE și rollback-at; TRUNCATE șterge tot mai rapid fără rollback",
+        "explanation": "DELETE e controlat (WHERE, rollback). TRUNCATE e rapid dar șterge tot.",
+        "difficulty": "medium"
       },
       {
-        number: 5,
-        name: "ACID Atomicity",
-        question: "Ce înseamnă 'A' din ACID (Atomicity)?",
-        options: [
-          "Datele sunt stocate automat",
-          "Tranzacția fie se execută complet, fie deloc",
-          "Accesul e restricționat",
-          "Datele sunt indexate automat",
+        "number": 6,
+        "name": "Soft delete",
+        "question": "De ce aplicațiile reale preferă soft delete față de DELETE fizic?",
+        "options": [
+          "Permite restaurarea datelor și păstrarea istoricului de audit",
+          "E mai rapid decât DELETE",
+          "Economisește spațiu pe disc",
+          "E singurul mod care funcționează cu JOIN"
         ],
-        answer: "Tranzacția fie se execută complet, fie deloc",
-        explanation: "Atomicitate = tot sau nimic. Dacă oricare operație din tranzacție eșuează, toate sunt anulate (ROLLBACK automat).",
-        difficulty: "medium",
+        "answer": "Permite restaurarea datelor și păstrarea istoricului de audit",
+        "explanation": "Soft delete (deleted_at timestamp) permite restaurare, audit trail, conformitate GDPR.",
+        "difficulty": "medium"
       },
       {
-        number: 6,
-        name: "INSERT multiple",
-        question: "Cum inserezi 3 rânduri cu un singur INSERT?",
-        options: [
-          "3 instrucțiuni INSERT separate",
-          "INSERT INTO t (col) VALUES (v1), (v2), (v3)",
-          "INSERT MULTIPLE INTO t VALUES ...",
-          "BATCH INSERT INTO t ...",
+        "number": 7,
+        "name": "COMMIT și ROLLBACK",
+        "question": "Ce face ROLLBACK într-o tranzacție?",
+        "options": [
+          "Anulează toate modificările făcute de la START TRANSACTION",
+          "Salvează modificările permanente",
+          "Creează un backup al tranzacției",
+          "Continuă tranzacția la o stare anterioară"
         ],
-        answer: "INSERT INTO t (col) VALUES (v1), (v2), (v3)",
-        explanation: "Un singur INSERT poate insera multiple rânduri cu VALUES (v1), (v2), (v3). E mult mai eficient decât N INSERT-uri separate.",
-        difficulty: "medium",
+        "answer": "Anulează toate modificările făcute de la START TRANSACTION",
+        "explanation": "ROLLBACK anulează orice modificare din tranzacția curentă. Util când apare o eroare.",
+        "difficulty": "easy"
       },
       {
-        number: 7,
-        name: "PRIMARY KEY",
-        question: "Ce garantează PRIMARY KEY la o coloană?",
-        options: [
-          "Valorile sunt sortate crescător",
-          "Valorile sunt unice și nu pot fi NULL",
-          "Coloana e indexată automat",
-          "Valorile sunt unice și nu pot fi NULL, identificând unic fiecare rând",
+        "number": 8,
+        "name": "ACID - Atomicity",
+        "question": "Ce garantează proprietatea Atomicity dintr-o tranzacție?",
+        "options": [
+          "Fie toate operațiile din tranzacție reușesc, fie niciuna",
+          "Tranzacția nu poate fi întreruptă de altele",
+          "Datele sunt corecte după tranzacție",
+          "Modificările sunt salvate permanent"
         ],
-        answer: "Valorile sunt unice și nu pot fi NULL, identificând unic fiecare rând",
-        explanation: "PRIMARY KEY = UNIQUE + NOT NULL. Fiecare tabelă ar trebui să aibă un PK. E și indexat automat pentru căutări rapide.",
-        difficulty: "medium",
+        "answer": "Fie toate operațiile din tranzacție reușesc, fie niciuna",
+        "explanation": "Atomicity = totul sau nimic. Dacă o operație din tranzacție eșuează, toate se anulează.",
+        "difficulty": "medium"
       },
       {
-        number: 8,
-        name: "FOREIGN KEY CASCADE",
-        question: "Ce face `ON DELETE CASCADE` la o FOREIGN KEY?",
-        options: [
-          "Interzice ștergerea rândului parinte dacă are copii",
-          "Șterge automat rândurile copil când se șterge rândul parinte",
-          "Setează FK la NULL",
-          "Copiază rândul parinte",
+        "number": 9,
+        "name": "INSERT SELECT",
+        "question": "Ce face `INSERT INTO arhiva SELECT * FROM produse WHERE stoc = 0`?",
+        "options": [
+          "Copiază toate produsele fără stoc din tabela produse în arhiva",
+          "Mută produsele (le șterge din produse)",
+          "Creează tabela arhiva cu produsele fără stoc",
+          "Eroare — INSERT nu poate fi combinat cu SELECT"
         ],
-        answer: "Șterge automat rândurile copil când se șterge rândul parinte",
-        explanation: "ON DELETE CASCADE: dacă ștergi un user, se șterg automat toate comenzile lui. Alternativa RESTRICT interzice ștergerea dacă există copii.",
-        difficulty: "medium",
+        "answer": "Copiază toate produsele fără stoc din tabela produse în arhiva",
+        "explanation": "INSERT...SELECT copiază date dintr-o tabelă în alta în baza unui query.",
+        "difficulty": "medium"
       },
       {
-        number: 9,
-        name: "ROLLBACK",
-        question: "Când folosești ROLLBACK?",
-        options: [
-          "La finalul fiecărei sesiuni",
-          "Când vrei să anulezi modificările dintr-o tranzacție neterminată",
-          "Înainte de SELECT",
-          "La optimizarea query-urilor",
+        "number": 10,
+        "name": "ON CONFLICT",
+        "question": "Ce face `INSERT INTO useri (email) VALUES ('a@b.com') ON CONFLICT (email) DO NOTHING`?",
+        "options": [
+          "Inserează userul dacă emailul nu există, altfel ignoră (fără eroare)",
+          "Inserează întotdeauna, duplicând emailul",
+          "Actualizează userul dacă emailul există",
+          "Generează eroare de duplicat silențioasă"
         ],
-        answer: "Când vrei să anulezi modificările dintr-o tranzacție neterminată",
-        explanation: "ROLLBACK anulează toate modificările de la ultimul BEGIN/COMMIT. E salvarea ta când detectezi o eroare în mijlocul unei tranzacții.",
-        difficulty: "medium",
+        "answer": "Inserează userul dacă emailul nu există, altfel ignoră (fără eroare)",
+        "explanation": "ON CONFLICT DO NOTHING ignorează INSERT-ul dacă violează o constrângere unică. PostgreSQL syntax.",
+        "difficulty": "medium"
       },
       {
-        number: 10,
-        name: "UPDATE sigur",
-        question: "Care e practica recomandată ÎNAINTE de a rula un UPDATE important?",
-        options: [
-          "Face backup automat",
-          "Rulează SELECT cu aceleași condiții WHERE să verifici exact ce vei modifica",
-          "Creează un index",
-          "Oprești alte conexiuni",
+        "number": 11,
+        "name": "Tranzacție și crash",
+        "question": "Dacă serverul cade DUPĂ `UPDATE conturi SET sold=sold-1000` dar ÎNAINTE de COMMIT, ce se întâmplă?",
+        "options": [
+          "Tranzacția e rollback-ată automat — banii nu se scad",
+          "Banii se scad dar nu se adaugă la destinatar",
+          "Tranzacția e salvată parțial",
+          "Depinde de baza de date"
         ],
-        answer: "Rulează SELECT cu aceleași condiții WHERE să verifici exact ce vei modifica",
-        explanation: "SELECT * FROM t WHERE id = 5 înainte de UPDATE t SET ... WHERE id = 5. Dacă SELECT returnează ce te aștepți, e sigur să faci UPDATE.",
-        difficulty: "medium",
+        "answer": "Tranzacția e rollback-ată automat — banii nu se scad",
+        "explanation": "Fără COMMIT, modificările din tranzacție nu sunt permanente. Recovery-ul DB face rollback automat.",
+        "difficulty": "hard"
       },
-    ],
+      {
+        "number": 12,
+        "name": "UPDATE cu subquery",
+        "question": "Cum mărești prețul cu 5% al produselor comandate în ultimele 30 de zile?",
+        "options": [
+          "UPDATE produse SET pret=pret*1.05 WHERE id IN (SELECT produs_id FROM comenzi WHERE data > DATE_SUB(NOW(), INTERVAL 30 DAY));",
+          "UPDATE produse SET pret*1.05 WHERE EXISTS (SELECT * FROM comenzi INTERVAL 30 DAY);",
+          "UPDATE produse, comenzi SET pret=pret*1.05 WHERE data > -30;",
+          "UPDATE produse SET pret+5% WHERE comenzi.data > NOW()-30;"
+        ],
+        "answer": "UPDATE produse SET pret=pret*1.05 WHERE id IN (SELECT produs_id FROM comenzi WHERE data > DATE_SUB(NOW(), INTERVAL 30 DAY));",
+        "explanation": "DATE_SUB(NOW(), INTERVAL 30 DAY) calculează data de acum 30 de zile.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 13,
+        "name": "SAVEPOINT",
+        "question": "La ce folosește SAVEPOINT în interiorul unei tranzacții?",
+        "options": [
+          "Poți face rollback parțial la acel punct fără a anula întreaga tranzacție",
+          "Salvează tranzacția permanent la acel punct",
+          "Creează o ramificație a tranzacției",
+          "E echivalent cu un COMMIT parțial"
+        ],
+        "answer": "Poți face rollback parțial la acel punct fără a anula întreaga tranzacție",
+        "explanation": "SAVEPOINT îți permite rollback granular. ROLLBACK TO savepoint_name revine la acel punct, nu la START TRANSACTION.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 14,
+        "name": "ACID - Isolation",
+        "question": "Ce garantează proprietatea Isolation?",
+        "options": [
+          "Tranzacțiile concurente nu văd modificările ne-committed ale celorlalte",
+          "O singură tranzacție poate rula la un moment dat",
+          "Datele izolate nu pot fi șterse",
+          "Fiecare tabelă e accesibilă dintr-o singură conexiune"
+        ],
+        "answer": "Tranzacțiile concurente nu văd modificările ne-committed ale celorlalte",
+        "explanation": "Isolation previne 'dirty reads' — nu citești datele intermediate ale altor tranzacții necomplete.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: sistem comenzi",
+        "question": "Tranzacția corectă pentru plasarea unei comenzi (scade stoc, inserează comanda, actualizează total user):",
+        "options": [
+          "START TRANSACTION; UPDATE produse SET stoc=stoc-1 WHERE id=:pid; INSERT INTO comenzi (user_id,produs_id) VALUES (:uid,:pid); UPDATE useri SET total_comenzi=total_comenzi+1 WHERE id=:uid; COMMIT;",
+          "BEGIN; INSERT INTO comenzi VALUES(:uid,:pid); COMMIT;",
+          "TRANSACTION { UPDATE produse; INSERT comenzi; UPDATE useri; }",
+          "START; UPDATE produse; INSERT comenzi; END TRANSACTION;"
+        ],
+        "answer": "START TRANSACTION; UPDATE produse SET stoc=stoc-1 WHERE id=:pid; INSERT INTO comenzi (user_id,produs_id) VALUES (:uid,:pid); UPDATE useri SET total_comenzi=total_comenzi+1 WHERE id=:uid; COMMIT;",
+        "explanation": "Toate cele 3 operații trebuie să fie atomice — dacă una eșuează, ROLLBACK anulează tot.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-aggregate-groupby",
-    title: "3. Funcții agregate + GROUP BY",
-    order: 3,
-    theory: [
+    "slug": "sql-functii-agregate",
+    "title": "4. Funcții agregate + GROUP BY",
+    "order": 4,
+    "theory": [
       {
-        order: 1,
-        title: "Funcții agregate — calculează statistici",
-        content: "**Funcțiile agregate** fac calcule pe un set de rânduri și returnează o singură valoare. E ca un calculator care primește o coloană și returneazå un număr:\n\n```sql\n-- COUNT — numără rânduri:\nSELECT COUNT(*) FROM produse;                    -- total rânduri\nSELECT COUNT(DISTINCT categorie) FROM produse;   -- categorii unice\nSELECT COUNT(descriere) FROM produse;            -- rânduri unde descriere ≠ NULL\n-- COUNT(*) numără toate rândurile inclusiv cu NULL\n-- COUNT(coloana) ignoră valorile NULL!\n\n-- SUM — suma valorilor:\nSELECT SUM(pret) FROM produse;          -- suma tuturor prețurilor\nSELECT SUM(pret * stoc) AS valoare_stoc FROM produse;  -- valoare totală\n\n-- AVG — media aritmetică:\nSELECT AVG(pret) FROM produse;          -- prețul mediu\nSELECT ROUND(AVG(pret), 2) AS pret_mediu FROM produse;\n\n-- MIN și MAX:\nSELECT MIN(pret) AS cel_mai_ieftin FROM produse;\nSELECT MAX(pret) AS cel_mai_scump FROM produse;\nSELECT MIN(creat_la) AS primul_produs FROM produse;\n\n-- Combinate:\nSELECT\n    COUNT(*) AS nr_produse,\n    SUM(pret * stoc) AS valoare_totala,\n    ROUND(AVG(pret), 2) AS pret_mediu,\n    MIN(pret) AS minim,\n    MAX(pret) AS maxim\nFROM produse;\n```",
+        "order": 1,
+        "title": "Funcții agregate — calculezi statistici",
+        "content": "Functiile agregate calculeaza o valoare pentru un grup de randuri. Esentiale pentru rapoarte.\n\n```sql\n-- COUNT:\nSELECT COUNT(*) FROM produse;           -- toate randurile\nSELECT COUNT(descriere) FROM produse;   -- doar cele cu descriere (non-NULL)\nSELECT COUNT(DISTINCT categorie) FROM produse; -- categorii unice\n\n-- SUM:\nSELECT SUM(pret) FROM comenzi WHERE luna = 6; -- venit luna iunie\n\n-- AVG:\nSELECT ROUND(AVG(pret), 2) AS pret_mediu FROM produse;\n\n-- MIN / MAX:\nSELECT MIN(pret) AS cel_mai_ieftin, MAX(pret) AS cel_mai_scump\nFROM produse;\n\n-- Combinate:\nSELECT\n    COUNT(*) AS total,\n    SUM(stoc) AS stoc_total,\n    AVG(pret) AS pret_mediu,\n    MIN(pret) AS minim,\n    MAX(pret) AS maxim\nFROM produse;\n```\n\nDIFERETA CRITICA: COUNT(*) numara toate randurile inclusiv cu NULL. COUNT(coloana) numara doar non-NULL. Esti aproape sigur intrebat la interviu!"
       },
       {
-        order: 2,
-        title: "GROUP BY — grupează și calculează pe grupuri",
-        content: "**GROUP BY** împarte rândurile în grupuri după valoarea unei coloane, apoi aplică funcțiile agregate pe fiecare grup:\n\n```sql\n-- Statistici per categorie:\nSELECT\n    categorie,\n    COUNT(*)        AS nr_produse,\n    SUM(stoc)       AS stoc_total,\n    ROUND(AVG(pret), 2) AS pret_mediu,\n    MAX(pret)       AS cel_mai_scump\nFROM produse\nGROUP BY categorie;\n\n-- Rezultat:\n-- electronics | 3 | 77 | 1806.67 | 3500\n-- furniture   | 2 | 11 | 1000.00 | 1200\n\n-- Grupare după mai multe coloane:\nSELECT\n    an_fabricatie,\n    categorie,\n    COUNT(*) AS nr_produse\nFROM produse\nGROUP BY an_fabricatie, categorie\nORDER BY an_fabricatie DESC;\n```\n\n**Regula de aur GROUP BY:**\nÎn SELECT poți pune NUMAI:\n1. Coloanele din GROUP BY\n2. Funcții agregate (COUNT, SUM, AVG, MIN, MAX)\nNu poți pune alte coloane! (PostgreSQL e strict, MySQL mai indulgent)\n\n```sql\n-- GREȘIT (în PostgreSQL strict):\nSELECT categorie, nume, COUNT(*) FROM produse GROUP BY categorie;\n-- ERROR: 'nume' must appear in GROUP BY\n\n-- CORECT:\nSELECT categorie, COUNT(*) FROM produse GROUP BY categorie;\n```",
+        "order": 2,
+        "title": "GROUP BY — statistici pe grupuri",
+        "content": "GROUP BY grupeaza randurile cu valori identice si aplica functiile agregate pe fiecare grup.\n\n```sql\n-- Statistici per categorie:\nSELECT\n    categorie,\n    COUNT(*) AS nr_produse,\n    AVG(pret) AS pret_mediu,\n    SUM(stoc) AS stoc_total\nFROM produse\nGROUP BY categorie;\n\n-- REGULA GROUP BY:\n-- In SELECT, orice coloana care NU e intr-o functie agregata\n-- TREBUIE sa fie in GROUP BY!\n\n-- GRESIT:\nSELECT categorie, nume, COUNT(*) FROM produse GROUP BY categorie;\n-- Eroare: 'nume' nu e in GROUP BY si nu e agregat\n\n-- CORECT:\nSELECT categorie, COUNT(*) FROM produse GROUP BY categorie;\n\n-- GROUP BY pe expresie:\nSELECT YEAR(data), COUNT(*) FROM comenzi GROUP BY YEAR(data);\n```"
       },
       {
-        order: 3,
-        title: "HAVING — filtru pe grupuri (nu pe rânduri!)",
-        content: "**HAVING** e ca WHERE dar pentru grupuri. WHERE filtrează rânduri înainte de grupare, HAVING filtrează grupuri după agregare:\n\n```sql\n-- Categoriile cu mai mult de 2 produse:\nSELECT\n    categorie,\n    COUNT(*) AS nr_produse\nFROM produse\nGROUP BY categorie\nHAVING COUNT(*) > 2;\n\n-- Categoriile cu prețul mediu > 500:\nSELECT\n    categorie,\n    ROUND(AVG(pret), 2) AS pret_mediu\nFROM produse\nGROUP BY categorie\nHAVING AVG(pret) > 500;\n\n-- WHERE și HAVING împreună:\nSELECT\n    categorie,\n    COUNT(*) AS nr_produse_active\nFROM produse\nWHERE stoc > 0                    -- WHERE: filtrează rânduri ÎNAINTE de grupare\nGROUP BY categorie\nHAVING COUNT(*) >= 2              -- HAVING: filtrează grupuri DUPĂ agregare\nORDER BY nr_produse_active DESC;\n```\n\n**Diferența cheie WHERE vs HAVING:**\n```\nWHERE   → rulează ÎNAINTE de GROUP BY, pe rânduri individuale\nHAVING  → rulează DUPĂ GROUP BY, pe grupuri agregate\n\nWHERE nu poate folosi funcții agregate:\nWHERE AVG(pret) > 500  ← EROARE\nHAVING AVG(pret) > 500 ← CORECT\n```",
+        "order": 3,
+        "title": "HAVING — filtrezi grupuri",
+        "content": "HAVING e ca WHERE dar pentru grupuri. WHERE filtreaza INAINTE de grupare, HAVING DUPA.\n\n```sql\n-- Categorii cu mai mult de 3 produse:\nSELECT categorie, COUNT(*) AS nr\nFROM produse\nGROUP BY categorie\nHAVING COUNT(*) > 3;\n-- NU poti pune COUNT(*) > 3 in WHERE!\n\n-- WHERE + HAVING combinate:\nSELECT categorie, AVG(pret) AS pret_mediu\nFROM produse\nWHERE stoc > 0          -- FILTRARE 1: exclude fara stoc\nGROUP BY categorie\nHAVING AVG(pret) > 500; -- FILTRARE 2: exclude categorii ieftine\n\n-- Report real: top categorii dupa vanzari:\nSELECT\n    p.categorie,\n    SUM(c.cantitate * p.pret) AS venit_total\nFROM comenzi c\nJOIN produse p ON c.produs_id = p.id\nWHERE c.data >= DATE_FORMAT(NOW(), '%Y-%m-01')\nGROUP BY p.categorie\nHAVING venit_total > 10000\nORDER BY venit_total DESC;\n```"
       },
       {
-        order: 4,
-        title: "Ordinea completă a clauzelor SQL",
-        content: "SQL are o ordine strictă de execuție. Înțelegerea ei explică de ce unele erori apar:\n\n**Ordinea de scriere** (sintaxă):\n```sql\nSELECT   col1, AGG(col2)\nFROM     tabela\nJOIN     alta_tabela ON ...\nWHERE    conditie_pe_randuri\nGROUP BY col1\nHAVING   conditie_pe_grupuri\nORDER BY col1\nLIMIT    n\nOFFSET   m;\n```\n\n**Ordinea de EXECUȚIE** (cum procesează baza de date):\n```\n1. FROM     — identifică tabelele\n2. JOIN     — combină tabelele\n3. WHERE    — filtrează rândurile\n4. GROUP BY — creează grupurile\n5. HAVING   — filtrează grupurile\n6. SELECT   — calculează expresiile și aliasele\n7. DISTINCT — elimină duplicatele\n8. ORDER BY — sortează (poate folosi aliasele din SELECT)\n9. LIMIT    — restricționează numărul de rânduri\n```\n\nDe aceea **nu poți folosi alias-ul din SELECT în WHERE**:\n```sql\n-- GREȘIT:\nSELECT pret * 1.19 AS pret_tva\nFROM produse\nWHERE pret_tva > 500;  -- ERROR: pret_tva nu există la pasul WHERE!\n\n-- CORECT:\nSELECT pret * 1.19 AS pret_tva\nFROM produse\nWHERE pret * 1.19 > 500;  -- repetă expresia\n-- SAU\nSELECT pret * 1.19 AS pret_tva\nFROM produse\nHAVING pret_tva > 500;  -- HAVING e după SELECT, aliasul e disponibil\n```\n\n**La interviu:** Explicarea ordinii de execuție arată că înțelegi SQL la un nivel profund.",
-      },
+        "order": 4,
+        "title": "Ordinea completă de execuție SQL",
+        "content": "SQL nu se executa in ordinea in care scrii clauzele. Ordinea de executie e critica pentru a intelege erori.\n\nORDINEA:\n```\n1. FROM      — din ce tabele\n2. JOIN      — combini tabelele\n3. WHERE     — filtrezi randuri (inainte de grup)\n4. GROUP BY  — formezi grupuri\n5. HAVING    — filtrezi grupuri\n6. SELECT    — calculezi/alegi coloanele\n7. DISTINCT  — elimini duplicate\n8. ORDER BY  — sortezi\n9. LIMIT     — limitezi\n```\n\nIn practica:\n```sql\n-- Nu poti folosi alias din SELECT in WHERE:\nSELECT pret * 1.19 AS pret_tva\nFROM produse\nWHERE pret_tva > 500;  -- EROARE! pret_tva nu exista la momentul WHERE\n\n-- Corect: repeti expresia\nWHERE pret * 1.19 > 500;\n\n-- ORDER BY poate folosi alias (vine dupa SELECT):\nSELECT pret * 1.19 AS pret_tva FROM produse\nORDER BY pret_tva DESC;  -- OK!\n```"
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "COUNT(*) vs COUNT(col)",
-        question: "Diferența dintre `COUNT(*)` și `COUNT(email)`?",
-        options: [
-          "Identice",
-          "COUNT(*) numără toate rândurile; COUNT(email) ignoră rândurile unde email e NULL",
-          "COUNT(*) e mai rapid",
-          "COUNT(email) numără caractere",
+        "number": 1,
+        "name": "COUNT(*) vs COUNT(col)",
+        "question": "Diferența dintre `COUNT(*)` și `COUNT(descriere)`?",
+        "options": [
+          "COUNT(*) numără toate rândurile; COUNT(descriere) numără doar rândurile cu descriere non-NULL",
+          "COUNT(descriere) numără toate rândurile; COUNT(*) numără doar rândurile complete",
+          "Sunt identice",
+          "COUNT(*) e mai rapid, COUNT(col) mai precis"
         ],
-        answer: "COUNT(*) numără toate rândurile; COUNT(email) ignoră rândurile unde email e NULL",
-        explanation: "COUNT(*) = total rânduri incluzând NULL. COUNT(coloana) = rândurile unde coloana nu e NULL.",
-        difficulty: "medium",
+        "answer": "COUNT(*) numără toate rândurile; COUNT(descriere) numără doar rândurile cu descriere non-NULL",
+        "explanation": "COUNT(*) = toate rândurile. COUNT(col) = rânduri unde col nu e NULL. Diferența contează!",
+        "difficulty": "medium"
       },
       {
-        number: 2,
-        name: "SUM",
-        question: "Ce returnează `SELECT SUM(pret * stoc) FROM produse`?",
-        options: [
-          "Suma tuturor prețurilor",
-          "Valoarea totală a stocului (pret × stoc pentru fiecare produs, totalizate)",
-          "Numărul de produse",
-          "Media prețurilor",
+        "number": 2,
+        "name": "SUM venituri",
+        "question": "Cum calculezi venitul total al comenzilor din luna curentă?",
+        "options": [
+          "SELECT SUM(total) FROM comenzi WHERE MONTH(data) = MONTH(NOW());",
+          "SELECT COUNT(total) FROM comenzi WHERE luna = NOW();",
+          "SELECT TOTAL(suma) FROM comenzi THIS MONTH;",
+          "SELECT SUM(*) FROM comenzi WHERE data = NOW();"
         ],
-        answer: "Valoarea totală a stocului (pret × stoc pentru fiecare produs, totalizate)",
-        explanation: "SUM(pret * stoc) calculează pret×stoc pentru fiecare rând, apoi sumează totul — valoarea monetară totală a stocului.",
-        difficulty: "medium",
+        "answer": "SELECT SUM(total) FROM comenzi WHERE MONTH(data) = MONTH(NOW());",
+        "explanation": "SUM adună valorile. MONTH() extrage luna din dată. NOW() returnează data curentă.",
+        "difficulty": "medium"
       },
       {
-        number: 3,
-        name: "GROUP BY",
-        question: "Ce returnează `SELECT categorie, COUNT(*) FROM produse GROUP BY categorie`?",
-        options: [
-          "Toate produsele cu categoriile lor",
-          "Câte produse există în fiecare categorie",
-          "Categoriile unice",
-          "Eroare",
+        "number": 3,
+        "name": "GROUP BY bază",
+        "question": "Ce returnează `SELECT categorie, COUNT(*) FROM produse GROUP BY categorie`?",
+        "options": [
+          "Un rând per categorie cu numărul de produse din ea",
+          "Toate produsele cu categoria lor repetată",
+          "Un singur număr total de produse",
+          "Eroare — COUNT(*) nu funcționează cu GROUP BY"
         ],
-        answer: "Câte produse există în fiecare categorie",
-        explanation: "GROUP BY categorie creează un grup per categorie, COUNT(*) numără rândurile din fiecare grup.",
-        difficulty: "easy",
+        "answer": "Un rând per categorie cu numărul de produse din ea",
+        "explanation": "GROUP BY grupează rândurile identice. COUNT(*) numără câte rânduri sunt în fiecare grup.",
+        "difficulty": "easy"
       },
       {
-        number: 4,
-        name: "HAVING vs WHERE",
-        question: "Cum filtrezi categoriile cu mai mult de 5 produse?",
-        options: [
-          "WHERE COUNT(*) > 5",
-          "HAVING COUNT(*) > 5",
-          "WHERE nr_produse > 5",
+        "number": 4,
+        "name": "Regula GROUP BY",
+        "question": "De ce `SELECT categorie, nume, COUNT(*) FROM produse GROUP BY categorie` e greșit?",
+        "options": [
+          "'nume' nu e în GROUP BY și nu e funcție agregată — ambiguitate",
+          "COUNT(*) nu poate fi combinat cu alte coloane",
+          "GROUP BY necesită ORDER BY",
+          "Trebuie să specifici toate coloanele în GROUP BY"
+        ],
+        "answer": "'nume' nu e în GROUP BY și nu e funcție agregată — ambiguitate",
+        "explanation": "Orice coloană din SELECT care nu e într-o funcție agregată trebuie să fie în GROUP BY.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 5,
+        "name": "HAVING vs WHERE",
+        "question": "Unde filtrezi pentru 'categorii cu mai mult de 5 produse'?",
+        "options": [
+          "HAVING COUNT(*) > 5 — după GROUP BY",
+          "WHERE COUNT(*) > 5 — înainte de GROUP BY",
           "FILTER COUNT(*) > 5",
+          "ORDER BY COUNT(*) > 5"
         ],
-        answer: "HAVING COUNT(*) > 5",
-        explanation: "HAVING filtrează GRUPURI după GROUP BY. WHERE nu poate folosi funcții agregate — se aplică înainte de grupare.",
-        difficulty: "medium",
+        "answer": "HAVING COUNT(*) > 5 — după GROUP BY",
+        "explanation": "Funcțiile agregate nu pot fi în WHERE. HAVING filtrează grupurile formate de GROUP BY.",
+        "difficulty": "medium"
       },
       {
-        number: 5,
-        name: "AVG",
-        question: "Ce face `SELECT ROUND(AVG(pret), 2) FROM produse`?",
-        options: [
-          "Returnează prețul median",
-          "Returnează media aritmetică a prețurilor rotunjită la 2 zecimale",
-          "Sortează prețurile",
-          "Returnează prețul maxim",
+        "number": 6,
+        "name": "MIN și MAX",
+        "question": "Cum găsești cel mai scump și cel mai ieftin produs din fiecare categorie?",
+        "options": [
+          "SELECT categorie, MIN(pret), MAX(pret) FROM produse GROUP BY categorie;",
+          "SELECT categorie, LOWEST(pret), HIGHEST(pret) FROM produse GROUP BY categorie;",
+          "SELECT categorie, pret WHERE pret = MIN OR pret = MAX GROUP BY categorie;",
+          "SELECT MIN(pret), MAX(pret) FROM produse ORDER BY categorie;"
         ],
-        answer: "Returnează media aritmetică a prețurilor rotunjită la 2 zecimale",
-        explanation: "AVG calculează media, ROUND(val, 2) rotunjește la 2 zecimale.",
-        difficulty: "easy",
+        "answer": "SELECT categorie, MIN(pret), MAX(pret) FROM produse GROUP BY categorie;",
+        "explanation": "MIN și MAX returnează valorile extreme din grup când sunt combinate cu GROUP BY.",
+        "difficulty": "easy"
       },
       {
-        number: 6,
-        name: "GROUP BY regulă",
-        question: "În SELECT cu GROUP BY, ce coloane poți pune?",
-        options: [
-          "Orice coloană din tabelă",
-          "Numai coloanele din GROUP BY și/sau funcții agregate",
-          "Numai funcții agregate",
-          "Numai coloana din GROUP BY",
+        "number": 7,
+        "name": "AVG și ROUND",
+        "question": "Cum calculezi prețul mediu rotunjit la 2 zecimale per categorie?",
+        "options": [
+          "SELECT categorie, ROUND(AVG(pret), 2) FROM produse GROUP BY categorie;",
+          "SELECT categorie, AVG(ROUND(pret, 2)) FROM produse GROUP BY categorie;",
+          "SELECT categorie, ROUND(pret, 2) FROM produse GROUP BY categorie;",
+          "SELECT categorie, FORMAT(AVG(pret), 2) FROM produse GROUP BY categorie;"
         ],
-        answer: "Numai coloanele din GROUP BY și/sau funcții agregate",
-        explanation: "Regula fundamentală: SELECT poate conține doar coloanele din GROUP BY + funcții agregate. Altfel PostgreSQL aruncă eroare.",
-        difficulty: "medium",
+        "answer": "SELECT categorie, ROUND(AVG(pret), 2) FROM produse GROUP BY categorie;",
+        "explanation": "Aplici ROUND pe rezultatul AVG. Ordinea: AVG calculează media, ROUND o rotunjește.",
+        "difficulty": "easy"
       },
       {
-        number: 7,
-        name: "Ordinea execuție",
-        question: "De ce nu poți folosi un alias definit în SELECT în clauza WHERE?",
-        options: [
-          "Sintaxă greșită",
-          "WHERE se execută ÎNAINTE de SELECT — aliasul nu există încă",
-          "Aliasul nu e valid în SQL standard",
-          "Poți, dar e mai lent",
+        "number": 8,
+        "name": "Ordinea execuției",
+        "question": "De ce `WHERE pret_tva > 500` eșuează dacă pret_tva e alias din SELECT?",
+        "options": [
+          "WHERE se execută înaintea SELECT, deci alias-ul nu există încă",
+          "Alias-urile nu pot fi folosite în filtrare",
+          "WHERE nu acceptă comparații",
+          "pret_tva trebuie să fie coloană fizică"
         ],
-        answer: "WHERE se execută ÎNAINTE de SELECT — aliasul nu există încă",
-        explanation: "Ordinea: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY. SELECT (unde se definesc aliasele) vine după WHERE.",
-        difficulty: "hard",
+        "answer": "WHERE se execută înaintea SELECT, deci alias-ul nu există încă",
+        "explanation": "Ordinea: FROM→WHERE→GROUP BY→HAVING→SELECT→ORDER BY. WHERE rulează înainte de SELECT.",
+        "difficulty": "hard"
       },
       {
-        number: 8,
-        name: "MIN MAX",
-        question: "Cum găsești simultan cel mai ieftin și cel mai scump produs?",
-        options: [
-          "SELECT MIN(pret), MAX(pret) FROM produse",
-          "SELECT FIRST(pret), LAST(pret) FROM produse ORDER BY pret",
-          "Necesită 2 query-uri separate",
-          "SELECT RANGE(pret) FROM produse",
+        "number": 9,
+        "name": "WHERE + HAVING combinat",
+        "question": "Cum calculezi media prețurilor (excluzând fără stoc) per categorie, și arăți doar categoriile cu medie > 500?",
+        "options": [
+          "SELECT categorie, AVG(pret) FROM produse WHERE stoc > 0 GROUP BY categorie HAVING AVG(pret) > 500;",
+          "SELECT categorie, AVG(pret) FROM produse GROUP BY categorie HAVING stoc > 0 AND AVG(pret) > 500;",
+          "SELECT categorie, AVG(pret) FROM produse WHERE stoc > 0 HAVING AVG(pret) > 500;",
+          "SELECT categorie FROM produse WHERE stoc > 0 AND AVG(pret) > 500 GROUP BY categorie;"
         ],
-        answer: "SELECT MIN(pret), MAX(pret) FROM produse",
-        explanation: "Funcțiile agregate se pot combina în același SELECT. Returnează un singur rând cu ambele valori.",
-        difficulty: "easy",
+        "answer": "SELECT categorie, AVG(pret) FROM produse WHERE stoc > 0 GROUP BY categorie HAVING AVG(pret) > 500;",
+        "explanation": "WHERE filtrează rânduri înainte de grupare. HAVING filtrează grupul după.",
+        "difficulty": "hard"
       },
       {
-        number: 9,
-        name: "WHERE + HAVING",
-        question: "Ce face WHERE în combinație cu GROUP BY?",
-        options: [
-          "WHERE filtrează grupurile formate",
-          "WHERE filtrează rândurile ÎNAINTE de grupare",
-          "WHERE e echivalent cu HAVING",
-          "WHERE nu se poate folosi cu GROUP BY",
+        "number": 10,
+        "name": "COUNT DISTINCT",
+        "question": "Cum numeri câți utilizatori unici au plasat comenzi?",
+        "options": [
+          "SELECT COUNT(DISTINCT user_id) FROM comenzi;",
+          "SELECT DISTINCT COUNT(user_id) FROM comenzi;",
+          "SELECT COUNT(user_id) UNIQUE FROM comenzi;",
+          "SELECT UNIQUE_COUNT(user_id) FROM comenzi;"
         ],
-        answer: "WHERE filtrează rândurile ÎNAINTE de grupare",
-        explanation: "WHERE rulează mai întâi și elimină rânduri. Apoi GROUP BY grupează rândurile rămase. HAVING filtrează grupurile rezultate.",
-        difficulty: "medium",
+        "answer": "SELECT COUNT(DISTINCT user_id) FROM comenzi;",
+        "explanation": "DISTINCT în interiorul COUNT numără valorile unice, nu totale.",
+        "difficulty": "medium"
       },
       {
-        number: 10,
-        name: "COUNT DISTINCT",
-        question: "Cum numeri câte categorii distincte există în tabela produse?",
-        options: [
-          "SELECT COUNT(*) FROM produse GROUP BY categorie",
-          "SELECT COUNT(DISTINCT categorie) FROM produse",
-          "SELECT DISTINCT COUNT(categorie) FROM produse",
-          "SELECT COUNT(categorie UNIQUE) FROM produse",
+        "number": 11,
+        "name": "GROUP BY cu JOIN",
+        "question": "Cum calculezi totalul vânzărilor per categorie (tabele comenzi și produse)?",
+        "options": [
+          "SELECT p.categorie, SUM(c.total) FROM comenzi c JOIN produse p ON c.produs_id=p.id GROUP BY p.categorie;",
+          "SELECT SUM(c.total) FROM comenzi GROUP BY p.categorie JOIN produse;",
+          "SELECT p.categorie, SUM(c.total) FROM produse GROUP BY p.categorie JOIN comenzi;",
+          "SELECT categorie, SUM(total) FROM comenzi, produse GROUP BY categorie;"
         ],
-        answer: "SELECT COUNT(DISTINCT categorie) FROM produse",
-        explanation: "COUNT(DISTINCT coloana) numără valorile unice. Returnează 1 număr — total categorii distincte.",
-        difficulty: "medium",
+        "answer": "SELECT p.categorie, SUM(c.total) FROM comenzi c JOIN produse p ON c.produs_id=p.id GROUP BY p.categorie;",
+        "explanation": "JOIN combini tabelele, GROUP BY grupezi, SUM agregezi. Ordinea: FROM→JOIN→GROUP BY.",
+        "difficulty": "hard"
       },
-    ],
+      {
+        "number": 12,
+        "name": "Procente din total",
+        "question": "Cum calculezi procentul din total al fiecărei categorii?",
+        "options": [
+          "SELECT categorie, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM produse) AS procent FROM produse GROUP BY categorie;",
+          "SELECT categorie, COUNT(*) / COUNT(*) * 100 FROM produse GROUP BY categorie;",
+          "SELECT categorie, PERCENT(COUNT(*)) FROM produse GROUP BY categorie;",
+          "SELECT categorie, COUNT(*) AS procent FROM produse GROUP BY categorie ORDER BY procent;"
+        ],
+        "answer": "SELECT categorie, COUNT(*) * 100.0 / (SELECT COUNT(*) FROM produse) AS procent FROM produse GROUP BY categorie;",
+        "explanation": "Subquery calculează totalul, împarți count-ul grupului la total. Folosești 100.0 (nu 100!) pentru a evita împărțirea de întregi.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 13,
+        "name": "GROUP BY pe expresie",
+        "question": "Cum grupezi comenzile pe an?",
+        "options": [
+          "SELECT YEAR(data), COUNT(*) FROM comenzi GROUP BY YEAR(data);",
+          "SELECT data, COUNT(*) FROM comenzi GROUP BY YEAR;",
+          "SELECT COUNT(*) FROM comenzi GROUP YEAR(data);",
+          "SELECT YEAR, COUNT(*) FROM comenzi GROUP BY data;"
+        ],
+        "answer": "SELECT YEAR(data), COUNT(*) FROM comenzi GROUP BY YEAR(data);",
+        "explanation": "Poți GROUP BY pe o expresie sau funcție, nu doar pe coloane.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 14,
+        "name": "HAVING cu alias MySQL",
+        "question": "În MySQL, funcționează `SELECT categorie, COUNT(*) AS nr FROM produse GROUP BY categorie HAVING nr > 3`?",
+        "options": [
+          "Da, MySQL permite alias în HAVING",
+          "Nu, trebuie HAVING COUNT(*) > 3 întotdeauna",
+          "Da, dar e non-standard și nu merge în PostgreSQL",
+          "Depinde de versiunea MySQL"
+        ],
+        "answer": "Da, dar e non-standard și nu merge în PostgreSQL",
+        "explanation": "MySQL extinde standardul SQL și permite alias în HAVING. PostgreSQL standard nu. Folosește COUNT(*) > 3 pentru portabilitate.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: dashboard vânzări",
+        "question": "Top 5 categorii după venituri din ultimele 30 de zile, cu nr. comenzi și valoare medie:",
+        "options": [
+          "SELECT p.categorie, COUNT(c.id) AS nr, SUM(c.total) AS venit, AVG(c.total) AS medie FROM comenzi c JOIN produse p ON c.produs_id=p.id WHERE c.data >= DATE_SUB(NOW(),INTERVAL 30 DAY) GROUP BY p.categorie ORDER BY venit DESC LIMIT 5;",
+          "SELECT COUNT(*), SUM(total) FROM comenzi LIMIT 5 WHERE data > -30;",
+          "SELECT TOP 5 categorie, SUM(total) FROM comenzi ORDER BY SUM DESC;",
+          "SELECT categorie, AVG(total) FROM comenzi INTERVAL 30 ORDER BY 1 LIMIT 5;"
+        ],
+        "answer": "SELECT p.categorie, COUNT(c.id) AS nr, SUM(c.total) AS venit, AVG(c.total) AS medie FROM comenzi c JOIN produse p ON c.produs_id=p.id WHERE c.data >= DATE_SUB(NOW(),INTERVAL 30 DAY) GROUP BY p.categorie ORDER BY venit DESC LIMIT 5;",
+        "explanation": "Combini JOIN, WHERE pe dată, GROUP BY, mai multe agregate și LIMIT pentru top 5.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-joins",
-    title: "4. JOINs — combinarea tabelelor",
-    order: 4,
-    theory: [
+    "slug": "sql-joins",
+    "title": "5. JOINs — combini tabele",
+    "order": 5,
+    "theory": [
       {
-        order: 1,
-        title: "De ce avem nevoie de JOINs — normalizarea datelor",
-        content: "Bazele de date relaționale stochează datele în tabele **separate** pentru a evita duplicarea. Comenzile nu stochează datele complete ale userului — ci doar `user_id`. JOINs le combină la cerere:\n\n```\nTabela utilizatori:          Tabela comenzi:\n┌────┬──────┬──────────┐    ┌────┬─────────┬────────┐\n│ id │ nume │ email    │    │ id │ user_id │ total  │\n├────┼──────┼──────────┤    ├────┼─────────┼────────┤\n│  1 │ Ana  │ ana@...  │    │  1 │    1    │  250   │\n│  2 │ Ion  │ ion@...  │    │  2 │    1    │  180   │\n│  3 │ Maria│ maria@...│    │  3 │    2    │  420   │\n└────┴──────┴──────────┘    └────┴─────────┴────────┘\n```\n\nFără JOIN: știi comenzile dar nu știi cine le-a făcut.\nCu JOIN: combini tabelele și ai imaginea completă.\n\n**INNER JOIN — interesecția:**\n```sql\n-- Comenzile cu datele userilor:\nSELECT\n    u.nume,\n    u.email,\n    c.id    AS comanda_id,\n    c.total\nFROM comenzi c\nINNER JOIN utilizatori u ON c.user_id = u.id;\n-- Returnează NUMAI rândurile cu potrivire în AMBELE tabele\n-- Comenzile fără user NU apar, userii fără comenzi NU apar\n```\n\n**Aliasuri pentru tabele** — esențial când ai JOIN-uri:\n```sql\n-- u = utilizatori, c = comenzi, p = produse\nFROM comenzi c\nJOIN utilizatori u ON c.user_id = u.id\nJOIN produse p ON c.produs_id = p.id;\n```",
+        "order": 1,
+        "title": "De ce avem mai multe tabele și ce sunt JOINs",
+        "content": "Bazele de date relationale stocheaza datele in tabele separate pentru a evita duplicarea. O comanda nu stocheaza tot textul adresei clientului — stocheaza doar ID-ul clientului.\n\nTabelele:\n```\nclienti:          comenzi:\nid | nume         id | client_id | total\n1  | Ion          1  |     1     |  250\n2  | Maria        2  |     1     |  800\n3  | Andrei       3  |     2     |  150\n4  | Elena        4  |     4     | 1200\n```\n\nJOIN uneste randuri din tabele diferite pe baza unei conditii:\n```sql\nSELECT clienti.nume, comenzi.total\nFROM clienti\nJOIN comenzi ON clienti.id = comenzi.client_id;\n-- Rezultat: Ion+250, Ion+800, Maria+150, Elena+1200\n-- Andrei nu apare — nu are comenzi (INNER JOIN exclude randurile fara corespondent)\n```"
       },
       {
-        order: 2,
-        title: "LEFT JOIN și RIGHT JOIN — include și rândurile fără potrivire",
-        content: "**LEFT JOIN** returnează TOT din tabela stângă + potrivirile din dreapta. Dacă nu există potrivire dreapta → NULL:\n\n```sql\n-- TOȚI userii, cu sau fără comenzi:\nSELECT\n    u.id,\n    u.nume,\n    COUNT(c.id) AS nr_comenzi,\n    COALESCE(SUM(c.total), 0) AS total_cheltuit\nFROM utilizatori u\nLEFT JOIN comenzi c ON c.user_id = u.id\nGROUP BY u.id, u.nume;\n\n-- Userii fără nicio comandă apar cu nr_comenzi=0, total_cheltuit=0\n\n-- Pattern clasic: găsirea rândurilor fără potrivire:\nSELECT u.id, u.nume\nFROM utilizatori u\nLEFT JOIN comenzi c ON c.user_id = u.id\nWHERE c.id IS NULL;  -- userii care NU au nicio comandă\n```\n\n**Comparație vizuală:**\n```\nTabela A:  1, 2, 3, 4\nTabela B:     2, 3,    5\n\nINNER JOIN:     2, 3         ← doar potrivirile\nLEFT JOIN:  1, 2, 3, 4       ← tot din A + potrivirile din B\nRIGHT JOIN:    2, 3,    5    ← tot din B + potrivirile din A\nFULL JOIN:  1, 2, 3, 4, 5   ← tot din ambele\n```\n\n**RIGHT JOIN** — rar folosit (se preferă LEFT JOIN cu tabelele inversate):\n```sql\n-- Echivalente:\nFROM a LEFT JOIN b  ON a.id = b.a_id\nFROM b RIGHT JOIN a ON a.id = b.a_id  -- idem, mai confuz\n```",
+        "order": 2,
+        "title": "INNER, LEFT, RIGHT, FULL JOIN — vizual",
+        "content": "Fiecare tip de JOIN controleaza ce se intampla cu randurile care nu au corespondent.\n\n```\nTabela A: [1, 2, 3, 4]    Tabela B: [2, 3, 5]\n\nINNER JOIN: [2, 3]            — doar randurile comune\nLEFT JOIN:  [1, 2, 3, 4]     — toate din A, NULL pentru cele fara B\nRIGHT JOIN: [2, 3, 5]        — toate din B, NULL pentru cele fara A\nFULL JOIN:  [1, 2, 3, 4, 5]  — toate randurile din ambele\n```\n\n```sql\n-- LEFT JOIN — toti clientii, cu sau fara comenzi:\nSELECT c.nume, o.total\nFROM clienti c\nLEFT JOIN comenzi o ON c.id = o.client_id;\n-- 5 randuri: Ion(250), Ion(800), Maria(150), Andrei(NULL), Elena(1200)\n\n-- Clientii FARA comenzi:\nSELECT c.nume\nFROM clienti c\nLEFT JOIN comenzi o ON c.id = o.client_id\nWHERE o.id IS NULL;\n-- Returneaza: Andrei\n```"
       },
       {
-        order: 3,
-        title: "JOIN cu GROUP BY, SELF JOIN și CROSS JOIN",
-        content: "**JOIN cu GROUP BY** — combinație uzuală în practică:\n```sql\n-- Top 5 clienți după suma cheltuită:\nSELECT\n    u.id,\n    u.nume,\n    COUNT(c.id)       AS nr_comenzi,\n    SUM(c.total)      AS total_cheltuit,\n    AVG(c.total)      AS medie_comanda,\n    MAX(c.creat_la)   AS ultima_comanda\nFROM utilizatori u\nINNER JOIN comenzi c ON c.user_id = u.id\nGROUP BY u.id, u.nume\nORDER BY total_cheltuit DESC\nLIMIT 5;\n```\n\n**SELF JOIN** — o tabelă joined cu ea însăși. Uzual pentru ierarhii:\n```sql\n-- Tabela angajati: id, nume, manager_id (FK la același tabel)\nSELECT\n    a.nume      AS angajat,\n    m.nume      AS manager\nFROM angajati a\nLEFT JOIN angajati m ON a.manager_id = m.id;\n-- CEO apare cu manager NULL (LEFT JOIN include și el)\n```\n\n**CROSS JOIN** — produsul cartezian (fiecare rând cu fiecare):\n```sql\n-- Toate combinațiile posibile de culori și mărimi:\nSELECT c.culoare, m.marime\nFROM culori c\nCROSS JOIN marimi m;\n-- 3 culori × 4 mărimi = 12 combinații\n-- ATENȚIE: cu tabele mari produce milioane de rânduri!\n```",
+        "order": 3,
+        "title": "JOIN pe mai multe tabele și aliasuri",
+        "content": "Poti inlantui oricate JOIN-uri. Aliasurile scurteaza codul si evita ambiguitatile.\n\n```sql\n-- Trei tabele: utilizatori, comenzi, produse:\nSELECT\n    u.nume AS utilizator,\n    p.nume AS produs,\n    c.cantitate,\n    c.cantitate * p.pret AS subtotal\nFROM comenzi c\nJOIN utilizatori u ON c.user_id = u.id\nJOIN produse p    ON c.produs_id = p.id\nWHERE c.data >= '2024-01-01'\nORDER BY subtotal DESC;\n\n-- Self JOIN — tabela cu ea insasi:\nSELECT\n    a.nume AS angajat,\n    m.nume AS manager\nFROM angajati a\nLEFT JOIN angajati m ON a.manager_id = m.id;\n-- CEO-ul nu are manager — LEFT JOIN il include cu NULL\n\n-- CROSS JOIN — produsul cartezian:\nSELECT culoare, marime\nFROM culori CROSS JOIN marimi;\n-- Genereaza toate combinatiile: rosu-S, rosu-M, albastru-S, etc.\n```"
       },
       {
-        order: 4,
-        title: "Performanță la JOIN-uri și greșeli comune",
-        content: "**JOIN-urile sunt costisitoare** dacă nu ai indecși pe coloanele de join:\n\n```sql\n-- Fără index: baza de date scanează complet tabela la fiecare JOIN\nSELECT * FROM comenzi c\nJOIN utilizatori u ON c.user_id = u.id;\n-- Dacă comenzi are 1 milion rânduri și nu are index pe user_id → LENT!\n\n-- Adaugă index pe coloana de join:\nCREATE INDEX idx_comenzi_user_id ON comenzi(user_id);\n-- Acum JOIN-ul e de 100x mai rapid!\n```\n\n**Greșeli comune la interviuri:**\n```sql\n-- 1. JOIN fără ON — produce CROSS JOIN accidental:\nSELECT * FROM a, b WHERE a.id = b.a_id;  -- sintaxă veche\nSELECT * FROM a JOIN b ON a.id = b.a_id; -- sintaxă modernă și clară\n\n-- 2. Confuzie ON vs WHERE în LEFT JOIN:\nSELECT u.*, c.total\nFROM utilizatori u\nLEFT JOIN comenzi c ON c.user_id = u.id\nWHERE c.total > 100;  -- GREȘIT: WHERE transformă LEFT în INNER JOIN!\n-- (userii fără comenzi au c.total = NULL → NULL > 100 = false → dispar)\n\n-- CORECT: filtrul pe tabelul din dreapta merge în ON:\nFROM utilizatori u\nLEFT JOIN comenzi c ON c.user_id = u.id AND c.total > 100;\n-- Acum toți userii apar, dar joinuim NUMAI comenzile > 100\n```\n\n**La interviu:** Explicarea diferenței dintre filtrarea în ON vs WHERE la LEFT JOIN arată înțelegere profundă.",
-      },
+        "order": 4,
+        "title": "Capcana ON vs WHERE în LEFT JOIN",
+        "content": "Aceasta e o intrebare clasica de interviu! Diferenta dintre filtrul in ON si in WHERE pentru LEFT JOIN.\n\n```sql\n-- DIFERENTA CRITICA:\n\n-- Query 1: WHERE filtreaza DUPA LEFT JOIN\nSELECT c.nume, o.total\nFROM clienti c\nLEFT JOIN comenzi o ON c.id = o.client_id\nWHERE o.data > '2024-01-01';\n-- Andrei e pierdut! WHERE exclude randurile cu NULL.\n-- Se comporta ca un INNER JOIN!\n\n-- Query 2: conditia in ON — face parte din JOIN\nSELECT c.nume, o.total\nFROM clienti c\nLEFT JOIN comenzi o ON c.id = o.client_id\n              AND o.data > '2024-01-01';\n-- Andrei apare cu NULL (nu are comenzi recente)\n-- Toti clientii sunt inclusi!\n```\n\nREGULA: Pune filtrul pe tabela dreapta in ON daca vrei sa pastrezi toate randurile din stanga. Pune-l in WHERE daca vrei sa filtrezi rândurile dupa JOIN."
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "INNER JOIN",
-        question: "Ce returnează INNER JOIN dintre tabelele utilizatori și comenzi?",
-        options: [
-          "Toți userii, indiferent dacă au comenzi",
-          "Toate comenzile cu datele userilor care le-au plasat — NUMAI potrivirile",
-          "Toate comenzile, indiferent dacă userul există",
-          "Produsul cartezian",
+        "number": 1,
+        "name": "JOIN bază",
+        "question": "Ce face `FROM clienti JOIN comenzi ON clienti.id = comenzi.client_id`?",
+        "options": [
+          "Returnează rândurile unde clienti.id = comenzi.client_id (clienți cu comenzi)",
+          "Returnează toate rândurile din ambele tabele",
+          "Returnează doar comenzile fără client",
+          "Returnează un rând per tabelă"
         ],
-        answer: "Toate comenzile cu datele userilor care le-au plasat — NUMAI potrivirile",
-        explanation: "INNER JOIN returnează NUMAI rândurile cu potrivire în ambele tabele. Userii fără comenzi și comenzile fără user NU apar.",
-        difficulty: "easy",
+        "answer": "Returnează rândurile unde clienti.id = comenzi.client_id (clienți cu comenzi)",
+        "explanation": "INNER JOIN (scris simplu JOIN) returnează rândurile care au corespondent în ambele tabele.",
+        "difficulty": "easy"
       },
       {
-        number: 2,
-        name: "LEFT JOIN",
-        question: "Ce diferențiază LEFT JOIN de INNER JOIN?",
-        options: [
-          "LEFT JOIN e mai rapid",
-          "LEFT JOIN returnează TOT din tabela stângă, chiar dacă nu există potrivire în dreapta",
-          "LEFT JOIN returnează tot din ambele tabele",
-          "LEFT JOIN poate fi folosit cu mai mult de 2 tabele",
+        "number": 2,
+        "name": "LEFT JOIN",
+        "question": "Cum obții toți clienții inclusiv cei fără comenzi?",
+        "options": [
+          "SELECT c.*, o.* FROM clienti c LEFT JOIN comenzi o ON c.id = o.client_id;",
+          "SELECT c.*, o.* FROM clienti c RIGHT JOIN comenzi o ON c.id = o.client_id;",
+          "SELECT c.*, o.* FROM clienti c FULL JOIN comenzi o ON c.id = o.client_id;",
+          "SELECT c.*, o.* FROM clienti c INNER JOIN comenzi o ON c.id = o.client_id;"
         ],
-        answer: "LEFT JOIN returnează TOT din tabela stângă, chiar dacă nu există potrivire în dreapta",
-        explanation: "LEFT JOIN include toate rândurile din tabela stângă. Dacă nu există potrivire în dreapta, coloanele drepte apar ca NULL.",
-        difficulty: "easy",
+        "answer": "SELECT c.*, o.* FROM clienti c LEFT JOIN comenzi o ON c.id = o.client_id;",
+        "explanation": "LEFT JOIN include toate rândurile din tabela stângă (clienti), cu NULL pentru coloanele din dreapta unde nu există corespondent.",
+        "difficulty": "easy"
       },
       {
-        number: 3,
-        name: "JOIN ON sintaxă",
-        question: "Care e sintaxa corectă pentru un INNER JOIN?",
-        options: [
-          "FROM a JOIN b WHERE a.id = b.a_id",
-          "FROM a INNER JOIN b ON a.id = b.a_id",
-          "FROM a, b WITH a.id = b.a_id",
-          "FROM a JOIN b USING id",
+        "number": 3,
+        "name": "Clienți fără comenzi",
+        "question": "Cum găsești clienții care NU au nicio comandă?",
+        "options": [
+          "SELECT c.* FROM clienti c LEFT JOIN comenzi o ON c.id=o.client_id WHERE o.id IS NULL;",
+          "SELECT c.* FROM clienti c WHERE NOT EXISTS (SELECT * FROM comenzi);",
+          "SELECT c.* FROM clienti c INNER JOIN comenzi o ON c.id=o.client_id WHERE o.id IS NULL;",
+          "SELECT c.* FROM clienti c EXCEPT SELECT client_id FROM comenzi;"
         ],
-        answer: "FROM a INNER JOIN b ON a.id = b.a_id",
-        explanation: "JOIN ... ON specifică condiția de join. INNER e opțional (JOIN implicit = INNER JOIN). ON e obligatoriu (fără el → CROSS JOIN).",
-        difficulty: "easy",
+        "answer": "SELECT c.* FROM clienti c LEFT JOIN comenzi o ON c.id=o.client_id WHERE o.id IS NULL;",
+        "explanation": "LEFT JOIN cu WHERE o.id IS NULL găsește rândurile din stânga fără corespondent în dreapta.",
+        "difficulty": "medium"
       },
       {
-        number: 4,
-        name: "LEFT JOIN NULL pattern",
-        question: "Cum găsești userii care NU au nicio comandă?",
-        options: [
-          "WHERE user_id NOT IN (SELECT user_id FROM comenzi)",
-          "LEFT JOIN comenzi ON user_id = id WHERE comenzi.id IS NULL",
-          "Ambele variante de mai sus sunt corecte",
-          "INNER JOIN cu NOT",
+        "number": 4,
+        "name": "INNER vs LEFT JOIN",
+        "question": "Câți clienți apar cu INNER JOIN dacă 2 din 10 nu au comenzi?",
+        "options": [
+          "8 clienți (cei cu comenzi)",
+          "10 clienți (toți)",
+          "2 clienți (cei fără comenzi)",
+          "12 clienți (toți + duplicatele)"
         ],
-        answer: "Ambele variante de mai sus sunt corecte",
-        explanation: "LEFT JOIN + WHERE dreapta IS NULL e pattern-ul clasic pentru anti-join. NOT IN cu subquery e alternativa — mai puțin eficientă dacă subquery-ul e mare.",
-        difficulty: "medium",
+        "answer": "8 clienți (cei cu comenzi)",
+        "explanation": "INNER JOIN exclude rândurile fără corespondent. 2 clienți fără comenzi sunt excluși.",
+        "difficulty": "easy"
       },
       {
-        number: 5,
-        name: "SELF JOIN",
-        question: "Pentru ce tip de date e util SELF JOIN?",
-        options: [
-          "Date numerice",
-          "Ierarhii și relații în aceeași tabelă — ex: angajat-manager",
-          "Date temporale",
-          "Tabele cu multe coloane",
+        "number": 5,
+        "name": "Aliasuri în JOIN",
+        "question": "De ce se folosesc aliasuri (AS c, AS o) la JOIN?",
+        "options": [
+          "Scurtează codul și evită ambiguitatea când ambele tabele au coloana 'id'",
+          "Sunt obligatorii la JOIN",
+          "Îmbunătățesc performanța query-ului",
+          "Redenumesc tabelele în baza de date"
         ],
-        answer: "Ierarhii și relații în aceeași tabelă — ex: angajat-manager",
-        explanation: "SELF JOIN = tabela joined cu ea însăși. Util pentru arbori: categorii cu subcategorii, angajat-manager, comentarii cu răspunsuri.",
-        difficulty: "medium",
+        "answer": "Scurtează codul și evită ambiguitatea când ambele tabele au coloana 'id'",
+        "explanation": "Aliasurile sunt opționale dar foarte utile: u.id e clar vs scris utilizatori.id de fiecare dată.",
+        "difficulty": "easy"
       },
       {
-        number: 6,
-        name: "ON vs WHERE in LEFT JOIN",
-        question: "Ce se întâmplă când pui un filtru pe tabela dreaptă în WHERE la un LEFT JOIN?",
-        options: [
-          "Funcționează identic cu ON",
-          "WHERE transformă efectiv LEFT JOIN în INNER JOIN — rândurile fără potrivire dispar",
-          "Produce eroare",
-          "Se aplică după JOIN",
+        "number": 6,
+        "name": "JOIN trei tabele",
+        "question": "Cum obții numele utilizatorului și produsul pentru fiecare comandă?",
+        "options": [
+          "SELECT u.nume, p.nume FROM comenzi c JOIN utilizatori u ON c.user_id=u.id JOIN produse p ON c.produs_id=p.id;",
+          "SELECT u.nume, p.nume FROM utilizatori u, produse p, comenzi c WHERE c.user_id=u.id OR c.produs_id=p.id;",
+          "SELECT * FROM comenzi JOIN utilizatori JOIN produse;",
+          "SELECT u.nume, p.nume FROM comenzi c DOUBLE JOIN (utilizatori u, produse p);"
         ],
-        answer: "WHERE transformă efectiv LEFT JOIN în INNER JOIN — rândurile fără potrivire dispar",
-        explanation: "NULL > 100 este NULL (false) → rândurile fără potrivire sunt eliminate de WHERE. Filtrul pe tabela dreaptă merge în ON, nu WHERE.",
-        difficulty: "hard",
+        "answer": "SELECT u.nume, p.nume FROM comenzi c JOIN utilizatori u ON c.user_id=u.id JOIN produse p ON c.produs_id=p.id;",
+        "explanation": "Înlănțuiești JOIN-urile. Primul JOIN adaugă utilizatori, al doilea adaugă produse.",
+        "difficulty": "medium"
       },
       {
-        number: 7,
-        name: "JOIN cu GROUP BY",
-        question: "Cum găsești numărul de comenzi per user (afișând și userii cu 0 comenzi)?",
-        options: [
-          "FROM comenzi c INNER JOIN utilizatori u ON ... GROUP BY u.id",
-          "FROM utilizatori u LEFT JOIN comenzi c ON ... GROUP BY u.id",
-          "FROM utilizatori u RIGHT JOIN comenzi c ON ... GROUP BY c.id",
-          "Nu se poate, necesită subquery",
+        "number": 7,
+        "name": "Self JOIN",
+        "question": "La ce folosește SELF JOIN?",
+        "options": [
+          "Când o tabelă are relație cu ea însăși (ex: angajat → manager din aceeași tabelă)",
+          "Când vrei să dublezi rândurile unei tabele",
+          "Când tabela nu are relații externe",
+          "Când tabela e prea mare pentru JOIN normal"
         ],
-        answer: "FROM utilizatori u LEFT JOIN comenzi c ON ... GROUP BY u.id",
-        explanation: "LEFT JOIN de la utilizatori + GROUP BY u.id include toți userii. COUNT(c.id) returnează 0 (nu NULL) pentru userii fără comenzi.",
-        difficulty: "medium",
+        "answer": "Când o tabelă are relație cu ea însăși (ex: angajat → manager din aceeași tabelă)",
+        "explanation": "Self JOIN e un JOIN al tabelei cu ea însăși, util pentru ierarhii (manager-angajat, categorie-subcategorie).",
+        "difficulty": "medium"
       },
       {
-        number: 8,
-        name: "CROSS JOIN",
-        question: "Dacă tabela A are 100 rânduri și B are 50, câte rânduri produce CROSS JOIN?",
-        options: ["150", "50", "5000", "100"],
-        answer: "5000",
-        explanation: "CROSS JOIN = produsul cartezian. Fiecare rând din A combinat cu fiecare din B: 100 × 50 = 5000.",
-        difficulty: "medium",
-      },
-      {
-        number: 9,
-        name: "Index pe FK",
-        question: "De ce e important să ai un index pe coloana de FOREIGN KEY (ex: comenzi.user_id)?",
-        options: [
-          "E obligatoriu sintactic",
-          "Face JOIN-urile mult mai rapide — baza de date nu scanează toată tabela",
-          "Previne valorile duplicate",
-          "Nu are impact semnificativ",
-        ],
-        answer: "Face JOIN-urile mult mai rapide — baza de date nu scanează toată tabela",
-        explanation: "Fără index pe FK, JOIN-ul face un full table scan la fiecare rând. Cu index, face lookup O(log n). Pe milioane de rânduri diferența e de 100x+.",
-        difficulty: "medium",
-      },
-      {
-        number: 10,
-        name: "JOIN aliasuri",
-        question: "De ce e recomandat să folosești aliasuri de tabelă (ex: FROM utilizatori u)?",
-        options: [
-          "E obligatoriu cu JOIN",
-          "Scurtează query-ul și clarifică de unde vine fiecare coloană — esențial când ai mai multe JOIN-uri",
-          "Îmbunătățește performanța",
-          "Evită erorile de SQL",
-        ],
-        answer: "Scurtează query-ul și clarifică de unde vine fiecare coloană — esențial când ai mai multe JOIN-uri",
-        explanation: "u.email vs utilizatori.email — cu 3-4 JOIN-uri, aliasurile scurte (u, c, p) fac query-ul mult mai lizibil.",
-        difficulty: "easy",
-      },
-    ],
-  },
-  {
-    slug: "sql-subqueries",
-    title: "5. Subquery-uri și CTE",
-    order: 5,
-    theory: [
-      {
-        order: 1,
-        title: "Subquery-uri în WHERE și FROM",
-        content: "Un **subquery** e un query în interiorul altui query — ca o întrebare în interiorul unei alte întrebări:\n\n**Subquery în WHERE:**\n```sql\n-- Produsele mai scumpe decât media:\nSELECT id, nume, pret\nFROM produse\nWHERE pret > (SELECT AVG(pret) FROM produse);\n-- Subquery-ul returnează un număr, WHERE compară cu el\n\n-- Userii care au plasat cel puțin o comandă:\nSELECT id, nume\nFROM utilizatori\nWHERE id IN (\n    SELECT DISTINCT user_id FROM comenzi\n);\n\n-- Produsele care NU au fost niciodată comandate:\nSELECT id, nume\nFROM produse\nWHERE id NOT IN (\n    SELECT DISTINCT produs_id FROM comenzi\n);\n-- ATENȚIE: NOT IN cu NULL produce rezultate greșite!\n-- Dacă subquery returnează NULL, NOT IN devine false pentru TOATE!\n-- Preferă NOT EXISTS (mai sigur)\n```\n\n**Subquery în FROM — tabele derivate:**\n```sql\n-- Media comenzilor per user, apoi filtrează:\nSELECT user_id, medie_comenzi\nFROM (\n    SELECT user_id, AVG(total) AS medie_comenzi\n    FROM comenzi\n    GROUP BY user_id\n) AS statistici_user  -- trebuie să dai alias subquery-ului!\nWHERE medie_comenzi > 200;\n```",
-      },
-      {
-        order: 2,
-        title: "EXISTS, ANY, ALL — subquery-uri corelate",
-        content: "**EXISTS** — verifică dacă subquery-ul returnează cel puțin un rând:\n```sql\n-- Userii care au comenzi (mai eficient decât IN pentru tabele mari):\nSELECT id, nume\nFROM utilizatori u\nWHERE EXISTS (\n    SELECT 1 FROM comenzi c\n    WHERE c.user_id = u.id  -- corelat cu tabela exterioară!\n);\n\n-- NOT EXISTS — userii fără comenzi:\nSELECT id, nume\nFROM utilizatori u\nWHERE NOT EXISTS (\n    SELECT 1 FROM comenzi c\n    WHERE c.user_id = u.id\n);\n-- NOT EXISTS e mai sigur decât NOT IN — tratează NULL corect\n```\n\n**ANY / ALL:**\n```sql\n-- Produse mai scumpe decât ORICARE produs din categoria 'furniture':\nSELECT * FROM produse\nWHERE pret > ANY (\n    SELECT pret FROM produse WHERE categorie = 'furniture'\n);\n-- ANY = mai mare decât cel mai mic din grup\n\n-- Produse mai scumpe decât TOATE produsele din 'furniture':\nSELECT * FROM produse\nWHERE pret > ALL (\n    SELECT pret FROM produse WHERE categorie = 'furniture'\n);\n-- ALL = mai mare decât cel mai mare din grup\n```\n\n**Subquery corelat** — referă tabela exterioară (recalculat pentru fiecare rând):\n```sql\n-- Angajații cu salar > media departamentului lor:\nSELECT e.id, e.nume, e.salar, e.dept_id\nFROM angajati e\nWHERE e.salar > (\n    SELECT AVG(a2.salar)\n    FROM angajati a2\n    WHERE a2.dept_id = e.dept_id  -- corelat cu e\n);\n```",
-      },
-      {
-        order: 3,
-        title: "CTE — WITH — subquery-uri reutilizabile",
-        content: "**CTE (Common Table Expression)** — definești un subquery cu nume, îl poți folosi de mai multe ori:\n\n```sql\n-- CTE simplu — alternativa la subquery în FROM:\nWITH statistici AS (\n    SELECT\n        user_id,\n        COUNT(*) AS nr_comenzi,\n        SUM(total) AS total_cheltuit\n    FROM comenzi\n    GROUP BY user_id\n)\nSELECT\n    u.nume,\n    s.nr_comenzi,\n    s.total_cheltuit\nFROM utilizatori u\nJOIN statistici s ON s.user_id = u.id\nORDER BY s.total_cheltuit DESC;\n\n-- Multiple CTE:\nWITH\ncomenzi_2024 AS (\n    SELECT * FROM comenzi WHERE YEAR(creat_la) = 2024\n),\ntop_useri AS (\n    SELECT user_id, SUM(total) AS suma\n    FROM comenzi_2024\n    GROUP BY user_id\n    ORDER BY suma DESC\n    LIMIT 10\n)\nSELECT u.nume, t.suma\nFROM utilizatori u\nJOIN top_useri t ON t.user_id = u.id;\n```\n\n**Avantajele CTE față de subquery:**\n```\n1. Mai lizibil — dai un nume expresiv subquery-ului\n2. Reutilizabil — îl poți referi de mai multe ori în query\n3. Recursiv — poți traversa ierarhii (WITH RECURSIVE)\n4. Debugging mai ușor — testezi CTE-ul separat\n```",
-      },
-      {
-        order: 4,
-        title: "CTE recursiv — traversare ierarhii",
-        content: "**WITH RECURSIVE** permite traversarea structurilor ierarhice — categorii cu subcategorii, organigramă, arbori:\n\n```sql\n-- Tabelă categorii cu ierarhie:\n-- id | nume        | parent_id\n-- 1  | Electronics | NULL\n-- 2  | Phones      | 1\n-- 3  | Laptops     | 1\n-- 4  | Smartphones | 2\n\nWITH RECURSIVE ierarhie AS (\n    -- Caz de bază — rădăcina:\n    SELECT id, nume, parent_id, 0 AS nivel, CAST(nume AS VARCHAR(500)) AS path\n    FROM categorii\n    WHERE parent_id IS NULL\n    \n    UNION ALL\n    \n    -- Caz recursiv — copiii:\n    SELECT c.id, c.nume, c.parent_id, i.nivel + 1, CONCAT(i.path, ' > ', c.nume)\n    FROM categorii c\n    JOIN ierarhie i ON c.parent_id = i.id\n)\nSELECT id, nume, nivel, path\nFROM ierarhie\nORDER BY path;\n\n-- Rezultat:\n-- Electronics (nivel 0, path: 'Electronics')\n-- Laptops     (nivel 1, path: 'Electronics > Laptops')\n-- Phones      (nivel 1, path: 'Electronics > Phones')\n-- Smartphones (nivel 2, path: 'Electronics > Phones > Smartphones')\n```\n\n**La interviu:** Cunoașterea CTE recursiv arată experiență serioasă cu SQL.",
-      },
-    ],
-    tasks: [
-      {
-        number: 1,
-        name: "Subquery scalar",
-        question: "Ce returnează subquery-ul din: `SELECT * FROM produse WHERE pret > (SELECT AVG(pret) FROM produse)`?",
-        options: [
-          "Un set de rânduri",
-          "O singură valoare — media prețurilor",
-          "Un boolean",
-          "O eroare",
-        ],
-        answer: "O singură valoare — media prețurilor",
-        explanation: "AVG() returnează o valoare scalară (un număr). Subquery-ul scalar returnează exact un rând cu o coloană.",
-        difficulty: "medium",
-      },
-      {
-        number: 2,
-        name: "IN cu subquery",
-        question: "Ce face `WHERE id IN (SELECT user_id FROM comenzi)`?",
-        options: [
-          "Filtrează userii care NU au comenzi",
-          "Filtrează userii al căror id apare în coloan user_id din comenzi",
-          "Returnează comenzile",
-          "Produce eroare",
-        ],
-        answer: "Filtrează userii al căror id apare în coloan user_id din comenzi",
-        explanation: "IN cu subquery verifică dacă valoarea există în setul returnat. Echivalent cu un JOIN + DISTINCT.",
-        difficulty: "easy",
-      },
-      {
-        number: 3,
-        name: "EXISTS vs IN",
-        question: "De ce e NOT EXISTS mai sigur decât NOT IN când subquery-ul poate returna NULL?",
-        options: [
-          "NOT EXISTS e mai rapid",
-          "NOT IN cu NULL în setul returnat face condiția false pentru TOATE rândurile",
-          "NOT EXISTS ignoră valorile NULL",
+        "number": 8,
+        "name": "ON vs WHERE în LEFT JOIN",
+        "question": "Diferența: `LEFT JOIN comenzi o ON c.id=o.client_id AND o.data>'2024'` vs `LEFT JOIN comenzi o ON c.id=o.client_id WHERE o.data>'2024'`?",
+        "options": [
+          "Cu AND în ON: toți clienții apar (fără comenzi 2024 au NULL). Cu WHERE: clienții fără comenzi 2024 dispar",
+          "Cu WHERE: toți clienții apar. Cu AND în ON: dispar cei fără comenzi",
           "Nu există diferență",
+          "Cu AND în ON e eroare de sintaxă"
         ],
-        answer: "NOT IN cu NULL în setul returnat face condiția false pentru TOATE rândurile",
-        explanation: "NULL IN (1, 2, NULL) = NULL (nu false). NOT IN returnează NOT NULL = NULL = false. Rezultat: 0 rânduri. NOT EXISTS nu are această problemă.",
-        difficulty: "hard",
+        "answer": "Cu AND în ON: toți clienții apar (fără comenzi 2024 au NULL). Cu WHERE: clienții fără comenzi 2024 dispar",
+        "explanation": "WHERE după LEFT JOIN filtrează NULLurile, transformând efectiv LEFT JOIN în INNER JOIN.",
+        "difficulty": "hard"
       },
       {
-        number: 4,
-        name: "CTE WITH",
-        question: "Care e avantajul principal al unui CTE (WITH) față de un subquery în FROM?",
-        options: [
-          "E mai rapid",
-          "Poate fi reutilizat și e mai lizibil — dai un nume expresiv",
-          "Funcționează în mai multe baze de date",
-          "Nu are avantaje",
+        "number": 9,
+        "name": "CROSS JOIN",
+        "question": "Câte rânduri returnează un CROSS JOIN între o tabelă cu 5 rânduri și una cu 3 rânduri?",
+        "options": [
+          "15 rânduri (5 × 3)",
+          "8 rânduri (5 + 3)",
+          "3 rânduri (minimul)",
+          "5 rânduri (maximul)"
         ],
-        answer: "Poate fi reutilizat și e mai lizibil — dai un nume expresiv",
-        explanation: "CTE-ul poate fi referit de mai multe ori în query și îmbunătățește lizibilitatea. Un subquery în FROM e anonim și nu se poate reutiliza.",
-        difficulty: "medium",
+        "answer": "15 rânduri (5 × 3)",
+        "explanation": "CROSS JOIN e produsul cartezian: fiecare rând din A combinat cu fiecare rând din B. 5×3=15.",
+        "difficulty": "medium"
       },
       {
-        number: 5,
-        name: "Subquery corelat",
-        question: "Ce face un subquery corelat față de unul obișnuit?",
-        options: [
-          "Se execută o singură dată",
-          "Se execută pentru fiecare rând al query-ului exterior — referă tabela exterioară",
-          "Nu poate folosi funcții agregate",
-          "E mai rapid",
+        "number": 10,
+        "name": "JOIN cu filtre",
+        "question": "Cum obții comenzile din 2024 cu numele clientului?",
+        "options": [
+          "SELECT c.nume, o.total FROM clienti c JOIN comenzi o ON c.id=o.client_id WHERE YEAR(o.data)=2024;",
+          "SELECT c.nume, o.total FROM clienti c JOIN comenzi o WHERE YEAR=2024 ON c.id=o.client_id;",
+          "SELECT c.nume FROM clienti c JOIN (SELECT * FROM comenzi WHERE YEAR=2024) o;",
+          "SELECT c.nume, o.total FROM clienti JOIN comenzi WHERE o.data=2024;"
         ],
-        answer: "Se execută pentru fiecare rând al query-ului exterior — referă tabela exterioară",
-        explanation: "Subquery-ul corelat are o referință la tabela exterioară (ex: WHERE dept_id = e.dept_id). Se recalculează pentru fiecare rând exterior.",
-        difficulty: "hard",
+        "answer": "SELECT c.nume, o.total FROM clienti c JOIN comenzi o ON c.id=o.client_id WHERE YEAR(o.data)=2024;",
+        "explanation": "WHERE vine după ON, filtrând rezultatul JOIN-ului. YEAR() extrage anul din dată.",
+        "difficulty": "medium"
       },
       {
-        number: 6,
-        name: "CTE recursiv uzual",
-        question: "Pentru ce tip de date e folosit WITH RECURSIVE?",
-        options: [
-          "Date numerice repetitive",
-          "Ierarhii — organigramă, categorii cu subcategorii, arbori de date",
-          "Date temporale",
-          "Tabele cu multe coloane",
+        "number": 11,
+        "name": "Index pentru JOIN",
+        "question": "De ce trebuie index pe `client_id` din tabela `comenzi`?",
+        "options": [
+          "Fără index, SQL face full scan al tabelei comenzi pentru fiecare client — extrem de lent pe date mari",
+          "Index-urile sunt necesare pentru a defini relații",
+          "Index-urile previn valorile duplicate în client_id",
+          "Fără index JOIN-ul returnează rezultate greșite"
         ],
-        answer: "Ierarhii — organigramă, categorii cu subcategorii, arbori de date",
-        explanation: "CTE recursiv permite traversarea structurilor arbore stocate în baze de date relaționale (parent_id referă același tabel).",
-        difficulty: "medium",
+        "answer": "Fără index, SQL face full scan al tabelei comenzi pentru fiecare client — extrem de lent pe date mari",
+        "explanation": "JOIN-ul caută rânduri după client_id. Fără index: scanează toată tabela pentru fiecare client.",
+        "difficulty": "hard"
       },
       {
-        number: 7,
-        name: "Alias subquery FROM",
-        question: "De ce trebuie să dai alias unui subquery folosit în FROM?",
-        options: [
-          "E opțional — poate fi fără alias",
-          "SQL cere un alias pentru tabela derivată — fără el produce eroare de sintaxă",
-          "Îmbunătățește performanța",
-          "Evită ambiguitatea coloanelor",
+        "number": 12,
+        "name": "NULL în JOIN",
+        "question": "Ce se întâmplă cu rândurile unde `client_id IS NULL` la INNER JOIN?",
+        "options": [
+          "Sunt excluse — NULL nu satisface nicio condiție de egalitate",
+          "Sunt incluse cu NULL în ambele tabele",
+          "Provoacă eroare",
+          "Sunt incluse cu valori din prima tabelă"
         ],
-        answer: "SQL cere un alias pentru tabela derivată — fără el produce eroare de sintaxă",
-        explanation: "FROM (SELECT ...) AS alias_obligatoriu — fără alias SQL nu știe cum să refere tabelă derivată în restul query-ului.",
-        difficulty: "medium",
+        "answer": "Sunt excluse — NULL nu satisface nicio condiție de egalitate",
+        "explanation": "NULL = NULL returnează NULL (nu TRUE), deci rândurile cu client_id NULL sunt excluse din INNER JOIN.",
+        "difficulty": "hard"
       },
       {
-        number: 8,
-        name: "ANY vs ALL",
-        question: "Ce returnează `WHERE pret > ALL (SELECT pret FROM produse WHERE cat='A')`?",
-        options: [
-          "Produse mai scumpe decât orice produs din A",
-          "Produse mai scumpe decât cel mai ieftin produs din A",
-          "Produse mai ieftine decât toate produsele din A",
-          "Eroare",
+        "number": 13,
+        "name": "FULL OUTER JOIN",
+        "question": "Ce returnează FULL OUTER JOIN?",
+        "options": [
+          "Toate rândurile din ambele tabele, cu NULL unde nu există corespondent",
+          "Rândurile comune din ambele tabele",
+          "Rândurile din stânga plus rândurile fără corespondent din dreapta",
+          "Rândurile din dreapta plus rândurile fără corespondent din stânga"
         ],
-        answer: "Produse mai scumpe decât orice produs din A",
-        explanation: "> ALL = mai mare decât MAXIMUM din set. > ANY = mai mare decât MINIMUM din set.",
-        difficulty: "hard",
+        "answer": "Toate rândurile din ambele tabele, cu NULL unde nu există corespondent",
+        "explanation": "FULL OUTER JOIN = LEFT JOIN + RIGHT JOIN (fără duplicate). MySQL nu suportă nativ — se emulează cu UNION.",
+        "difficulty": "medium"
       },
       {
-        number: 9,
-        name: "Subquery SELECT",
-        question: "Un subquery scalar în SELECT se evaluează:",
-        options: [
+        "number": 14,
+        "name": "Raport cu JOIN",
+        "question": "Cum calculezi totalul comenzilor per client, incluzând clienții cu 0 comenzi?",
+        "options": [
+          "SELECT c.nume, COUNT(o.id) AS nr, COALESCE(SUM(o.total), 0) AS total FROM clienti c LEFT JOIN comenzi o ON c.id=o.client_id GROUP BY c.id, c.nume;",
+          "SELECT c.nume, COUNT(o.id) FROM clienti c INNER JOIN comenzi o ON c.id=o.client_id GROUP BY c.id;",
+          "SELECT c.nume, SUM(o.total) FROM clienti c JOIN comenzi o ON c.id=o.client_id GROUP BY c.id;",
+          "SELECT c.nume, COUNT(*) FROM clienti GROUP BY c.id LEFT JOIN comenzi;"
+        ],
+        "answer": "SELECT c.nume, COUNT(o.id) AS nr, COALESCE(SUM(o.total), 0) AS total FROM clienti c LEFT JOIN comenzi o ON c.id=o.client_id GROUP BY c.id, c.nume;",
+        "explanation": "LEFT JOIN include clienții fără comenzi. COALESCE(SUM(o.total),0) transformă NULL în 0.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: factură",
+        "question": "Query care generează o factură: client cu adresa, produsele cu prețul și cantitatea, subtotal per produs:",
+        "options": [
+          "SELECT u.nume, u.adresa, p.nume, c.cantitate, p.pret, c.cantitate*p.pret AS subtotal FROM comenzi c JOIN utilizatori u ON c.user_id=u.id JOIN produse p ON c.produs_id=p.id WHERE c.id=:id;",
+          "SELECT * FROM comenzi JOIN utilizatori JOIN produse WHERE id=:id;",
+          "SELECT factura FROM comenzi c, utilizatori u, produse p WHERE c.id=:id;",
+          "JOIN comenzi WITH utilizatori AND produse WHERE c.id=:id SELECT *;"
+        ],
+        "answer": "SELECT u.nume, u.adresa, p.nume, c.cantitate, p.pret, c.cantitate*p.pret AS subtotal FROM comenzi c JOIN utilizatori u ON c.user_id=u.id JOIN produse p ON c.produs_id=p.id WHERE c.id=:id;",
+        "explanation": "JOIN-uri multiple pentru a aduna toate datele necesare facturii dintr-o singură interogare.",
+        "difficulty": "hard"
+      }
+    ]
+  },
+  {
+    "slug": "sql-subqueries-cte",
+    "title": "6. Subquery-uri + CTE",
+    "order": 6,
+    "theory": [
+      {
+        "order": 1,
+        "title": "Tipuri de subquery-uri",
+        "content": "Un subquery e un SELECT in interiorul altui SELECT. Il poti pune in WHERE, FROM sau SELECT.\n\n```sql\n-- Subquery in WHERE:\nSELECT * FROM produse\nWHERE pret > (SELECT AVG(pret) FROM produse);\n\n-- Subquery in FROM (tabela derivata):\nSELECT categorie, pret_mediu\nFROM (\n    SELECT categorie, AVG(pret) AS pret_mediu\n    FROM produse GROUP BY categorie\n) AS statistici\nWHERE pret_mediu > 500;\n\n-- Subquery scalar in SELECT:\nSELECT\n    nume,\n    pret,\n    (SELECT AVG(pret) FROM produse) AS medie_globala,\n    pret - (SELECT AVG(pret) FROM produse) AS diferenta\nFROM produse;\n\n-- EXISTS — verifici existenta, nu valoarea:\nSELECT * FROM clienti c\nWHERE EXISTS (\n    SELECT 1 FROM comenzi o WHERE o.client_id = c.id\n);\n-- EXISTS e mai eficient decat IN pe seturi mari!\n```"
+      },
+      {
+        "order": 2,
+        "title": "Subquery-uri corelate și NOT EXISTS",
+        "content": "Un subquery corelat se refera la valori din query-ul exterior. Se executa o data per rand.\n\n```sql\n-- Angajatii cu salariul mai mare decat media departamentului:\nSELECT a.nume, a.salariu, a.departament\nFROM angajati a\nWHERE a.salariu > (\n    SELECT AVG(a2.salariu)\n    FROM angajati a2\n    WHERE a2.departament = a.departament -- refera randul exterior\n);\n\n-- Acelasi rezultat cu JOIN (mai eficient):\nSELECT a.nume, a.salariu, a.dept\nFROM angajati a\nJOIN (\n    SELECT dept, AVG(salariu) AS medie\n    FROM angajati GROUP BY dept\n) m ON a.dept = m.dept\nWHERE a.salariu > m.medie;\n\n-- NOT EXISTS — mai sigur decat NOT IN:\nSELECT * FROM produse p\nWHERE NOT EXISTS (\n    SELECT 1 FROM comenzi c WHERE c.produs_id = p.id\n);\n-- Produse niciodata comandate\n-- NOT EXISTS e corect chiar daca exista NULL-uri!\n```"
+      },
+      {
+        "order": 3,
+        "title": "CTE (WITH) — query-uri reutilizabile",
+        "content": "CTE (Common Table Expression) e ca o variabila pentru un query. Il definesti cu WITH si il reutilizezi.\n\nAVANTAJE fata de subquery:\n- Mai lizibil (nu ai subquery-uri imbricate la infinit)\n- Poti reutiliza acelasi CTE de mai multe ori\n- Poti testa CTE-ul independent\n\n```sql\n-- CTE simplu:\nWITH clienti_activi AS (\n    SELECT id, nume, email\n    FROM clienti\n    WHERE activ = true\n      AND ultima_comanda > DATE_SUB(NOW(), INTERVAL 90 DAY)\n)\nSELECT * FROM clienti_activi;\n\n-- Mai multe CTE:\nWITH\nvanzari AS (\n    SELECT produs_id, SUM(cantitate) AS total_vandut\n    FROM comenzi WHERE YEAR(data) = 2024\n    GROUP BY produs_id\n),\npopulare AS (\n    SELECT p.*, v.total_vandut\n    FROM produse p JOIN vanzari v ON p.id = v.produs_id\n    WHERE v.total_vandut > 100\n)\nSELECT categorie, COUNT(*) AS nr_populare\nFROM populare GROUP BY categorie;\n```"
+      },
+      {
+        "order": 4,
+        "title": "CTE Recursiv — parcurgi ierarhii",
+        "content": "CTE recursiv parcurge structuri arborescente: categorii/subcategorii, organigrama, BOM.\n\n```sql\nWITH RECURSIVE subordonati AS (\n    -- Baza recursiei (punctul de start):\n    SELECT id, nume, manager_id, 0 AS nivel\n    FROM angajati WHERE id = 1  -- CEO-ul\n\n    UNION ALL\n\n    -- Pasul recursiv:\n    SELECT a.id, a.nume, a.manager_id, s.nivel + 1\n    FROM angajati a\n    JOIN subordonati s ON a.manager_id = s.id\n    -- Se opreste cand nu mai gaseste randuri noi\n)\nSELECT * FROM subordonati ORDER BY nivel;\n\n-- Categorii cu subcategorii (oricate niveluri):\nWITH RECURSIVE cat_tree AS (\n    SELECT id, nume, parinte_id, 0 AS adancime\n    FROM categorii WHERE parinte_id IS NULL\n\n    UNION ALL\n\n    SELECT c.id, c.nume, c.parinte_id, ct.adancime+1\n    FROM categorii c\n    JOIN cat_tree ct ON c.parinte_id = ct.id\n)\nSELECT * FROM cat_tree ORDER BY adancime, nume;\n```"
+      }
+    ],
+    "tasks": [
+      {
+        "number": 1,
+        "name": "Subquery în WHERE",
+        "question": "Cum găsești produsele cu prețul peste media globală?",
+        "options": [
+          "SELECT * FROM produse WHERE pret > (SELECT AVG(pret) FROM produse);",
+          "SELECT * FROM produse WHERE pret > AVG(pret);",
+          "SELECT * FROM produse HAVING pret > AVG(pret);",
+          "SELECT * FROM produse WHERE pret > AVERAGE(produse.pret);"
+        ],
+        "answer": "SELECT * FROM produse WHERE pret > (SELECT AVG(pret) FROM produse);",
+        "explanation": "AVG nu poate fi folosit direct în WHERE. Trebuie ca subquery.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 2,
+        "name": "Tabelă derivată",
+        "question": "Ce e o 'tabelă derivată'?",
+        "options": [
+          "Un subquery în FROM care produce un rezultat temporar folosit ca tabelă",
+          "O tabelă creată din alta cu CREATE TABLE AS SELECT",
+          "O VIEW salvată în baza de date",
+          "O tabelă temporară creată cu TEMP TABLE"
+        ],
+        "answer": "Un subquery în FROM care produce un rezultat temporar folosit ca tabelă",
+        "explanation": "Un subquery în FROM e o tabelă derivată — există doar în durata query-ului, nu e salvată.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 3,
+        "name": "EXISTS vs IN eficiență",
+        "question": "De ce EXISTS e mai eficient decât IN pe seturi mari?",
+        "options": [
+          "EXISTS se oprește la primul rând găsit; IN parcurge toate valorile din subquery",
+          "EXISTS folosește indecși, IN nu",
+          "IN face JOIN intern, EXISTS nu",
+          "EXISTS e mai nou și optimizat în toate bazele de date"
+        ],
+        "answer": "EXISTS se oprește la primul rând găsit; IN parcurge toate valorile din subquery",
+        "explanation": "EXISTS returnează TRUE la primul match și se oprește. IN colectează toate valorile din subquery și le compară.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 4,
+        "name": "NOT IN cu NULL",
+        "question": "De ce `WHERE id NOT IN (1, NULL, 3)` nu returnează niciun rând?",
+        "options": [
+          "Comparația cu NULL returnează NULL, deci NOT IN e NULL pentru toate rândurile",
+          "NULL înseamnă că tabela e goală",
+          "NULL e tratat ca 0 în IN",
+          "IN cu NULL e eroare de sintaxă"
+        ],
+        "answer": "Comparația cu NULL returnează NULL, deci NOT IN e NULL pentru toate rândurile",
+        "explanation": "id NOT IN (1, NULL, 3) devine id!=1 AND id!=NULL AND id!=3. id!=NULL e mereu NULL. NULL AND anything = NULL. Niciun rând nu trece.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 5,
+        "name": "NOT EXISTS avantaj",
+        "question": "Care e avantajul NOT EXISTS față de NOT IN pentru produse necomandante?",
+        "options": [
+          "NOT EXISTS e corect chiar dacă subquery-ul returnează NULL; NOT IN cu NULL returnează 0 rânduri",
+          "NOT IN e mai rapid decât NOT EXISTS",
+          "NOT EXISTS necesită mai puțin cod",
+          "Sunt identice"
+        ],
+        "answer": "NOT EXISTS e corect chiar dacă subquery-ul returnează NULL; NOT IN cu NULL returnează 0 rânduri",
+        "explanation": "NOT EXISTS nu are problema NULL. E pattern-ul preferat pentru verificarea absenței.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 6,
+        "name": "CTE sintaxă",
+        "question": "Care este sintaxa corectă pentru un CTE?",
+        "options": [
+          "WITH cte_name AS (SELECT ...) SELECT * FROM cte_name;",
+          "CREATE TEMP AS cte_name SELECT ...;",
+          "DEFINE cte_name AS (SELECT ...); SELECT * FROM cte_name;",
+          "WITH (SELECT ... AS cte_name) SELECT * FROM cte_name;"
+        ],
+        "answer": "WITH cte_name AS (SELECT ...) SELECT * FROM cte_name;",
+        "explanation": "WITH cte_name AS (...) definește CTE-ul. Urmezi cu query-ul principal care îl folosește.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 7,
+        "name": "CTE vs subquery",
+        "question": "Când preferi CTE față de subquery?",
+        "options": [
+          "Când ai nevoie să reutilizești același query de mai multe ori sau codul e complex",
+          "Când performanța e critică — CTE e mereu mai rapid",
+          "Când subquery-ul e în FROM",
+          "CTE funcționează cu orice bază de date, subquery nu"
+        ],
+        "answer": "Când ai nevoie să reutilizești același query de mai multe ori sau codul e complex",
+        "explanation": "CTE îmbunătățesc lizibilitatea și permit reutilizare. Performanța e similară în most databases.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 8,
+        "name": "Subquery corelat execuție",
+        "question": "Cât de des se execută un subquery corelat?",
+        "options": [
+          "O dată per rând din query-ul exterior",
           "O singură dată pentru tot query-ul",
-          "O dată pentru fiecare rând returnat",
-          "Niciodată — e optimizat",
-          "Depinde de indexuri",
+          "De câte ori e nevoie, bazat pe cache",
+          "Depinde de numărul de coloane"
         ],
-        answer: "O dată pentru fiecare rând returnat",
-        explanation: "Un subquery corelat în SELECT se execută per rând exterior — poate fi lent dacă ai milioane de rânduri. Preferă JOIN când e posibil.",
-        difficulty: "hard",
+        "answer": "O dată per rând din query-ul exterior",
+        "explanation": "Subquery-ul corelat se referă la valori din rândul curent al query-ului exterior, deci rulează per rând.",
+        "difficulty": "hard"
       },
       {
-        number: 10,
-        name: "Multiple CTE",
-        question: "Cum definești 2 CTE-uri care se referă unul pe celălalt?",
-        options: [
-          "WITH cte1 AS (...) WITH cte2 AS (...) SELECT ...",
-          "WITH cte1 AS (...), cte2 AS (...) SELECT ...",
-          "Nu e posibil — fiecare WITH e separat",
-          "DEFINE cte1 ... DEFINE cte2 ...",
+        "number": 9,
+        "name": "CTE multiplu",
+        "question": "Pot defini mai multe CTE cu WITH?",
+        "options": [
+          "Da: WITH cte1 AS (...), cte2 AS (...) SELECT ...",
+          "Nu, trebuie câte un WITH per CTE",
+          "Da, dar cel de-al doilea trebuie în subquery",
+          "Da: WITH cte1 AS (...) WITH cte2 AS (...) SELECT ..."
         ],
-        answer: "WITH cte1 AS (...), cte2 AS (...) SELECT ...",
-        explanation: "Multiple CTE-uri se separă prin virgulă după WITH. Ordinea contează — un CTE poate referi CTE-urile definite înaintea lui.",
-        difficulty: "medium",
+        "answer": "Da: WITH cte1 AS (...), cte2 AS (...) SELECT ...",
+        "explanation": "Poți defini oricâte CTE separate prin virgulă după WITH. Ultimul e urmat de query-ul principal.",
+        "difficulty": "medium"
       },
-    ],
+      {
+        "number": 10,
+        "name": "CTE recursiv bază",
+        "question": "Ce are un CTE recursiv obligatoriu?",
+        "options": [
+          "O parte de bază (anchor) și o parte recursivă unite cu UNION ALL",
+          "O condiție de oprire în WHERE",
+          "Un index pe tabela parcursă",
+          "O limită explicită a nivelurilor"
+        ],
+        "answer": "O parte de bază (anchor) și o parte recursivă unite cu UNION ALL",
+        "explanation": "Baza (anchor) produce rândurile inițiale. Recursivul se aplică repetat până nu mai produce rânduri noi.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 11,
+        "name": "Scalar subquery eroare",
+        "question": "Ce se întâmplă dacă un scalar subquery returnează mai mult de un rând?",
+        "options": [
+          "SQL aruncă eroare — scalar subquery trebuie să returneze exact 0 sau 1 rând",
+          "Returnează primul rând",
+          "Returnează NULL",
+          "Returnează un array"
+        ],
+        "answer": "SQL aruncă eroare — scalar subquery trebuie să returneze exact 0 sau 1 rând",
+        "explanation": "Un scalar subquery TREBUIE să returneze exact 0 sau 1 rând. Dacă returnează mai mult, SQL aruncă eroare.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 12,
+        "name": "CTE recursiv utilitate",
+        "question": "Pentru ce e util CTE recursiv?",
+        "options": [
+          "Structuri arborescente: organigramă, categorii/subcategorii, comentarii imbricate",
+          "Tabele foarte mari care necesită procesare în pași",
+          "Query-uri cu multe JOIN-uri",
+          "Calcule matematice iterative"
+        ],
+        "answer": "Structuri arborescente: organigramă, categorii/subcategorii, comentarii imbricate",
+        "explanation": "CTE recursiv parcurge ierarhii. Fără el, ai nevoie de cod aplicativ sau proceduri stocate.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 13,
+        "name": "Subquery vs JOIN performanță",
+        "question": "Subquery corelat sau JOIN — care e mai eficient pe milioane de rânduri?",
+        "options": [
+          "JOIN e aproape mereu mai eficient — subquery corelat rulează per rând exterior",
+          "Subquery corelat e mai eficient — evită tabelele temporare",
+          "Depinde de optimizer, dar JOIN e preferabil",
+          "Sunt identice ca performanță"
+        ],
+        "answer": "Depinde de optimizer, dar JOIN e preferabil",
+        "explanation": "JOIN-urile beneficiază de indecși și optimizare. Subquery corelat rulează N ori. Prefer JOIN dar explainuiți ambele.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 14,
+        "name": "CTE testabilitate",
+        "question": "Cum testezi un CTE înainte de a folosi rezultatul în query-ul principal?",
+        "options": [
+          "Scrii `WITH cte AS (...) SELECT * FROM cte;` și rulezi ca query separat",
+          "Nu poți testa CTE izolat",
+          "Creezi o VIEW temporară din CTE",
+          "Folosești EXPLAIN pe CTE"
+        ],
+        "answer": "Scrii `WITH cte AS (...) SELECT * FROM cte;` și rulezi ca query separat",
+        "explanation": "Poți rula CTE cu `SELECT * FROM cte` ca să-l inspectezi independent. E un avantaj mare față de subquery-uri imbricate.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: raport ierarhic",
+        "question": "Toți angajații dintr-o firmă cu nivelul lor în ierarhie (CEO = nivel 0):",
+        "options": [
+          "WITH RECURSIVE org AS (SELECT id,nume,0 AS nivel FROM ang WHERE manager_id IS NULL UNION ALL SELECT a.id,a.nume,o.nivel+1 FROM ang a JOIN org o ON a.manager_id=o.id) SELECT * FROM org ORDER BY nivel;",
+          "SELECT * FROM angajati JOIN managers ON id=manager_id ORDER BY nivel;",
+          "WITH org AS (SELECT * FROM angajati) SELECT nivel FROM org;",
+          "RECURSIVE SELECT angajati HIERARCHY ORDER BY manager_id;"
+        ],
+        "answer": "WITH RECURSIVE org AS (SELECT id,nume,0 AS nivel FROM ang WHERE manager_id IS NULL UNION ALL SELECT a.id,a.nume,o.nivel+1 FROM ang a JOIN org o ON a.manager_id=o.id) SELECT * FROM org ORDER BY nivel;",
+        "explanation": "CTE recursiv cu anchor (CEO fără manager) și pas recursiv (angajații subordonați). nivel+1 la fiecare nivel.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-create-table",
-    title: "6. CREATE TABLE, tipuri de date și relații",
-    order: 6,
-    theory: [
+    "slug": "sql-create-table-design",
+    "title": "7. CREATE TABLE și Design baze de date",
+    "order": 7,
+    "theory": [
       {
-        order: 1,
-        title: "CREATE TABLE — designul schemei",
-        content: "**CREATE TABLE** definește structura — coloanele, tipurile lor și constrângerile:\n\n```sql\nCREATE TABLE utilizatori (\n    id          INT          NOT NULL AUTO_INCREMENT,\n    email       VARCHAR(255) NOT NULL UNIQUE,\n    username    VARCHAR(50)  NOT NULL UNIQUE,\n    password_hash CHAR(60)   NOT NULL,  -- bcrypt produce fix 60 chars\n    nume        VARCHAR(100),\n    varsta      TINYINT UNSIGNED CHECK(varsta >= 13),\n    rol         ENUM('user', 'editor', 'admin') NOT NULL DEFAULT 'user',\n    activ       BOOLEAN      NOT NULL DEFAULT TRUE,\n    creat_la    TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    actualizat  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id)\n);\n```\n\n**Modificare tabelă existentă:**\n```sql\n-- Adaugă coloană:\nALTER TABLE utilizatori ADD COLUMN telefon VARCHAR(20);\n\n-- Modifică tipul:\nALTER TABLE utilizatori MODIFY COLUMN nume VARCHAR(200);\n\n-- Redenumire:\nALTER TABLE utilizatori RENAME COLUMN username TO user_slug;\n\n-- Adaugă constrângere:\nALTER TABLE utilizatori ADD CONSTRAINT check_varsta CHECK(varsta >= 0);\n\n-- Șterge coloană:\nALTER TABLE utilizatori DROP COLUMN telefon;\n\n-- Șterge tabelă:\nDROP TABLE IF EXISTS utilizatori;\n```",
+        "order": 1,
+        "title": "CREATE TABLE și tipuri de date",
+        "content": "CREATE TABLE defineste structura tabelei: coloanele, tipurile, constrangerile.\n\n```sql\nCREATE TABLE utilizatori (\n    id          INT           AUTO_INCREMENT PRIMARY KEY,\n    email       VARCHAR(255)  NOT NULL UNIQUE,\n    nume        VARCHAR(100)  NOT NULL,\n    parola_hash VARCHAR(255)  NOT NULL,\n    varsta      TINYINT       CHECK (varsta >= 18),\n    rol         ENUM('user','admin') DEFAULT 'user',\n    activ       BOOLEAN       DEFAULT true,\n    creat_la    DATETIME      DEFAULT CURRENT_TIMESTAMP\n);\n```\n\nTIPURI DE DATE — alege cu grija:\n```\nINT          → varste, cantitati, ID-uri\nBIGINT       → ID-uri pentru sisteme foarte mari\nDECIMAL(10,2)→ BANI! FLOAT/DOUBLE nu sunt exacte!\nVARCHAR(n)   → text variabil (email, nume)\nCHAR(n)      → text fix (cod tara 'RO', hash)\nTEXT         → continut lung (articole, descrieri)\nBOOLEAN      → true/false\nDATETIME     → data + ora exacta\nJSON         → structuri flexibile (settings)\n```"
       },
       {
-        order: 2,
-        title: "Tipuri de date — alege corect pentru performanță",
-        content: "Alegerea tipului de date afectează spațiul și viteza. Folosește cel mai mic tip care acoperă datele:\n\n**Numere întregi:**\n```sql\nTINYINT    -128..127 (1 byte)  — vârstă, stele review 1-5\nSMALLINT   -32K..32K (2 bytes) — cod poștal\nMEDIUMINT  -8M..8M   (3 bytes)\nINT        -2B..2B   (4 bytes) — ID, count — cel mai comun\nBIGINT     ±9×10^18  (8 bytes) — timestamps Unix, ID-uri foarte mari\n\n-- UNSIGNED dublează maximul pozitiv:\nINT UNSIGNED: 0 .. 4,294,967,295\n```\n\n**Text:**\n```sql\nCHAR(n)       — lungime fixă, completat cu spații. Util: cod ISO, hash\nVARCHAR(n)    — lungime variabilă, max n. Cel mai uzual: VARCHAR(255)\nTEXT          — text lung (64KB). Blog post, descriere produs\nMEDIUMTEXT    — 16MB. Conținut articole\nLONGTEXT      — 4GB. Rar necesar\nJSON          — date JSON (MySQL 5.7+, indexabil)\n```\n\n**Date și timp:**\n```sql\nDATE          — 'YYYY-MM-DD'                   — data nașterii\nTIME          — 'HH:MM:SS'                     — ora\nDATETIME      — 'YYYY-MM-DD HH:MM:SS'          — nu ține cont de timezone!\nTIMESTAMP     — seconds since 1970 (4 bytes)   — creat_la, actualizat_la\n                ← TIMESTAMP se convertește automat la UTC, DATETIME nu!\n```\n\n**Sfat important:**\n```sql\n-- E-mail: VARCHAR(255) — standardul permite max 254 caractere\n-- Preț: DECIMAL(10, 2) — NU FLOAT! (floating point imprecis: 9.99 ≠ 9.99 în float)\n-- Hash parole: CHAR(60) pentru bcrypt fix\n-- IP Address: VARCHAR(45) sau INT UNSIGNED (mai eficient)\n-- URL: VARCHAR(2048)\n```",
+        "order": 2,
+        "title": "Relații: 1:1, 1:N, M:N",
+        "content": "Designul relational se bazeaza pe 3 tipuri de relatii.\n\n1:N (cel mai comun) — un client, mai multe comenzi:\n```sql\nCREATE TABLE comenzi (\n    id         INT AUTO_INCREMENT PRIMARY KEY,\n    client_id  INT NOT NULL,\n    total      DECIMAL(10,2),\n    FOREIGN KEY (client_id) REFERENCES clienti(id)\n        ON DELETE CASCADE  -- daca stergi clientul, sterge si comenzile\n        ON UPDATE CASCADE  -- propagheaza schimbarile de PK\n);\n```\n\nM:N — un student poate lua mai multe cursuri, un curs are mai multi studenti:\n```sql\n-- Tabela pivot (junction table):\nCREATE TABLE inscrieri (\n    student_id INT NOT NULL,\n    curs_id    INT NOT NULL,\n    data_inscriere DATETIME DEFAULT CURRENT_TIMESTAMP,\n    nota       DECIMAL(4,2),\n    PRIMARY KEY (student_id, curs_id), -- cheie compusa\n    FOREIGN KEY (student_id) REFERENCES studenti(id),\n    FOREIGN KEY (curs_id)    REFERENCES cursuri(id)\n);\n-- Tabela pivot poate stoca si atribute ale relatiei (nota, data)\n```"
       },
       {
-        order: 3,
-        title: "Relații între tabele — 1:1, 1:N, M:N",
-        content: "**1:1 (One-to-One)** — un rând din A corespunde cu un rând din B:\n```sql\n-- User ↔ Profil extins\nCREATE TABLE profiluri (\n    user_id    INT PRIMARY KEY,  -- FK și PK simultan!\n    bio        TEXT,\n    avatar_url VARCHAR(500),\n    FOREIGN KEY (user_id) REFERENCES utilizatori(id) ON DELETE CASCADE\n);\n```\n\n**1:N (One-to-Many)** — cel mai comun: un user poate face mai multe comenzi:\n```sql\nCREATE TABLE comenzi (\n    id       INT PRIMARY KEY AUTO_INCREMENT,\n    user_id  INT NOT NULL,\n    total    DECIMAL(10, 2),\n    FOREIGN KEY (user_id) REFERENCES utilizatori(id) ON DELETE RESTRICT\n);\n```\n\n**M:N (Many-to-Many)** — un student la mai multe cursuri, un curs cu mai mulți studenți:\n```sql\n-- Tabela de legătură (junction table):\nCREATE TABLE inscrieri (\n    student_id INT NOT NULL,\n    curs_id    INT NOT NULL,\n    data_inscriere DATE DEFAULT (CURRENT_DATE),\n    nota       DECIMAL(4, 2),\n    PRIMARY KEY (student_id, curs_id),  -- PK compus!\n    FOREIGN KEY (student_id) REFERENCES studenti(id),\n    FOREIGN KEY (curs_id)    REFERENCES cursuri(id)\n);\n\n-- Query M:N:\nSELECT s.nume, c.titlu, i.nota\nFROM studenti s\nJOIN inscrieri i ON i.student_id = s.id\nJOIN cursuri c   ON c.id = i.curs_id;\n```",
+        "order": 3,
+        "title": "Normalizare — 1NF, 2NF, 3NF",
+        "content": "Normalizarea e procesul de organizare a tabelelor pentru a elimina redundanta.\n\n1NF — o celula = o singura valoare:\n```\nBAD:  id | telefoane\n      1  | 0724xxx, 0312xxx  (doua valori!)\n\nGOOD: id | telefon\n      1  | 0724xxx\n      1  | 0312xxx\n```\n\n2NF — fara dependente partiale (pentru chei compuse):\n```\nBAD:  student_id | curs_id | nota | titlu_curs\n(titlu_curs depinde DOAR de curs_id)\n\nGOOD: inscrieri: student_id, curs_id, nota\n      cursuri: curs_id, titlu_curs\n```\n\n3NF — fara dependente tranzitive:\n```\nBAD:  id | oras | cod_postal | tara\n(tara depinde de cod_postal, nu de id)\n\nGOOD: adrese: id, oras, cod_postal_id\n      coduri_postale: id, cod, tara\n```"
       },
       {
-        order: 4,
-        title: "Indecși — cheia performanței",
-        content: "Un **index** e ca indexul din finalul unei cărți — în loc să citești toată cartea, mergi direct la pagina dorită.\n\n```sql\n-- Fără index: scanare completă (Full Table Scan) — O(n)\n-- Cu index: lookup rapid — O(log n) sau O(1)\n\n-- Creare index:\nCREATE INDEX idx_email ON utilizatori(email);\nCREATE INDEX idx_pret ON produse(pret);\n\n-- Index compus — pentru query-uri cu mai multe condiții:\nCREATE INDEX idx_cat_pret ON produse(categorie, pret);\n-- Util pentru: WHERE categorie = 'X' AND pret < 100\n-- SAU:         WHERE categorie = 'X' ORDER BY pret\n-- NU pentru:  WHERE pret < 100 (fără filtru categorie)\n-- Regula leftmost prefix — folosești de la stânga!\n\n-- Index unic:\nCREATE UNIQUE INDEX idx_slug ON articole(slug);\n\n-- Șterge index:\nDROP INDEX idx_email ON utilizatori;\n\n-- Vizualizează indecșii:\nSHOW INDEX FROM utilizatori;\n```\n\n**Când NU să pui index:**\n```\n- Coloane cu cardinalitate mică (ex: boolean, gen_sex) — puțin util\n- Tabele mici (< 1000 rânduri) — overhead mai mare decât beneficiul\n- Coloane modificate frecvent — fiecare UPDATE/INSERT recalculează indexul\n```\n\n**La interviu:** *„Ce e un index compus și regula leftmost prefix?\"*\nRăspuns: Un index pe (A, B, C) ajută query-urile care filtrează A, sau A+B, sau A+B+C, dar NU B singur sau C singur.",
-      },
+        "order": 4,
+        "title": "INDEX-uri — faci query-urile rapide",
+        "content": "Un index e ca index-ul dintr-o carte — in loc sa citesti totul, mergi direct la pagina corecta.\n\n```sql\n-- Index simplu:\nCREATE INDEX idx_produse_categorie ON produse(categorie);\n\n-- Index compus (ordinea conteaza!):\nCREATE INDEX idx_comenzi_user_data ON comenzi(user_id, data);\n-- Functioneaza pentru: WHERE user_id=1 sau WHERE user_id=1 AND data>...\n-- NU functioneaza: WHERE data>... (fara user_id)\n-- Regula leftmost prefix!\n\n-- EXPLAIN — verifici daca e folosit indexul:\nEXPLAIN SELECT * FROM produse WHERE categorie = 'electronics';\n-- type=ALL → full scan → ai nevoie de index\n-- type=ref → foloseste index → bine!\n```\n\nCAND ADAUGI INDEX: coloanele din WHERE frecvente, coloanele FK din JOIN, coloanele din ORDER BY.\n\nCAND NU ADAUGI: nu la orice coloana! INSERT/UPDATE/DELETE devin mai lente pentru ca indexul trebuie actualizat."
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "CREATE TABLE sintaxă",
-        question: "Cum creezi o tabelă `produse` cu id auto-increment și nume obligatoriu?",
-        options: [
-          "NEW TABLE produse (id AUTO, nume NOT NULL)",
-          "CREATE TABLE produse (id INT AUTO_INCREMENT PRIMARY KEY, nume VARCHAR(100) NOT NULL)",
-          "MAKE TABLE produse ...",
-          "CREATE TABLE produse {id: AUTO, nume: STRING}",
+        "number": 1,
+        "name": "AUTO_INCREMENT",
+        "question": "Ce face `id INT AUTO_INCREMENT PRIMARY KEY`?",
+        "options": [
+          "Creează un ID care crește automat la fiecare INSERT și e cheie primară",
+          "Creează un ID aleatoriu unic la fiecare INSERT",
+          "Creează un ID incrementat manual de aplicație",
+          "Creează o secvență de la 0 la infinit"
         ],
-        answer: "CREATE TABLE produse (id INT AUTO_INCREMENT PRIMARY KEY, nume VARCHAR(100) NOT NULL)",
-        explanation: "Sintaxa standard: coloana tip constrângere. AUTO_INCREMENT generează ID unic automat.",
-        difficulty: "easy",
+        "answer": "Creează un ID care crește automat la fiecare INSERT și e cheie primară",
+        "explanation": "AUTO_INCREMENT (MySQL) sau SERIAL (PostgreSQL) generează automat un ID unic crescător la fiecare INSERT.",
+        "difficulty": "easy"
       },
       {
-        number: 2,
-        name: "VARCHAR vs CHAR",
-        question: "Când folosești CHAR(n) în loc de VARCHAR(n)?",
-        options: [
-          "Când textul e lung",
-          "Când valorile au întotdeauna aceeași lungime fixă — ex: cod ISO țară CHAR(2), hash bcrypt CHAR(60)",
-          "VARCHAR e întotdeauna mai bun",
-          "CHAR e mai sigur",
+        "number": 2,
+        "name": "DECIMAL vs FLOAT",
+        "question": "De ce folosești DECIMAL(10,2) și nu FLOAT pentru prețuri?",
+        "options": [
+          "FLOAT are erori de precizie la calcule — DECIMAL e exact pentru valori monetare",
+          "DECIMAL e mai rapid decât FLOAT",
+          "FLOAT nu poate stoca valori cu 2 zecimale",
+          "DECIMAL ocupă mai puțin spațiu"
         ],
-        answer: "Când valorile au întotdeauna aceeași lungime fixă — ex: cod ISO țară CHAR(2), hash bcrypt CHAR(60)",
-        explanation: "CHAR(n) alocă fix n bytes, mai rapid pentru valori cu lungime fixă. VARCHAR(n) e variabil, mai eficient pentru text de lungimi diferite.",
-        difficulty: "medium",
+        "answer": "FLOAT are erori de precizie la calcule — DECIMAL e exact pentru valori monetare",
+        "explanation": "FLOAT/DOUBLE au erori binare: 0.1 + 0.2 = 0.30000000000000004. Pentru bani, DECIMAL e obligatoriu.",
+        "difficulty": "medium"
       },
       {
-        number: 3,
-        name: "DECIMAL vs FLOAT",
-        question: "De ce folosești DECIMAL(10,2) pentru prețuri și NU FLOAT?",
-        options: [
-          "DECIMAL e mai rapid",
-          "FLOAT are imprecizie — 9.99 poate fi stocat ca 9.98999... Banii necesită precizie exactă",
-          "FLOAT nu suportă zecimale",
-          "Nu există diferență semnificativă",
+        "number": 3,
+        "name": "FOREIGN KEY CASCADE",
+        "question": "Ce face `ON DELETE CASCADE` pe un FOREIGN KEY?",
+        "options": [
+          "Când ștergi rândul din tabela referință, se șterg automat și rândurile din tabela cu FK",
+          "Când ștergi rândul cu FK, se șterge automat și rândul referit",
+          "Previne ștergerea dacă există FK-uri",
+          "Setează FK la NULL la ștergere"
         ],
-        answer: "FLOAT are imprecizie — 9.99 poate fi stocat ca 9.98999... Banii necesită precizie exactă",
-        explanation: "FLOAT folosește reprezentare binară cu erori de rotunjire. DECIMAL(10,2) stochează exact 2 zecimale fără erori — obligatoriu pentru bani.",
-        difficulty: "medium",
+        "answer": "Când ștergi rândul din tabela referință, se șterg automat și rândurile din tabela cu FK",
+        "explanation": "ON DELETE CASCADE: dacă ștergi clientul 1, toate comenzile lui sunt șterse automat.",
+        "difficulty": "medium"
       },
       {
-        number: 4,
-        name: "Relație M:N",
-        question: "Cum implementezi relația M:N între studenți și cursuri?",
-        options: [
-          "Coloana array în una din tabele",
-          "Tabela de legătură (junction table) cu FK la ambele",
-          "Duplicarea datelor în ambele tabele",
-          "Nu se poate în SQL relațional",
+        "number": 4,
+        "name": "Relație M:N",
+        "question": "Cum implementezi relația M:N între studenți și cursuri?",
+        "options": [
+          "Cu o tabelă pivot (inscrieri) cu FK la ambele tabele",
+          "Cu o coloană JSON în studenți cu lista de cursuri",
+          "Cu un array de cursuri_id în tabela studenți",
+          "Cu două FK-uri în ambele tabele principale"
         ],
-        answer: "Tabela de legătură (junction table) cu FK la ambele",
-        explanation: "Tabela inscrieri(student_id, curs_id) cu FK la ambele tabele. PK compus pe ambele coloane garantează unicitatea înscrierii.",
-        difficulty: "medium",
+        "answer": "Cu o tabelă pivot (inscrieri) cu FK la ambele tabele",
+        "explanation": "M:N necesită tabelă pivot (junction table) cu FK la ambele. Poate stoca și atribute ale relației.",
+        "difficulty": "medium"
       },
       {
-        number: 5,
-        name: "ON DELETE CASCADE",
-        question: "Ce face `ON DELETE CASCADE` la o FOREIGN KEY?",
-        options: [
-          "Interzice ștergerea dacă există FK",
-          "Șterge automat rândurile copil când se șterge rândul parinte",
-          "Setează FK la NULL",
-          "Copiează datele",
+        "number": 5,
+        "name": "1NF",
+        "question": "Ce problemă are coloana `telefoane VARCHAR(500)` cu valoarea '0724xxx, 0312xxx'?",
+        "options": [
+          "Violează 1NF — o celulă trebuie să conțină o singură valoare atomică",
+          "Ocupă prea mult spațiu",
+          "Nu se poate indexa",
+          "E o problemă de securitate"
         ],
-        answer: "Șterge automat rândurile copil când se șterge rândul parinte",
-        explanation: "DELETE CASCADE: dacă ștergi un user, se șterg automat toate comenzile lui. RESTRICT (implicit) blochează ștergerea dacă există copii.",
-        difficulty: "easy",
+        "answer": "Violează 1NF — o celulă trebuie să conțină o singură valoare atomică",
+        "explanation": "1NF cere valori atomice. O coloană cu liste separate prin virgulă e greu de interogat și indexat.",
+        "difficulty": "medium"
       },
       {
-        number: 6,
-        name: "Index compus",
-        question: "Un index pe (categorie, pret) ajută query-ul `WHERE pret < 100` fără filtru pe categorie?",
-        options: [
-          "Da, orice index ajută",
-          "Nu — regula leftmost prefix: indexul (A, B) ajută numai dacă filtrezi și A",
-          "Depinde de baza de date",
-          "Da, dar mai lent",
+        "number": 6,
+        "name": "Index simplu",
+        "question": "Când creezi `CREATE INDEX idx_produse_cat ON produse(categorie)`?",
+        "options": [
+          "Când faci frecvent WHERE categorie = '...' și tabela are mii+ de rânduri",
+          "La orice coloană din tabelă pentru siguranță",
+          "Doar la coloanele UNIQUE",
+          "Doar la PRIMARY KEY"
         ],
-        answer: "Nu — regula leftmost prefix: indexul (A, B) ajută numai dacă filtrezi și A",
-        explanation: "Indexul compus (categorie, pret) ajută: WHERE categorie=X, sau WHERE categorie=X AND pret<100. NU ajută WHERE pret<100 singur.",
-        difficulty: "hard",
+        "answer": "Când faci frecvent WHERE categorie = '...' și tabela are mii+ de rânduri",
+        "explanation": "Index pe coloanele frecvent filtrate/sortate. Pe tabele mici indexul nu ajută.",
+        "difficulty": "easy"
       },
       {
-        number: 7,
-        name: "ALTER TABLE",
-        question: "Cum adaugi coloana `telefon VARCHAR(20)` la o tabelă existentă?",
-        options: [
-          "UPDATE TABLE utilizatori ADD telefon VARCHAR(20)",
-          "ALTER TABLE utilizatori ADD COLUMN telefon VARCHAR(20)",
-          "MODIFY TABLE utilizatori ADD telefon VARCHAR(20)",
-          "INSERT COLUMN telefon VARCHAR(20) INTO utilizatori",
+        "number": 7,
+        "name": "Index compus — leftmost prefix",
+        "question": "Index pe (user_id, data). Care query NU beneficiază de index?",
+        "options": [
+          "WHERE data = '2024-01-01' (fără user_id)",
+          "WHERE user_id = 1 AND data = '2024-01-01'",
+          "WHERE user_id = 1",
+          "WHERE user_id IN (1, 2, 3)"
         ],
-        answer: "ALTER TABLE utilizatori ADD COLUMN telefon VARCHAR(20)",
-        explanation: "ALTER TABLE modifică structura tabelei. ADD COLUMN adaugă o coloană nouă. COLUMN e opțional în unele dialecte.",
-        difficulty: "easy",
+        "answer": "WHERE data = '2024-01-01' (fără user_id)",
+        "explanation": "Regula leftmost prefix: index compus pe (A,B) funcționează pentru WHERE A... sau WHERE A AND B..., dar nu pentru WHERE B... singur.",
+        "difficulty": "hard"
       },
       {
-        number: 8,
-        name: "TIMESTAMP vs DATETIME",
-        question: "De ce TIMESTAMP e preferabil DATETIME pentru coloana `creat_la`?",
-        options: [
-          "TIMESTAMP e mai precis",
-          "TIMESTAMP se convertește automat la UTC și e mai eficient (4 vs 8 bytes)",
-          "DATETIME nu suportă DEFAULT",
-          "Nu există diferență",
+        "number": 8,
+        "name": "EXPLAIN type=ALL",
+        "question": "Ce înseamnă `type = ALL` în output-ul EXPLAIN?",
+        "options": [
+          "Full table scan — SQL citește fiecare rând, semn că lipsește un index",
+          "Query-ul returnează toate coloanele",
+          "Indexul acoperă toată tabela",
+          "Query-ul folosește toate indexurile disponibile"
         ],
-        answer: "TIMESTAMP se convertește automat la UTC și e mai eficient (4 vs 8 bytes)",
-        explanation: "TIMESTAMP stochează UTC intern și convertește la timezone-ul clientului. Crucial pentru aplicații globale. DATETIME stochează ora exactă fără timezone.",
-        difficulty: "medium",
+        "answer": "Full table scan — SQL citește fiecare rând, semn că lipsește un index",
+        "explanation": "type=ALL în EXPLAIN = full scan = cel mai lent. Vrei type=ref, range, index sau const.",
+        "difficulty": "medium"
       },
       {
-        number: 9,
-        name: "Index cardinalitate",
-        question: "De ce indexul pe o coloană boolean (`activ BOOLEAN`) e de obicei inutil?",
-        options: [
-          "Boolean nu poate fi indexat",
-          "Cardinalitate mică — numai 2 valori. Indexul nu elimină suficiente rânduri vs full scan",
-          "Nu se poate filtra după boolean",
-          "E mai eficient fără index",
+        "number": 9,
+        "name": "DEFAULT TIMESTAMP",
+        "question": "Ce face `creat_la DATETIME DEFAULT CURRENT_TIMESTAMP`?",
+        "options": [
+          "Setează automat data și ora curentă la INSERT dacă nu specifici o valoare",
+          "Actualizează data la fiecare modificare a rândului",
+          "Stochează timestamp-ul serverului la creare tabelă",
+          "Necesită că INSERT să includă explicit NULL"
         ],
-        answer: "Cardinalitate mică — numai 2 valori. Indexul nu elimină suficiente rânduri vs full scan",
-        explanation: "Un index eficient trebuie să aibă cardinalitate mare (multe valori distincte). Pe o coloană cu 2 valori, indexul nu ajută — dacă 90% sunt activ=1, scanezi oricum 90%.",
-        difficulty: "hard",
+        "answer": "Setează automat data și ora curentă la INSERT dacă nu specifici o valoare",
+        "explanation": "DEFAULT CURRENT_TIMESTAMP completează automat câmpul cu ora curentă la INSERT.",
+        "difficulty": "easy"
       },
       {
-        number: 10,
-        name: "PK compus M:N",
-        question: "De ce e util PRIMARY KEY (student_id, curs_id) în tabela de legătură?",
-        options: [
-          "E obligatoriu la M:N",
-          "Garantează că același student nu se poate înscrie de 2 ori la același curs",
-          "Face JOIN-urile mai rapide",
-          "Nu are beneficii speciale",
+        "number": 10,
+        "name": "CHECK constraint",
+        "question": "Ce face `varsta TINYINT CHECK (varsta >= 18)`?",
+        "options": [
+          "Previne inserarea valorilor mai mici de 18 — INSERT eșuează cu eroare",
+          "Returnează un avertisment dar inserează oricum",
+          "Returnează NULL pentru valorile sub 18",
+          "Funcționează doar pe UPDATE, nu INSERT"
         ],
-        answer: "Garantează că același student nu se poate înscrie de 2 ori la același curs",
-        explanation: "PK compus = UNIQUE pe combinația ambelor coloane. Previne duplicatele (aceeași pereche student+curs nu poate apărea de 2 ori).",
-        difficulty: "medium",
+        "answer": "Previne inserarea valorilor mai mici de 18 — INSERT eșuează cu eroare",
+        "explanation": "CHECK constraint validează datele la INSERT și UPDATE. Dacă condiția e falsă, operația eșuează.",
+        "difficulty": "easy"
       },
-    ],
+      {
+        "number": 11,
+        "name": "2NF exemplu",
+        "question": "Tabela (student_id, curs_id, nota, titlu_curs). Ce problemă are?",
+        "options": [
+          "Violează 2NF: titlu_curs depinde de curs_id singur, nu de (student_id, curs_id)",
+          "Violează 1NF: cheia e compusă",
+          "Violează 3NF: nota depinde de ambele chei",
+          "Nu are probleme de normalizare"
+        ],
+        "answer": "Violează 2NF: titlu_curs depinde de curs_id singur, nu de (student_id, curs_id)",
+        "explanation": "2NF: fiecare coloană non-cheie trebuie să depindă de ÎNTREAGA cheie primară. titlu_curs depinde doar de curs_id.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 12,
+        "name": "VARCHAR vs CHAR",
+        "question": "Când folosești CHAR(n) față de VARCHAR(n)?",
+        "options": [
+          "CHAR pentru date cu lungime fixă (cod țară 'RO', hash); VARCHAR pentru lungime variabilă (email, nume)",
+          "CHAR e mai rapid deci îl folosești mereu",
+          "VARCHAR salvează spațiu deci îl folosești mereu",
+          "CHAR pentru numere, VARCHAR pentru text"
+        ],
+        "answer": "CHAR pentru date cu lungime fixă (cod țară 'RO', hash); VARCHAR pentru lungime variabilă (email, nume)",
+        "explanation": "CHAR(2) stochează exact 2 caractere. VARCHAR(255) stochează 0-255 caractere. CHAR e mai rapid pentru lungimi fixe.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 13,
+        "name": "ON UPDATE CASCADE",
+        "question": "Ce se întâmplă cu comenzile la `ON UPDATE CASCADE` dacă schimbi ID-ul clientului?",
+        "options": [
+          "Toate comenzile clientului au client_id actualizat automat la noul ID",
+          "Comenzile sunt șterse",
+          "Operația e blocată",
+          "client_id devine NULL în comenzi"
+        ],
+        "answer": "Toate comenzile clientului au client_id actualizat automat la noul ID",
+        "explanation": "ON UPDATE CASCADE propagă modificările cheii primare în toate tabelele care referențiează cu FK.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 14,
+        "name": "Index și write performance",
+        "question": "De ce adăugarea de indexuri la fiecare coloană poate fi dăunătoare?",
+        "options": [
+          "INSERT/UPDATE/DELETE devin mai lente pentru că fiecare index trebuie actualizat la modificare",
+          "Indexurile fac SELECT-urile mai lente",
+          "Baza de date devine coruptă cu prea mulți indexuri",
+          "Indexurile funcționează doar pe PRIMARY KEY"
+        ],
+        "answer": "INSERT/UPDATE/DELETE devin mai lente pentru că fiecare index trebuie actualizat la modificare",
+        "explanation": "Fiecare index = structură de date suplimentară care trebuie menținută la orice modificare. Indexează inteligent.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: schema magazin",
+        "question": "Câte tabele minim și ce relații are un magazin online complet (utilizatori, produse, comenzi, categorii)?",
+        "options": [
+          "6 tabele: utilizatori, produse, categorii, comenzi, detalii_comanda(pivot M:N), produse_categorii(pivot M:N)",
+          "3 tabele: utilizatori, produse, comenzi cu toate datele în JSON",
+          "2 tabele: users și orders cu toate produsele",
+          "4 tabele fără tabele pivot"
+        ],
+        "answer": "6 tabele: utilizatori, produse, categorii, comenzi, detalii_comanda(pivot M:N), produse_categorii(pivot M:N)",
+        "explanation": "Produse-Categorii e M:N. Comenzi-Produse e M:N (cu cantitate, preț unitar). Necesită tabele pivot.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-window-functions",
-    title: "7. Window Functions și funcții avansate",
-    order: 7,
-    theory: [
+    "slug": "sql-window-functions",
+    "title": "8. Window Functions — calcule avansate",
+    "order": 8,
+    "theory": [
       {
-        order: 1,
-        title: "Window Functions — agregate fără GROUP BY",
-        content: "**Window functions** calculează o valoare pentru fiecare rând bazată pe un set de rânduri (fereastra) — fără a pierde detaliile rândurilor individuale:\n\n```sql\n-- Fără window function:\nSELECT categorie, SUM(vanzari)\nFROM vanzari\nGROUP BY categorie;  -- 1 rând per categorie (detaliile dispar)\n\n-- Cu window function:\nSELECT\n    id,\n    categorie,\n    vanzari,\n    SUM(vanzari) OVER (PARTITION BY categorie) AS total_categorie,\n    vanzari / SUM(vanzari) OVER (PARTITION BY categorie) * 100 AS procent\nFROM vanzari;\n-- Fiecare rând individual RĂMÂNE, dar are și totalul categoriei\n```\n\n**Structura:**\n```sql\nFUNCTIE() OVER (\n    PARTITION BY coloana    -- împarte în grupuri (optional)\n    ORDER BY coloana        -- ordinea în fereastră (optional)\n    ROWS/RANGE ...          -- dimensiunea ferestrei (optional)\n)\n```\n\n**Funcții agregate ca window:**\n```sql\nSELECT\n    id, data, total,\n    SUM(total)   OVER (ORDER BY data)      AS running_total,  -- curent\n    AVG(total)   OVER (PARTITION BY user_id) AS avg_user,\n    COUNT(*)     OVER ()                   AS total_comenzi   -- toate\nFROM comenzi;\n```",
+        "order": 1,
+        "title": "Ce sunt Window Functions",
+        "content": "Window functions calculeaza valori pe un set de randuri fara sa le grupeze. Pastrezi toate randurile dar adaugi informatie agregata.\n\nDIFERENTA FATA DE GROUP BY:\n```sql\n-- GROUP BY comprima randurile:\nSELECT departament, AVG(salariu) FROM angajati GROUP BY departament;\n-- Returneaza 1 rand per departament\n\n-- WINDOW FUNCTION pastreaza toate randurile:\nSELECT\n    nume, salariu, departament,\n    AVG(salariu) OVER (PARTITION BY departament) AS medie_dept\nFROM angajati;\n-- Returneaza TOTI angajatii cu media departamentului adaugata!\n```\n\nSintaxa:\n```sql\nFUNCTIE() OVER (\n    PARTITION BY coloana  -- optional: imparte in grupuri\n    ORDER BY coloana      -- optional: ordinea in grup\n    ROWS/RANGE ...        -- optional: fereastra de calcul\n)\n```\n\nCele mai utile:\n```\nROW_NUMBER()  → numar rand unic (1, 2, 3...)\nRANK()        → rang cu salturi (1, 1, 3 ex-aequo)\nDENSE_RANK()  → rang fara salturi (1, 1, 2 ex-aequo)\nLAG(col)      → valoarea din randul anterior\nLEAD(col)     → valoarea din randul urmator\nSUM/AVG OVER  → suma/medie cumulativa\n```"
       },
       {
-        order: 2,
-        title: "ROW_NUMBER, RANK, DENSE_RANK, NTILE",
-        content: "**Funcții de ranking** — cele mai cerute la interviuri SQL:\n\n```sql\nSELECT\n    id,\n    nume,\n    pret,\n    ROW_NUMBER()  OVER (ORDER BY pret DESC) AS pozitie,\n    RANK()        OVER (ORDER BY pret DESC) AS rank_,\n    DENSE_RANK()  OVER (ORDER BY pret DESC) AS dense_rank_,\n    NTILE(4)      OVER (ORDER BY pret DESC) AS quartil\nFROM produse;\n\n-- Exemplu cu prețuri: 3500, 1800, 1800, 1200, 800, 120\n-- ROW_NUMBER:  1,    2,    3,    4,    5,   6   — întotdeauna unice\n-- RANK:        1,    2,    2,    4,    5,   6   — gap la egalitate (sare 3)\n-- DENSE_RANK:  1,    2,    2,    3,    4,   5   — fără gap la egalitate\n-- NTILE(4):    1,    1,    2,    2,    3,   4   — împarte în 4 grupe egale\n```\n\n**TOP N per grup — clasic la interviuri:**\n```sql\n-- Primele 3 produse din fiecare categorie după preț:\nWITH ranked AS (\n    SELECT\n        id, nume, pret, categorie,\n        ROW_NUMBER() OVER (PARTITION BY categorie ORDER BY pret DESC) AS rn\n    FROM produse\n)\nSELECT id, nume, pret, categorie\nFROM ranked\nWHERE rn <= 3;  -- primele 3 per categorie\n```\n\n**LAG și LEAD** — accesează rândul anterior/următor:\n```sql\nSELECT\n    data,\n    total,\n    LAG(total)  OVER (ORDER BY data) AS vanzare_anterioara,\n    LEAD(total) OVER (ORDER BY data) AS vanzare_urmatoare,\n    total - LAG(total) OVER (ORDER BY data) AS crestere_fata_de_ieri\nFROM vanzari_zilnice;\n```",
+        "order": 2,
+        "title": "ROW_NUMBER, RANK și DENSE_RANK",
+        "content": "Aceste functii atribuie un numar fiecarui rand. Difera la ex-aequo.\n\n```sql\nSELECT\n    nume, salariu, departament,\n    ROW_NUMBER() OVER (ORDER BY salariu DESC) AS row_num,\n    RANK()       OVER (ORDER BY salariu DESC) AS rank,\n    DENSE_RANK() OVER (ORDER BY salariu DESC) AS dense_rank\nFROM angajati;\n```\n\nRezultat:\n```\nnume  | salariu | row_num | rank | dense_rank\nAna   |  5000   |    1    |   1  |     1\nIon   |  4500   |    2    |   2  |     2\nMaria |  4500   |    3    |   2  |     2   (ex-aequo)\nDan   |  3000   |    4    |   4  |     3   (RANK sare la 4, DENSE_RANK la 3)\n```\n\nTOP N per grup — pattern clasic de interviu:\n```sql\nWITH ranked AS (\n    SELECT *,\n        DENSE_RANK() OVER (\n            PARTITION BY departament\n            ORDER BY salariu DESC\n        ) AS rang\n    FROM angajati\n)\nSELECT * FROM ranked WHERE rang <= 2;\n-- Top 2 angajati per departament dupa salariu\n```"
       },
       {
-        order: 3,
-        title: "CASE, COALESCE, NULLIF, CAST",
-        content: "**CASE** — if/else în SQL:\n```sql\n-- CASE simplu:\nSELECT\n    id, pret,\n    CASE\n        WHEN pret < 100  THEN 'ieftin'\n        WHEN pret < 500  THEN 'mediu'\n        WHEN pret < 2000 THEN 'scump'\n        ELSE 'premium'\n    END AS categoria_pret\nFROM produse;\n\n-- CASE ca pivot (tabele pivot dinamice):\nSELECT\n    user_id,\n    SUM(CASE WHEN MONTH(creat_la) = 1 THEN total ELSE 0 END) AS ian,\n    SUM(CASE WHEN MONTH(creat_la) = 2 THEN total ELSE 0 END) AS feb,\n    SUM(CASE WHEN MONTH(creat_la) = 3 THEN total ELSE 0 END) AS mar\nFROM comenzi\nGROUP BY user_id;\n```\n\n**COALESCE și NULLIF:**\n```sql\n-- COALESCE — primul non-NULL:\nSELECT\n    COALESCE(telefon, email, 'Fără contact') AS contact,\n    COALESCE(reducere, 0) AS reducere_sau_zero  -- NULL → 0\nFROM utilizatori;\n\n-- NULLIF — returnează NULL dacă valorile sunt egale:\nSELECT\n    total,\n    discount,\n    total / NULLIF(discount, 0) AS ratio  -- evită împărțirea la zero!\nFROM comenzi;\n\n-- CAST — conversie tip:\nSELECT\n    CAST('2024-01-15' AS DATE)  AS data,\n    CAST(pret AS CHAR)          AS pret_text,\n    CAST('42' AS INT)           AS numar\nFROM produse;\n```",
+        "order": 3,
+        "title": "LAG și LEAD — compari rânduri consecutive",
+        "content": "LAG si LEAD acceseaza date din alte randuri fara un self-JOIN.\n\nSCENARIU REAL: Cresterea zilnica a vanzarilor.\n\n```sql\nSELECT\n    data,\n    vanzari,\n    LAG(vanzari) OVER (ORDER BY data) AS vanzari_ziua_anterioara,\n    vanzari - LAG(vanzari) OVER (ORDER BY data) AS crestere,\n    ROUND(\n        (vanzari - LAG(vanzari) OVER (ORDER BY data)) * 100.0\n        / LAG(vanzari) OVER (ORDER BY data), 2\n    ) AS crestere_procent\nFROM vanzari_zilnice;\n\n-- LAG cu offset si valoare default:\nLAG(vanzari, 7) OVER (ORDER BY data)    -- acum 7 zile\nLAG(vanzari, 1, 0) OVER (ORDER BY data) -- ziua anterioara, 0 daca nu exista\n\n-- LEAD — valoarea din randul urmator:\nLEAD(vanzari) OVER (ORDER BY data) AS vanzari_maine\n```"
       },
       {
-        order: 4,
-        title: "VIEW — tabele virtuale reutilizabile",
-        content: "Un **VIEW** e un query salvat cu un nume — se comportă ca o tabelă dar datele sunt calculate la cerere:\n\n```sql\n-- Creează view:\nCREATE VIEW vw_comenzi_cu_useri AS\nSELECT\n    c.id,\n    c.total,\n    c.creat_la,\n    u.email,\n    u.nume AS user_nume\nFROM comenzi c\nJOIN utilizatori u ON u.id = c.user_id;\n\n-- Folosești view ca o tabelă:\nSELECT * FROM vw_comenzi_cu_useri WHERE total > 500;\n\n-- Actualizează view:\nCREATE OR REPLACE VIEW vw_comenzi_cu_useri AS ...;\n\n-- Șterge view:\nDROP VIEW IF EXISTS vw_comenzi_cu_useri;\n```\n\n**Avantajele view-urilor:**\n```\n1. Securitate — expune numai coloanele necesare (ascunde parole, date sensibile)\n2. Simplitate — query-uri complexe devin simple\n3. Consistență — dacă query-ul de bază se schimbă, toate interogările se actualizează\n4. Reutilizare — un singur loc, folosit oriunde\n```\n\n**Materialized View** (PostgreSQL) — datele sunt cache-uite:\n```sql\nCREATE MATERIALIZED VIEW mv_statistici_zilnice AS\nSELECT DATE(creat_la), COUNT(*), SUM(total)\nFROM comenzi\nGROUP BY DATE(creat_la);\n\nREFRESH MATERIALIZED VIEW mv_statistici_zilnice;  -- actualizează\n```",
-      },
+        "order": 4,
+        "title": "SUM/AVG cu fereastra — agregate cumulative",
+        "content": "Window functions cu agregare calculeaza sume/medii cumulative sau mobile.\n\n```sql\n-- Suma cumulativa (running total):\nSELECT\n    data, vanzari,\n    SUM(vanzari) OVER (ORDER BY data) AS total_cumulativ\nFROM vanzari_zilnice;\n\n-- Media mobila pe 7 zile:\nSELECT\n    data, vanzari,\n    AVG(vanzari) OVER (\n        ORDER BY data\n        ROWS BETWEEN 6 PRECEDING AND CURRENT ROW\n    ) AS medie_7_zile\nFROM vanzari_zilnice;\n\n-- Procent din total:\nSELECT\n    produs, vanzari,\n    ROUND(vanzari * 100.0 / SUM(vanzari) OVER (), 2) AS procent\nFROM raport;\n-- OVER () fara PARTITION = fereastra e tot tabelul\n\n-- Total per categorie + total global simultan:\nSELECT\n    categorie, vanzari,\n    SUM(vanzari) OVER (PARTITION BY categorie) AS total_cat,\n    SUM(vanzari) OVER () AS total_global\nFROM raport;\n```"
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "OVER() sintaxă",
-        question: "Ce face `SUM(total) OVER (PARTITION BY user_id)` față de `SUM(total) GROUP BY user_id`?",
-        options: [
-          "Sunt identice",
-          "OVER() calculează suma per user DAR păstrează toate rândurile individuale — GROUP BY reduce la 1 rând per user",
-          "OVER() e mai rapid",
-          "GROUP BY poate fi înlocuit întotdeauna cu OVER()",
+        "number": 1,
+        "name": "Window vs GROUP BY",
+        "question": "Diferența principală între window functions și GROUP BY?",
+        "options": [
+          "Window functions păstrează toate rândurile; GROUP BY le comprimă la câte un rând per grup",
+          "Window functions sunt mai lente decât GROUP BY",
+          "GROUP BY poate calcula mai multe agregate, window functions una singură",
+          "Nu există diferență funcțională"
         ],
-        answer: "OVER() calculează suma per user DAR păstrează toate rândurile individuale — GROUP BY reduce la 1 rând per user",
-        explanation: "Window functions nu colapsează rândurile. Fiecare rând rămâne, dar primește o valoare calculată pe fereastra lui.",
-        difficulty: "medium",
+        "answer": "Window functions păstrează toate rândurile; GROUP BY le comprimă la câte un rând per grup",
+        "explanation": "Window function = adaugi informație agregată fără a pierde rânduri. GROUP BY = comprimi rândurile.",
+        "difficulty": "medium"
       },
       {
-        number: 2,
-        name: "RANK vs DENSE_RANK",
-        question: "La prețuri 100, 100, 50: ce produce RANK vs DENSE_RANK?",
-        options: [
-          "RANK: 1,1,2 — DENSE_RANK: 1,1,2",
-          "RANK: 1,1,3 — DENSE_RANK: 1,1,2",
-          "RANK: 1,2,3 — DENSE_RANK: 1,1,2",
-          "Identice",
+        "number": 2,
+        "name": "PARTITION BY",
+        "question": "Ce face `PARTITION BY departament` în OVER()?",
+        "options": [
+          "Împarte rândurile în grupuri per departament, calculul se face independent per grup",
+          "Filtrează rândurile la un singur departament",
+          "Sortează rândurile după departament",
+          "Grupează și comprimă rândurile ca GROUP BY"
         ],
-        answer: "RANK: 1,1,3 — DENSE_RANK: 1,1,2",
-        explanation: "RANK sare numerele după egalitate (1,1,3 — sare rangul 2). DENSE_RANK nu sare (1,1,2). ROW_NUMBER nu are egalitate (1,2,3).",
-        difficulty: "hard",
+        "answer": "Împarte rândurile în grupuri per departament, calculul se face independent per grup",
+        "explanation": "PARTITION BY e ca GROUP BY pentru window functions — definește fereastra de calcul, dar nu comprimă rândurile.",
+        "difficulty": "medium"
       },
       {
-        number: 3,
-        name: "LAG",
-        question: "Ce face `LAG(total) OVER (ORDER BY data)`?",
-        options: [
-          "Calculează media",
-          "Returnează valoarea `total` din rândul PRECEDENT (cu o poziție în urmă)",
-          "Returnează valoarea din primul rând",
-          "Sortează după total",
+        "number": 3,
+        "name": "ROW_NUMBER",
+        "question": "Cum numerotezi rândurile unui SELECT în ordinea prețului descrescător?",
+        "options": [
+          "SELECT *, ROW_NUMBER() OVER (ORDER BY pret DESC) AS nr FROM produse;",
+          "SELECT *, ROWNUM OVER pret DESC FROM produse;",
+          "SELECT *, ROW_NUMBER(pret DESC) AS nr FROM produse;",
+          "SELECT *, COUNT(*) AS nr FROM produse ORDER BY pret DESC;"
         ],
-        answer: "Returnează valoarea `total` din rândul PRECEDENT (cu o poziție în urmă)",
-        explanation: "LAG(col, n) returnează valoarea coloanei din n rânduri în urmă (implicit n=1). LEAD face invers — rândul următor.",
-        difficulty: "medium",
+        "answer": "SELECT *, ROW_NUMBER() OVER (ORDER BY pret DESC) AS nr FROM produse;",
+        "explanation": "ROW_NUMBER() OVER (ORDER BY col) atribuie numere 1,2,3... în ordinea specificată.",
+        "difficulty": "easy"
       },
       {
-        number: 4,
-        name: "CASE WHEN",
-        question: "Ce returnează: `CASE WHEN pret < 100 THEN 'ieftin' WHEN pret < 500 THEN 'mediu' ELSE 'scump' END` pentru pret=200?",
-        options: ["ieftin", "mediu", "scump", "NULL"],
-        answer: "mediu",
-        explanation: "CASE evaluează condițiile în ordine. 200 < 100 = false, 200 < 500 = true → 'mediu'. Se oprește la prima condiție adevărată.",
-        difficulty: "easy",
-      },
-      {
-        number: 5,
-        name: "COALESCE",
-        question: "Ce returnează `COALESCE(NULL, NULL, 'default')`?",
-        options: ["NULL", "default", "Eroare", "0"],
-        answer: "default",
-        explanation: "COALESCE returnează primul argument non-NULL. Primele două sunt NULL, al treilea 'default' → returnează 'default'.",
-        difficulty: "easy",
-      },
-      {
-        number: 6,
-        name: "NULLIF",
-        question: "De ce `total / NULLIF(discount, 0)` e mai sigur decât `total / discount`?",
-        options: [
-          "NULLIF e mai rapid",
-          "NULLIF(discount, 0) returnează NULL când discount=0, evitând împărțirea la zero care aruncă eroare",
-          "Nu există diferență",
-          "discount poate fi NULL oricum",
+        "number": 4,
+        "name": "RANK vs DENSE_RANK",
+        "question": "Dacă trei angajați au același salariu și sunt pe locul 2, ce returnează RANK vs DENSE_RANK?",
+        "options": [
+          "RANK returnează 2,2,2 și sare la 5; DENSE_RANK returnează 2,2,2 și continuă cu 3",
+          "RANK returnează 2,3,4; DENSE_RANK returnează 2,2,2",
+          "RANK și DENSE_RANK returnează același lucru",
+          "RANK returnează 2,2,2; DENSE_RANK returnează 2,3,4"
         ],
-        answer: "NULLIF(discount, 0) returnează NULL când discount=0, evitând împărțirea la zero care aruncă eroare",
-        explanation: "Împărțirea la zero = eroare în SQL. NULLIF(val, 0) întoarce NULL dacă val=0, iar total/NULL = NULL (nu eroare).",
-        difficulty: "medium",
+        "answer": "RANK returnează 2,2,2 și sare la 5; DENSE_RANK returnează 2,2,2 și continuă cu 3",
+        "explanation": "RANK sare numere după ex-aequo (1,2,2,2,5). DENSE_RANK nu sare (1,2,2,2,3). DENSE_RANK e preferat pentru top-N.",
+        "difficulty": "medium"
       },
       {
-        number: 7,
-        name: "ROW_NUMBER top N",
-        question: "Cum obții primele 3 produse din fiecare categorie după preț?",
-        options: [
-          "SELECT * FROM produse GROUP BY categorie LIMIT 3",
-          "CTE cu ROW_NUMBER() OVER (PARTITION BY categorie ORDER BY pret DESC) AS rn, WHERE rn <= 3",
-          "SELECT TOP 3 * FROM produse ORDER BY categorie, pret",
-          "Nu se poate cu SQL standard",
+        "number": 5,
+        "name": "Top N per grup",
+        "question": "Cum obții top 3 produse per categorie după preț?",
+        "options": [
+          "WITH r AS (SELECT *, DENSE_RANK() OVER (PARTITION BY categorie ORDER BY pret DESC) AS rang FROM produse) SELECT * FROM r WHERE rang <= 3;",
+          "SELECT * FROM produse WHERE pret > AVG(pret) GROUP BY categorie LIMIT 3;",
+          "SELECT TOP 3 * FROM produse PARTITION BY categorie ORDER BY pret DESC;",
+          "SELECT * FROM produse ORDER BY categorie, pret DESC LIMIT 3;"
         ],
-        answer: "CTE cu ROW_NUMBER() OVER (PARTITION BY categorie ORDER BY pret DESC) AS rn, WHERE rn <= 3",
-        explanation: "PARTITION BY categorie creează numerotare separată per categorie. Filtrezi rn<=3 pentru primele 3 din fiecare.",
-        difficulty: "hard",
+        "answer": "WITH r AS (SELECT *, DENSE_RANK() OVER (PARTITION BY categorie ORDER BY pret DESC) AS rang FROM produse) SELECT * FROM r WHERE rang <= 3;",
+        "explanation": "Pattern clasic: DENSE_RANK cu PARTITION BY categorie în CTE, apoi WHERE rang <= 3.",
+        "difficulty": "hard"
       },
       {
-        number: 8,
-        name: "VIEW",
-        question: "Ce e un VIEW în SQL?",
-        options: [
-          "O copie fizică a datelor",
-          "Un query SQL salvat cu un nume — se comportă ca o tabelă virtuală",
-          "Un index special",
-          "O procedură stocată",
+        "number": 6,
+        "name": "LAG primul rând",
+        "question": "Ce returnează `LAG(vanzari) OVER (ORDER BY data)` pentru primul rând?",
+        "options": [
+          "NULL — nu există rând anterior",
+          "0 — valoare default",
+          "Valoarea celui mai mare rând",
+          "Eroare"
         ],
-        answer: "Un query SQL salvat cu un nume — se comportă ca o tabelă virtuală",
-        explanation: "VIEW nu stochează date — la fiecare SELECT pe view, se execută query-ul de bază. Datele sunt live.",
-        difficulty: "easy",
+        "answer": "NULL — nu există rând anterior",
+        "explanation": "LAG pentru primul rând returnează NULL (nu există predecessor). Poți specifica un default: LAG(vanzari, 1, 0).",
+        "difficulty": "easy"
       },
       {
-        number: 9,
-        name: "Running total",
-        question: "Ce calculează `SUM(total) OVER (ORDER BY data)`?",
-        options: [
-          "Suma totală a tuturor rândurilor",
-          "Suma cumulativă (running total) — suma de la primul rând până la rândul curent",
-          "Media cumulativă",
-          "Suma ultimelor 7 zile",
+        "number": 7,
+        "name": "Creștere zilnică",
+        "question": "Cum calculezi creșterea procentuală zilnică a vânzărilor?",
+        "options": [
+          "SELECT data, (vanzari-LAG(vanzari) OVER (ORDER BY data))*100.0/LAG(vanzari) OVER (ORDER BY data) AS crestere FROM vanzari;",
+          "SELECT data, vanzari / LAG(vanzari) OVER () * 100 AS crestere FROM vanzari;",
+          "SELECT data, PERCENT_CHANGE(vanzari) OVER (ORDER BY data) FROM vanzari;",
+          "SELECT data, (vanzari - previous_day) * 100 FROM vanzari GROUP BY data;"
         ],
-        answer: "Suma cumulativă (running total) — suma de la primul rând până la rândul curent",
-        explanation: "SUM cu ORDER BY (fără PARTITION) creează o sumă cumulativă. Rândul 3 va conține suma rândurilor 1+2+3.",
-        difficulty: "medium",
+        "answer": "SELECT data, (vanzari-LAG(vanzari) OVER (ORDER BY data))*100.0/LAG(vanzari) OVER (ORDER BY data) AS crestere FROM vanzari;",
+        "explanation": "LAG(vanzari) returnează vânzările de ieri. (azi - ieri) / ieri * 100 = procentul de creștere.",
+        "difficulty": "hard"
       },
       {
-        number: 10,
-        name: "Materialized View",
-        question: "Diferența dintre VIEW și MATERIALIZED VIEW?",
-        options: [
-          "VIEW stochează date, MATERIALIZED nu",
-          "VIEW recalculează live la fiecare acces; MATERIALIZED VIEW e cache-uit pe disk",
-          "Sunt identice",
-          "MATERIALIZED VIEW nu poate fi actualizat",
+        "number": 8,
+        "name": "SUM cumulativ",
+        "question": "Cum calculezi totalul cumulativ al vânzărilor pe zile?",
+        "options": [
+          "SELECT data, SUM(vanzari) OVER (ORDER BY data) AS total_cumulativ FROM vanzari;",
+          "SELECT data, CUMSUM(vanzari) FROM vanzari ORDER BY data;",
+          "SELECT data, SUM(vanzari) FROM vanzari GROUP BY data CUMULATIVE;",
+          "SELECT data, SUM(vanzari) OVER () AS total FROM vanzari ORDER BY data;"
         ],
-        answer: "VIEW recalculează live la fiecare acces; MATERIALIZED VIEW e cache-uit pe disk",
-        explanation: "Materialized View stochează datele fizic — extrem de rapid la citire, dar trebuie refreshed manual/periodic. Util pentru rapoarte complexe.",
-        difficulty: "hard",
+        "answer": "SELECT data, SUM(vanzari) OVER (ORDER BY data) AS total_cumulativ FROM vanzari;",
+        "explanation": "SUM() OVER (ORDER BY data) fără ROWS = implicit UNBOUNDED PRECEDING TO CURRENT ROW = sumă cumulativă.",
+        "difficulty": "medium"
       },
-    ],
+      {
+        "number": 9,
+        "name": "OVER fără PARTITION",
+        "question": "Ce fereastra calculezi cu `SUM(vanzari) OVER ()`?",
+        "options": [
+          "Suma totală globală din întreaga tabelă, aceeași pentru fiecare rând",
+          "Suma cumulativă până la rândul curent",
+          "Suma rândului curent",
+          "Eroare — OVER() trebuie să aibă clauze"
+        ],
+        "answer": "Suma totală globală din întreaga tabelă, aceeași pentru fiecare rând",
+        "explanation": "OVER() fără nimic = fereastra e toată tabela. Util pentru a calcula % din total: val/SUM(val) OVER().",
+        "difficulty": "medium"
+      },
+      {
+        "number": 10,
+        "name": "Medie mobilă 7 zile",
+        "question": "Ce face `AVG(vanzari) OVER (ORDER BY data ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)`?",
+        "options": [
+          "Calculează media vânzărilor din ultimele 7 zile (inclusiv ziua curentă)",
+          "Calculează media vânzărilor din ultimele 6 zile (fără ziua curentă)",
+          "Calculează media pe un interval de 7 zile fix din calendar",
+          "Calculează media ultimelor 7 rânduri indiferent de dată"
+        ],
+        "answer": "Calculează media vânzărilor din ultimele 7 zile (inclusiv ziua curentă)",
+        "explanation": "ROWS BETWEEN 6 PRECEDING AND CURRENT ROW = 6 rânduri înainte + rândul curent = 7 rânduri total.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 11,
+        "name": "LEAD",
+        "question": "Cum afișezi vânzările de mâine lângă vânzările de azi?",
+        "options": [
+          "SELECT data, vanzari, LEAD(vanzari) OVER (ORDER BY data) AS maine FROM vanzari;",
+          "SELECT data, vanzari, LAG(vanzari, -1) OVER (ORDER BY data) FROM vanzari;",
+          "SELECT data, vanzari, NEXT(vanzari) FROM vanzari;",
+          "SELECT data, vanzari, LEAD(1) OVER (ORDER BY data) FROM vanzari;"
+        ],
+        "answer": "SELECT data, vanzari, LEAD(vanzari) OVER (ORDER BY data) AS maine FROM vanzari;",
+        "explanation": "LEAD(col) returnează valoarea din rândul URMĂTOR. LAG(col) din cel ANTERIOR.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 12,
+        "name": "NTILE",
+        "question": "Ce face `NTILE(4) OVER (ORDER BY salariu)`?",
+        "options": [
+          "Împarte angajații în 4 grupe egale (quartile) după salariu",
+          "Returnează 1/4 din totalul salariului",
+          "Selectează fiecare al 4-lea angajat",
+          "Rotunjește salariul la cel mai apropiat sfert"
+        ],
+        "answer": "Împarte angajații în 4 grupe egale (quartile) după salariu",
+        "explanation": "NTILE(n) numerotează rândurile ca aparținând unuia din n grupuri egale. NTILE(4) = quartile.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 13,
+        "name": "FIRST_VALUE vs MAX",
+        "question": "Cum obții salariul maxim din departament pentru fiecare angajat?",
+        "options": [
+          "Ambele sunt corecte: MAX(salariu) OVER (PARTITION BY dept) și FIRST_VALUE(salariu) OVER (PARTITION BY dept ORDER BY salariu DESC)",
+          "Doar MAX(salariu) OVER (PARTITION BY dept) funcționează",
+          "Doar FIRST_VALUE funcționează",
+          "Niciuna nu funcționează — trebuie subquery"
+        ],
+        "answer": "Ambele sunt corecte: MAX(salariu) OVER (PARTITION BY dept) și FIRST_VALUE(salariu) OVER (PARTITION BY dept ORDER BY salariu DESC)",
+        "explanation": "MAX(salariu) OVER (PARTITION BY dept) și FIRST_VALUE(salariu) OVER (PARTITION BY dept ORDER BY salariu DESC) returnează același rezultat.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 14,
+        "name": "Window pe JOIN",
+        "question": "Poți folosi window functions pe rezultatul unui JOIN?",
+        "options": [
+          "Da — window functions se aplică pe rezultatul oricărui query valid",
+          "Nu — window functions funcționează doar pe tabele simple",
+          "Da, dar trebuie într-un subquery sau CTE",
+          "Doar în PostgreSQL și SQL Server, nu MySQL"
+        ],
+        "answer": "Da — window functions se aplică pe rezultatul oricărui query valid",
+        "explanation": "Window functions sunt clauze SELECT, deci se aplică pe orice set de rânduri rezultat din FROM/JOIN/WHERE.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 15,
+        "name": "Proiect: raport vânzări complet",
+        "question": "Raport cu: rank vânzări per produs, % din total, medie mobilă 7 zile, creștere față de ziua anterioară — toate într-un query:",
+        "options": [
+          "SELECT produs, vanzari, RANK() OVER (ORDER BY vanzari DESC) AS rank, vanzari*100/SUM(vanzari) OVER() AS pct, AVG(vanzari) OVER(ORDER BY data ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS avg7, vanzari-LAG(vanzari) OVER(ORDER BY data) AS delta FROM vanzari;",
+          "SELECT * FROM vanzari WITH ANALYTICS;",
+          "SELECT produs, RANK(vanzari), PERCENT(vanzari), MOVING_AVG(7), DELTA FROM vanzari;",
+          "Necesită 4 query-uri separate cu JOIN la final"
+        ],
+        "answer": "SELECT produs, vanzari, RANK() OVER (ORDER BY vanzari DESC) AS rank, vanzari*100/SUM(vanzari) OVER() AS pct, AVG(vanzari) OVER(ORDER BY data ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS avg7, vanzari-LAG(vanzari) OVER(ORDER BY data) AS delta FROM vanzari;",
+        "explanation": "Multiple window functions pot fi combinate în același SELECT — fiecare calculează independent pe fereastra sa.",
+        "difficulty": "hard"
+      }
+    ]
   },
   {
-    slug: "sql-optimizare-interview",
-    title: "8. Optimizare + Întrebări clasice de interviu",
-    order: 8,
-    theory: [
+    "slug": "sql-optimizare",
+    "title": "9. Optimizare și întrebări de interviu",
+    "order": 9,
+    "theory": [
       {
-        order: 1,
-        title: "EXPLAIN — citirea planului de execuție",
-        content: "**EXPLAIN** îți arată CUM baza de date execută query-ul — e primul instrument la optimizare:\n\n```sql\nEXPLAIN SELECT * FROM comenzi WHERE user_id = 5;\n```\n\nColoane importante în output-ul EXPLAIN (MySQL):\n```\ntype:          ALL = full scan (BAD!)\n               ref = index lookup (BINE)\n               const = acces prin PK/UNIQUE (IDEAL)\n\npossible_keys: indexurile disponibile\nkey:           indexul FOLOSIT efectiv (NULL = nu folosește index)\nrows:          estimare câte rânduri scanează (mai mic = mai bun)\nExtra:         Using index, Using filesort, Using temporary\n```\n\n**Exemplu interpretare:**\n```sql\nEXPLAIN SELECT * FROM comenzi\nWHERE user_id = 5\nORDER BY creat_la DESC;\n\n-- Dacă type=ALL → full scan pe toate comenzile — adaugă index!\n-- Dacă key=NULL → nu folosește niciun index\n\n-- Fix:\nCREATE INDEX idx_user_data ON comenzi(user_id, creat_la);\n-- Acum: type=ref, key=idx_user_data — mult mai rapid!\n\n-- EXPLAIN ANALYZE (PostgreSQL) rulează și query-ul:\nEXPLAIN ANALYZE SELECT ...;  -- arată și timpii reali\n```",
+        "order": 1,
+        "title": "EXPLAIN — înțelegi cum rulează query-ul",
+        "content": "EXPLAIN iti arata planul de executie. E instrumentul numarul 1 pentru optimizare.\n\n```sql\nEXPLAIN SELECT * FROM produse WHERE categorie = 'electronics';\n```\n\nColumnele importante:\n```\ntype     → tipul de acces (ALL=rau, ref/range/const=bine)\nkey      → indexul ales de optimizer\nrows     → estimarea nr de randuri scanate\n```\n\nSCALA (de la mai rau la mai bun):\n```\nALL    → full table scan — scaneza tot\nindex  → parcurge indexul\nrange  → interval din index\nref    → matching pe index non-unic\neq_ref → matching pe index unic\nconst  → matching pe PRIMARY KEY\n```\n\n```sql\n-- EXPLAIN ANALYZE (PostgreSQL) — timpi reali:\nEXPLAIN ANALYZE\nSELECT * FROM comenzi c JOIN clienti cl ON c.client_id = cl.id\nWHERE c.data > '2024-01-01';\n```"
       },
       {
-        order: 2,
-        title: "Normalizare — 1NF, 2NF, 3NF",
-        content: "**Normalizarea** elimină redundanța datelor prin împărțirea în tabele mai mici:\n\n**1NF — Prima Formă Normală:**\n```\nReguile:\n✓ Fiecare coloană conține valori atomice (nu liste!)\n✓ Nu există coloane repetitive (culori1, culori2, culori3...)\n✓ Există cheie primară\n\nViolat:\nid | nume  | culori              ← coloane cu liste\n1  | Tricou | roșu,verde,albastru\n\nCorect (1NF):\nid | produs_id | culoare\n1  |     1     | roșu\n2  |     1     | verde\n3  |     1     | albastru\n```\n\n**2NF — A Doua Formă Normală (necesită 1NF):**\n```\nRegula: Fiecare atribut non-cheie depinde de ÎNTREAGA cheie primară\n\nViolat (PK compus: student_id + curs_id):\nstudent_id | curs_id | nota | student_nume  ← student_nume depinde numai de student_id!\n\nCorect (2NF): Mută student_nume în tabela studenti\n```\n\n**3NF — A Treia Formă Normală (necesită 2NF):**\n```\nRegula: Fără dependențe tranzitive (A→B→C → A→C indirect)\n\nViolat:\ncod_postal | oras    | judet  ← judet depinde de oras, nu de cod_postal direct\n\nCorect (3NF): Separă coduri_postale și judete\n```\n\n**Denormalizare** — uneori intenționată pentru performanță (tabele de raportare, data warehouses).",
+        "order": 2,
+        "title": "Anti-pattern-uri comune",
+        "content": "Acestea sunt greselile frecvente care fac aplicatiile sa fie lente.\n\n1. SELECT * in productie:\n```sql\n-- BAD:\nSELECT * FROM articole;  -- transfera toate coloanele inclusiv cele mari\n\n-- GOOD:\nSELECT id, titlu, autor FROM articole;\n```\n\n2. Functie pe coloana indexata in WHERE:\n```sql\n-- BAD: indexul pe data NU e folosit!\nWHERE YEAR(data) = 2024\n\n-- GOOD: range scan pe index:\nWHERE data >= '2024-01-01' AND data < '2025-01-01'\n```\n\n3. Problema N+1:\n```\n// BAD:\nusers = SELECT * FROM users;  // 1 query\nfor each user:\n    orders = SELECT * FROM orders WHERE user_id = user.id;  // N queries\n// 1000 useri = 1001 queries!\n\n// GOOD:\nSELECT u.*, o.* FROM users u LEFT JOIN orders o ON u.id = o.user_id;\n// 1 singur query!\n```\n\n4. LIKE cu prefix wildcard:\n```sql\nWHERE nume LIKE '%smith'  -- full scan! Index nu e folosit\nWHERE nume LIKE 'smith%'  -- index e folosit! Cautare de prefix\n```"
       },
       {
-        order: 3,
-        title: "Probleme clasice de interviu SQL",
-        content: "**1. Al doilea cel mai mare salariu:**\n```sql\n-- Varianta cu LIMIT OFFSET:\nSELECT DISTINCT salariu\nFROM angajati\nORDER BY salariu DESC\nLIMIT 1 OFFSET 1;\n\n-- Varianta cu subquery (funcționează pe orice DB):\nSELECT MAX(salariu) AS al_doilea_salariu\nFROM angajati\nWHERE salariu < (SELECT MAX(salariu) FROM angajati);\n\n-- Varianta cu DENSE_RANK:\nWITH ranked AS (\n    SELECT salariu, DENSE_RANK() OVER (ORDER BY salariu DESC) AS rk\n    FROM angajati\n)\nSELECT salariu FROM ranked WHERE rk = 2;\n```\n\n**2. Găsire duplicate:**\n```sql\n-- Email-uri duplicate:\nSELECT email, COUNT(*) AS aparitii\nFROM utilizatori\nGROUP BY email\nHAVING COUNT(*) > 1;\n\n-- Șterge duplicate, păstrează cel mai nou:\nDELETE FROM utilizatori\nWHERE id NOT IN (\n    SELECT MAX(id)\n    FROM utilizatori\n    GROUP BY email\n);\n```\n\n**3. Angajați cu salar > media departamentului:**\n```sql\nSELECT a.id, a.nume, a.salar, a.dept_id\nFROM angajati a\nWHERE a.salar > (\n    SELECT AVG(a2.salar)\n    FROM angajati a2\n    WHERE a2.dept_id = a.dept_id\n);\n```",
+        "order": 3,
+        "title": "Întrebări clasice de interviu",
+        "content": "Acestea sunt query-urile pe care le esti intrebat la orice interviu.\n\nAL 2-LEA CEL MAI MARE SALARIU:\n```sql\n-- Varianta 1: subquery\nSELECT MAX(salariu) FROM angajati\nWHERE salariu < (SELECT MAX(salariu) FROM angajati);\n\n-- Varianta 2: OFFSET\nSELECT DISTINCT salariu FROM angajati\nORDER BY salariu DESC LIMIT 1 OFFSET 1;\n\n-- Varianta 3: window function (cel mai flexibil)\nWITH ranked AS (\n    SELECT salariu, DENSE_RANK() OVER (ORDER BY salariu DESC) AS rang\n    FROM angajati\n)\nSELECT salariu FROM ranked WHERE rang = 2;\n```\n\nGASESTI DUPLICATE:\n```sql\nSELECT email, COUNT(*) AS aparitii\nFROM useri GROUP BY email\nHAVING COUNT(*) > 1;\n\n-- Sterge duplicate (pastreaza ID minim):\nDELETE FROM useri\nWHERE id NOT IN (SELECT MIN(id) FROM useri GROUP BY email);\n```\n\nANGAJATI PESTE MEDIA DEPARTAMENTULUI:\n```sql\nSELECT a.nume, a.salariu, a.dept\nFROM angajati a\nJOIN (SELECT dept, AVG(salariu) AS medie FROM angajati GROUP BY dept) m\n  ON a.dept = m.dept\nWHERE a.salariu > m.medie;\n```"
       },
       {
-        order: 4,
-        title: "Optimizări practice și anti-pattern-uri",
-        content: "**Anti-pattern-uri comune care fac query-urile lente:**\n\n```sql\n-- 1. SELECT * — transferă date inutile:\n-- Slab:\nSELECT * FROM utilizatori WHERE id = 5;\n-- Bine:\nSELECT id, email, nume FROM utilizatori WHERE id = 5;\n\n-- 2. Funcție pe coloana indexată în WHERE — dezactivează indexul!:\n-- Slab (indexul pe creat_la e ignorat):\nSELECT * FROM comenzi WHERE YEAR(creat_la) = 2024;\n-- Bine:\nSELECT * FROM comenzi\nWHERE creat_la >= '2024-01-01' AND creat_la < '2025-01-01';\n\n-- 3. OR pe coloane diferite — probleme cu indexuri:\n-- Slab:\nSELECT * FROM t WHERE col_a = 1 OR col_b = 2;\n-- Mai bine:\nSELECT * FROM t WHERE col_a = 1\nUNION ALL\nSELECT * FROM t WHERE col_b = 2 AND col_a != 1;\n\n-- 4. Subquery corelat în SELECT — N+1 problem:\n-- Slab (se execută o dată per user!):\nSELECT u.id,\n    (SELECT COUNT(*) FROM comenzi c WHERE c.user_id = u.id) AS nr\nFROM utilizatori u;\n\n-- Bine (un singur JOIN):\nSELECT u.id, COUNT(c.id) AS nr\nFROM utilizatori u\nLEFT JOIN comenzi c ON c.user_id = u.id\nGROUP BY u.id;\n```\n\n**Checklist optimizare:**\n```\n1. Rulează EXPLAIN — identifică full scans\n2. Adaugă indexuri pe coloanele din WHERE, JOIN ON, ORDER BY\n3. Evită funcții pe coloane indexate în WHERE\n4. Folosește LIMIT când nu ai nevoie de toate datele\n5. Evită SELECT * în producție\n6. Înlocuiește subquery-uri corelate cu JOIN-uri când posibil\n```",
-      },
+        "order": 4,
+        "title": "VIEW, Materialized View și proceduri stocate",
+        "content": "VIEW e un query salvat ca obiect. Il folosesti ca o tabela.\n\n```sql\n-- Creare VIEW:\nCREATE VIEW vw_clienti_activi AS\nSELECT id, nume, email\nFROM clienti\nWHERE activ = true\n  AND ultima_comanda > DATE_SUB(NOW(), INTERVAL 90 DAY);\n\nSELECT * FROM vw_clienti_activi WHERE email LIKE '%@gmail.com';\n\n-- VIEW nu stocheaza datele — ruleaza query-ul la fiecare acces!\n-- Avantaje: simplitate, securitate, abstractizare\n```\n\nMATERIALIZED VIEW (PostgreSQL):\n```sql\nCREATE MATERIALIZED VIEW mv_statistici AS\nSELECT MONTH(data) AS luna, SUM(total) AS vanzari\nFROM comenzi GROUP BY MONTH(data);\n\nREFRESH MATERIALIZED VIEW mv_statistici;\n-- Stocheaza fizic rezultatul! Rapid la citire dar necesita refresh\n-- Bun pentru rapoarte pe date istorice mari\n```\n\nPROCEDURA STOCATA:\n```sql\nCREATE PROCEDURE plaseaza_comanda(IN p_user INT, IN p_produs INT)\nBEGIN\n    START TRANSACTION;\n    UPDATE produse SET stoc = stoc - 1 WHERE id = p_produs;\n    INSERT INTO comenzi (user_id, produs_id) VALUES (p_user, p_produs);\n    COMMIT;\nEND;\n\nCALL plaseaza_comanda(1, 3);\n```"
+      }
     ],
-    tasks: [
+    "tasks": [
       {
-        number: 1,
-        name: "EXPLAIN type ALL",
-        question: "Ce înseamnă `type: ALL` în output-ul EXPLAIN?",
-        options: [
-          "Query-ul e optim",
-          "Baza de date face un full table scan — citește toate rândurile",
-          "Se folosesc toate indexurile",
-          "Toate condițiile sunt satisfăcute",
+        "number": 1,
+        "name": "EXPLAIN type=ALL",
+        "question": "Ai `EXPLAIN SELECT * FROM comenzi WHERE data > '2024-01-01'` și type=ALL. Ce înseamnă?",
+        "options": [
+          "Full table scan — SQL citește fiecare rând din tabelă, lipsește index pe 'data'",
+          "Query-ul returnează toate coloanele",
+          "Query-ul folosește toate indexurile disponibile",
+          "Tabela nu are date"
         ],
-        answer: "Baza de date face un full table scan — citește toate rândurile",
-        explanation: "type=ALL = cel mai slab. Baza de date scanează fiecare rând. Fix: adaugă index pe coloana filtrată.",
-        difficulty: "medium",
+        "answer": "Full table scan — SQL citește fiecare rând din tabelă, lipsește index pe 'data'",
+        "explanation": "type=ALL = full scan = cel mai lent. Adaugă CREATE INDEX idx_comenzi_data ON comenzi(data).",
+        "difficulty": "medium"
       },
       {
-        number: 2,
-        name: "Al doilea salariu",
-        question: "Cum găsești al 2-lea cel mai mare salariu distinct?",
-        options: [
-          "SELECT MAX(salariu) - 1 FROM angajati",
-          "SELECT MAX(salariu) FROM angajati WHERE salariu < (SELECT MAX(salariu) FROM angajati)",
-          "SELECT salariu FROM angajati ORDER BY salariu DESC LIMIT 1, 1",
-          "Ambele variante B și C sunt corecte",
+        "number": 2,
+        "name": "Funcție pe coloană indexată",
+        "question": "De ce `WHERE YEAR(data) = 2024` e mai lent decât `WHERE data >= '2024-01-01' AND data < '2025-01-01'`?",
+        "options": [
+          "Prima varianta aplică funcția pe fiecare rând, invalidând indexul; a doua face range scan pe index",
+          "Prima varianta e greșită sintactic",
+          "A doua varianta face full scan, prima folosește index",
+          "Nu există diferență de performanță"
         ],
-        answer: "Ambele variante B și C sunt corecte",
-        explanation: "Subquery cu MAX și LIMIT OFFSET ambele rezolvă corect. La interviu, arată ambele variante și explică DENSE_RANK pentru n-lea salariu.",
-        difficulty: "hard",
+        "answer": "Prima varianta aplică funcția pe fiecare rând, invalidând indexul; a doua face range scan pe index",
+        "explanation": "YEAR(data) aplică funcția pe fiecare rând, indexul nu poate fi folosit. Range pe data directă folosește indexul.",
+        "difficulty": "medium"
       },
       {
-        number: 3,
-        name: "Funcție pe index",
-        question: "De ce `WHERE YEAR(creat_la) = 2024` e mai lent decât `WHERE creat_la >= '2024-01-01'`?",
-        options: [
-          "YEAR() e o funcție lentă",
-          "Funcția pe coloana indexată dezactivează indexul — forțează full scan",
+        "number": 3,
+        "name": "Problema N+1",
+        "question": "Ce e problema N+1 la ORM-uri?",
+        "options": [
+          "Un query pentru lista de obiecte + N query-uri individuale pentru relații = N+1 total",
+          "N query-uri care returnează 1 rând fiecare",
+          "Un query cu N JOIN-uri",
+          "N tranzacții cu câte 1 operație"
+        ],
+        "answer": "Un query pentru lista de obiecte + N query-uri individuale pentru relații = N+1 total",
+        "explanation": "N+1 e una din cele mai comune probleme de performanță: încarci lista (1 query) și pentru fiecare element încarci relațiile (N queries).",
+        "difficulty": "medium"
+      },
+      {
+        "number": 4,
+        "name": "Al 2-lea cel mai mare salariu",
+        "question": "Care varianta găsește al 2-lea cel mai mare salariu?",
+        "options": [
+          "SELECT MAX(salariu) FROM angajati WHERE salariu < (SELECT MAX(salariu) FROM angajati);",
+          "SELECT salariu FROM angajati ORDER BY salariu DESC LIMIT 1;",
+          "SELECT SECOND_MAX(salariu) FROM angajati;",
+          "SELECT salariu FROM angajati ORDER BY salariu LIMIT 2 OFFSET 1;"
+        ],
+        "answer": "SELECT MAX(salariu) FROM angajati WHERE salariu < (SELECT MAX(salariu) FROM angajati);",
+        "explanation": "Subquery-ul găsește maximul global, outer query găsește maximul din rândurile mai mici.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 5,
+        "name": "Găsire duplicate",
+        "question": "Cum găsești emailurile care apar de mai mult de o dată?",
+        "options": [
+          "SELECT email, COUNT(*) FROM useri GROUP BY email HAVING COUNT(*) > 1;",
+          "SELECT DISTINCT email FROM useri WHERE COUNT(*) > 1;",
+          "SELECT email FROM useri WHERE email IN (SELECT email FROM useri);",
+          "SELECT email FROM useri GROUP BY email WHERE COUNT > 1;"
+        ],
+        "answer": "SELECT email, COUNT(*) FROM useri GROUP BY email HAVING COUNT(*) > 1;",
+        "explanation": "GROUP BY emailul, COUNT numără aparițiile, HAVING filtrează grupurile cu mai mult de 1 apariție.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 6,
+        "name": "VIEW beneficii",
+        "question": "Care NU e un beneficiu al VIEW-urilor?",
+        "options": [
+          "Îmbunătățesc performanța query-urilor complexe prin caching",
+          "Simplifică query-uri complexe reutilizate frecvent",
+          "Ascund coloane sensibile de anumiți utilizatori",
+          "Oferă un nivel de abstractizare față de schimbările de schemă"
+        ],
+        "answer": "Îmbunătățesc performanța query-urilor complexe prin caching",
+        "explanation": "VIEW-urile simple nu cachează rezultatele — rulează query-ul la fiecare acces. Materialized View cachează.",
+        "difficulty": "medium"
+      },
+      {
+        "number": 7,
+        "name": "Materialized View când",
+        "question": "Când folosești Materialized View față de View normal?",
+        "options": [
+          "Când query-ul e scump și datele se schimbă rar — tolerezi date ușor vechi",
+          "Mereu, pentru că e mai rapid",
+          "Când tabela are mai puțin de 1 milion de rânduri",
+          "Când vrei să ascunzi coloane"
+        ],
+        "answer": "Când query-ul e scump și datele se schimbă rar — tolerezi date ușor vechi",
+        "explanation": "Materialized View stochează rezultatul fizic. Bun pentru rapoarte historice unde câteva minute de latență e acceptabilă.",
+        "difficulty": "hard"
+      },
+      {
+        "number": 8,
+        "name": "SELECT * probleme",
+        "question": "De ce evitați `SELECT *` în codul de producție?",
+        "options": [
+          "Transferi mai multă dată decât ai nevoie, coloanele mari sunt costisitoare, codul se poate rupe la modificări de schemă",
+          "SQL Server nu suportă SELECT *",
+          "SELECT * e mai lent la parsare",
+          "SELECT * nu folosește indecși"
+        ],
+        "answer": "Transferi mai multă dată decât ai nevoie, coloanele mari sunt costisitoare, codul se poate rupe la modificări de schemă",
+        "explanation": "SELECT * = transfer de date inutil, posibilă expunere de date sensibile, și dacă adaugi o coloană nouă codul tău s-ar putea rupe.",
+        "difficulty": "easy"
+      },
+      {
+        "number": 9,
+        "name": "LIKE prefix wildcard",
+        "question": "De ce `WHERE nume LIKE '%smith'` e mai lent decât `WHERE nume LIKE 'smith%'`?",
+        "options": [
+          "Prefix wildcard % la început dezactivează utilizarea indexului — trebuie full scan",
           "Nu există diferență",
-          "YEAR() nu funcționează în toate DB-urile",
+          "LIKE cu prefix e mai rapid decât cu sufix",
+          "Indexul B-tree funcționează bidirecțional"
         ],
-        answer: "Funcția pe coloana indexată dezactivează indexul — forțează full scan",
-        explanation: "Când aplici o funcție pe o coloană indexată în WHERE, baza de date nu poate folosi indexul. Rescrie cu interval explicit.",
-        difficulty: "hard",
+        "answer": "Prefix wildcard % la început dezactivează utilizarea indexului — trebuie full scan",
+        "explanation": "Indexul B-tree poate face căutare de prefix (smith%). Nu poate face căutare inversă (%smith) — necesită full scan.",
+        "difficulty": "medium"
       },
       {
-        number: 4,
-        name: "1NF",
-        question: "Care tabelă respectă Prima Formă Normală (1NF)?",
-        options: [
-          "user(id, email, telefoane_multiple)",
-          "user(id, email, tel1, tel2, tel3)",
-          "user(id, email) + telefoane(id, user_id, numar)",
-          "Ambele A și B respectă 1NF",
+        "number": 10,
+        "name": "Soluție N+1",
+        "question": "Cum rezolvi problema N+1 la încărcarea utilizatorilor cu comenzile lor?",
+        "options": [
+          "LEFT JOIN utilizatori u ON o.user_id = u.id într-un singur query",
+          "Foreach user: câte un query SELECT * FROM orders WHERE user_id = ?",
+          "SELECT * FROM orders WHERE user_id IN (SELECT id FROM users)",
+          "Cache-uiești rezultatele fiecărui query individual"
         ],
-        answer: "user(id, email) + telefoane(id, user_id, numar)",
-        explanation: "1NF cere valori atomice — nu liste și nu coloane repetitive. Telefoanele multiple se separă într-o tabelă separată.",
-        difficulty: "medium",
+        "answer": "LEFT JOIN utilizatori u ON o.user_id = u.id într-un singur query",
+        "explanation": "Un JOIN aduce toate datele în un singur round-trip la baza de date. N query-uri = N round-trip-uri = lent.",
+        "difficulty": "medium"
       },
       {
-        number: 5,
-        name: "Găsire duplicate",
-        question: "Cum găsești emailurile care apar de mai mult de o dată?",
-        options: [
-          "SELECT * FROM u WHERE email DUPLICATE",
-          "SELECT email, COUNT(*) FROM u GROUP BY email HAVING COUNT(*) > 1",
-          "SELECT DISTINCT email FROM u",
-          "SELECT email FROM u WHERE id != id",
+        "number": 11,
+        "name": "Angajați peste medie dept",
+        "question": "Cel mai curat mod de a găsi angajații cu salariu peste media departamentului lor?",
+        "options": [
+          "WITH medii AS (SELECT dept, AVG(sal) m FROM ang GROUP BY dept) SELECT a.* FROM ang a JOIN medii ON a.dept=medii.dept WHERE a.sal > medii.m;",
+          "SELECT * FROM ang WHERE sal > (SELECT AVG(sal) FROM ang);",
+          "SELECT * FROM ang GROUP BY dept HAVING sal > AVG(sal);",
+          "SELECT * FROM ang a1 WHERE sal > ALL (SELECT AVG(sal) FROM ang a2 GROUP BY dept);"
         ],
-        answer: "SELECT email, COUNT(*) FROM u GROUP BY email HAVING COUNT(*) > 1",
-        explanation: "GROUP BY email + HAVING COUNT(*) > 1 identifică valorile cu apariții multiple.",
-        difficulty: "medium",
+        "answer": "WITH medii AS (SELECT dept, AVG(sal) m FROM ang GROUP BY dept) SELECT a.* FROM ang a JOIN medii ON a.dept=medii.dept WHERE a.sal > medii.m;",
+        "explanation": "CTE calculează media per departament, JOIN le combină, WHERE filtrează angajații sub media lor.",
+        "difficulty": "hard"
       },
       {
-        number: 6,
-        name: "N+1 problem",
-        question: "De ce subquery corelat în SELECT e mai lent decât un JOIN?",
-        options: [
-          "Subquery-ul nu poate folosi indexuri",
-          "Subquery-ul se execută o dată per rând exterior (N execuții) vs JOIN care procesează totul o dată",
-          "JOIN e întotdeauna mai lent",
-          "Nu există diferență de performanță",
+        "number": 12,
+        "name": "Procedură stocată avantaje",
+        "question": "Care e avantajul principal al procedurilor stocate față de query-uri din aplicație?",
+        "options": [
+          "Logica rulează pe serverul DB (mai rapid), reduce traficul rețea, reutilizabilă din orice limbaj",
+          "Sunt mai ușor de scris decât SQL direct",
+          "Sunt mai sigure față de SQL injection",
+          "Funcționează offline"
         ],
-        answer: "Subquery-ul se execută o dată per rând exterior (N execuții) vs JOIN care procesează totul o dată",
-        explanation: "Cu 10.000 useri: subquery corelat în SELECT = 10.000 query-uri separate. JOIN = 1 singur query. Asta e problema N+1.",
-        difficulty: "hard",
+        "answer": "Logica rulează pe serverul DB (mai rapid), reduce traficul rețea, reutilizabilă din orice limbaj",
+        "explanation": "Proceduri stocate: compilate și cachate pe server, un singur round-trip pentru operații complexe.",
+        "difficulty": "medium"
       },
       {
-        number: 7,
-        name: "3NF",
-        question: "Care dependență violează 3NF?",
-        options: [
-          "id → email",
-          "cod_postal → oras → judet (dependență tranzitivă: cod_postal → judet prin oras)",
-          "student_id → nota",
-          "produs_id → pret",
+        "number": 13,
+        "name": "Index selectivitate",
+        "question": "Un index pe o coloană booleană (true/false) e util?",
+        "options": [
+          "Rar util — selectivitate scăzută: 50% din rânduri sunt true, optimizer preferă full scan",
+          "Mereu util — orice coloană din WHERE beneficiază de index",
+          "Util doar pentru coloane false",
+          "Util dacă tabela are mai puțin de 1000 rânduri"
         ],
-        answer: "cod_postal → oras → judet (dependență tranzitivă: cod_postal → judet prin oras)",
-        explanation: "3NF interzice dependențele tranzitive. judet depinde de oras, nu direct de cod_postal → separă într-o tabelă orase(id, judet).",
-        difficulty: "hard",
+        "answer": "Rar util — selectivitate scăzută: 50% din rânduri sunt true, optimizer preferă full scan",
+        "explanation": "Indexul e util când selectivitatea e mare (multe valori distincte). Pe boolean: full scan e mai rapid decât index + I/O random.",
+        "difficulty": "hard"
       },
       {
-        number: 8,
-        name: "Index pe ORDER BY",
-        question: "Dacă ai frecvent `ORDER BY creat_la DESC`, ce index ajută?",
-        options: [
-          "Index pe id",
-          "Index pe creat_la",
-          "Index compus pe (user_id, creat_la) dacă filtrezi și user_id",
-          "Nu ajută niciun index",
+        "number": 14,
+        "name": "Query plan cache",
+        "question": "Ce e query plan cache?",
+        "options": [
+          "Baza de date memorează planul de execuție compilat pentru query-uri repetate, evitând re-parsarea",
+          "Cache-ul aplicației pentru rezultatele query-urilor",
+          "Buffer de memorie pentru date des accesate",
+          "Indexul pentru query-uri frecvente"
         ],
-        answer: "Index compus pe (user_id, creat_la) dacă filtrezi și user_id",
-        explanation: "Dacă query-ul e WHERE user_id = X ORDER BY creat_la, indexul (user_id, creat_la) ajută ambele operații. Ordinea din index trebuie să corespundă cu ordinea din query.",
-        difficulty: "hard",
+        "answer": "Baza de date memorează planul de execuție compilat pentru query-uri repetate, evitând re-parsarea",
+        "explanation": "Plan cache = DB compilează query-ul o dată și reutilizează planul. Prepared statements beneficiază de plan cache.",
+        "difficulty": "hard"
       },
       {
-        number: 9,
-        name: "UNION vs UNION ALL",
-        question: "Diferența dintre UNION și UNION ALL?",
-        options: [
-          "Identice",
-          "UNION elimină duplicatele (mai lent), UNION ALL le păstrează (mai rapid)",
-          "UNION ALL funcționează pe mai multe tabele",
-          "UNION e pentru SELECT, UNION ALL pentru INSERT",
+        "number": 15,
+        "name": "Proiect: diagnoza performanță",
+        "question": "Ai un query lent. Care e ordinea corectă de diagnoză?",
+        "options": [
+          "EXPLAIN → verifici type/key → adaugi index dacă lipsește → re-rulezi EXPLAIN → verifici îmbunătățirea",
+          "Adaugi index pe toate coloanele din WHERE → rulezi query → verifici dacă e mai rapid",
+          "Rescrii query-ul → optimizezi logica aplicației → adaugi index la final",
+          "Pornești cu Materialized View → treci la index → la final EXPLAIN"
         ],
-        answer: "UNION elimină duplicatele (mai lent), UNION ALL le păstrează (mai rapid)",
-        explanation: "UNION face DISTINCT implicit — overhead suplimentar. UNION ALL păstrează tot. Folosește UNION ALL când știi că nu ai duplicate sau nu contează.",
-        difficulty: "medium",
-      },
-      {
-        number: 10,
-        name: "Angajat > media dept",
-        question: "Cum găsești angajații cu salar mai mare decât media departamentului lor?",
-        options: [
-          "WHERE salar > (SELECT AVG(salar) FROM angajati)",
-          "WHERE salar > (SELECT AVG(salar) FROM angajati WHERE dept_id = a.dept_id)",
-          "HAVING salar > AVG(salar) GROUP BY dept_id",
-          "JOIN pe AVG(salar) GROUP BY dept_id WHERE salar > medie",
-        ],
-        answer: "WHERE salar > (SELECT AVG(salar) FROM angajati WHERE dept_id = a.dept_id)",
-        explanation: "Subquery corelat: pentru fiecare angajat, calculează media departamentului LUI. Alternativa e JOIN cu CTE care calculează media per dept.",
-        difficulty: "hard",
-      },
-    ],
-  },
+        "answer": "EXPLAIN → verifici type/key → adaugi index dacă lipsește → re-rulezi EXPLAIN → verifici îmbunătățirea",
+        "explanation": "EXPLAIN mai întâi, înțelegi problema, adaugi indexul corect, verifici că s-a rezolvat. Nu adaugi indexuri la orb.",
+        "difficulty": "hard"
+      }
+    ]
+  }
 ];
 
 module.exports = { sqlLessons };

@@ -19,7 +19,33 @@ const { csharpMore } = require("./seed-csharp-more");
 const { javaMore } = require("./seed-java-more");
 const { nextjsFrontendMore, nextjsBackendMore } = require("./seed-next-more");
 const { sqlLessons } = require("./seed-sql");
+const { sqlMore } = require("./seed-sql-more");
 const { phpLessons } = require("./seed-php");
+const { htmlExtra2 } = require("./seed-html-extra2");
+const { cssExtra2 } = require("./seed-css-extra2");
+const { tailwindExtra2 } = require("./seed-tailwind-extra2");
+const { tailwindExtra3 } = require("./seed-tailwind-extra3");
+const { cExtra2 } = require("./seed-c-extra2");
+const { cppExtra2 } = require("./seed-cpp-extra2");
+const { csharpExtra2 } = require("./seed-csharp-extra2");
+const { javaExtra2 } = require("./seed-java-extra2");
+const { cybersecExtra2 } = require("./seed-cybersec-extra2");
+const { nextjsFrontendMore2, nextjsBackendMore2 } = require("./seed-next-more2");
+const { pythonExtra } = require("./seed-python-extra");
+const { jsExtra2 } = require("./seed-js-extra2");
+const { reactExtra } = require("./seed-react-extra");
+const { sqlExtra } = require("./seed-sql-extra");
+const { phpExtra2 } = require("./seed-php-extra2");
+const { htmlExtra3 } = require("./seed-html-extra3");
+const { cExtra3 } = require("./seed-c-extra3");
+const { cybersecExtra3 } = require("./seed-cybersec-extra3");
+const { nextjsFrontendExtra2 } = require("./seed-nextjs-fe-extra");
+const { cppExtra3 } = require("./seed-cpp-extra3");
+const { csharpExtra3 } = require("./seed-csharp-extra3");
+const { cssExtra3 } = require("./seed-css-extra3");
+const { tailwindExtra4 } = require("./seed-tailwind-extra4");
+const { javaExtra3 } = require("./seed-java-extra3");
+const { nextjsBackendExtra2 } = require("./seed-nextjs-be-extra");
 const prisma = new PrismaClient();
 
 const modules = [
@@ -1497,37 +1523,45 @@ async function main() {
   const fixSlugs = (prefix, lessons) =>
     lessons.map(l => l.slug === prefix ? { ...l, slug: `${prefix}-lesson-${l.order}` } : l);
 
-  await seedLessons("python", pythonMore);
-  await seedLessons("javascript", [...jsLessons, ...jsExtra]);
+  await seedLessons("python", [...pythonMore, ...pythonExtra]);
+  await seedLessons("javascript", [...jsLessons, ...jsExtra, ...jsExtra2]);
   await seedLessons("nextjs-frontend", [
     ...nextjsFrontendLessons,
     ...nextjsFrontendExtra,
     ...fixSlugs("nextjs-frontend", nextjsFrontendMore),
+    ...fixSlugs("nextjs-frontend", nextjsFrontendMore2),
+    ...nextjsFrontendExtra2,
   ]);
   await seedLessons("nextjs-backend", [
     ...nextjsBackendLessons,
     ...nextjsBackendExtra,
     ...fixSlugs("nextjs-backend", nextjsBackendMore),
+    ...fixSlugs("nextjs-backend", nextjsBackendMore2),
+    ...nextjsBackendExtra2,
   ]);
-  await seedLessons("html", [...htmlLessons, ...htmlMore]);
-  await seedLessons("css", [...cssLessons, ...cssMore]);
-  await seedLessons("react", [...reactLessons, ...reactMore]);
-  await seedLessons("c", [...cLessons, ...cMore]);
-  await seedLessons("cpp", [...cppLessons, ...cppMore]);
+  await seedLessons("html", [...htmlLessons, ...htmlMore, ...htmlExtra2, ...htmlExtra3]);
+  await seedLessons("css", [...cssLessons, ...cssMore, ...cssExtra2, ...cssExtra3]);
+  await seedLessons("react", [...reactLessons, ...reactMore, ...reactExtra]);
+  await seedLessons("c", [...cLessons, ...cMore, ...cExtra2, ...cExtra3]);
+  await seedLessons("cpp", [...cppLessons, ...cppMore, ...cppExtra2, ...cppExtra3]);
   await seedLessons("csharp", [
     ...csharpLessons,
     ...csharpExtra,
     ...fixSlugs("csharp", csharpMore),
+    ...fixSlugs("csharp", csharpExtra2),
+    ...csharpExtra3,
   ]);
   await seedLessons("java", [
     ...javaLessons,
     ...javaExtra,
     ...fixSlugs("java", javaMore),
+    ...fixSlugs("java", javaExtra2),
+    ...javaExtra3,
   ]);
-  await seedLessons("tailwind", [...tailwindLessons, ...tailwindExtra, ...tailwindMore]);
-  await seedLessons("cybersecurity", [...cybersecLessons, ...cybersecMore]);
-  await seedLessons("sql", sqlLessons);
-  await seedLessons("php", phpLessons);
+  await seedLessons("tailwind", [...tailwindLessons, ...tailwindExtra, ...tailwindMore, ...tailwindExtra2, ...tailwindExtra3, ...tailwindExtra4]);
+  await seedLessons("cybersecurity", [...cybersecLessons, ...cybersecMore, ...cybersecExtra2, ...cybersecExtra3]);
+  await seedLessons("sql", [...sqlLessons, ...sqlMore, ...sqlExtra]);
+  await seedLessons("php", [...phpLessons, ...phpExtra2]);
 
   console.log("Done!");
 }

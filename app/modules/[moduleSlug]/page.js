@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, CheckCircle, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle, Clock, Play } from "lucide-react";
 
 const MOD_BG = {
   python: "from-blue-500 to-cyan-400", javascript: "from-yellow-400 to-orange-400",
@@ -22,22 +22,40 @@ export default function ModulePage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetch("/api/modules"), fetch("/api/progress")])
+    Promise.all([
+      fetch(`/api/modules/${moduleSlug}`),
+      fetch("/api/progress"),
+    ])
       .then(([m, p]) => Promise.all([m.json(), p.json()]))
-      .then(([mods, prog]) => {
-        setModule(mods.find(m => m.slug === moduleSlug) || null);
+      .then(([mod, prog]) => {
+        setModule(mod?.error ? null : mod);
         setProgress(Array.isArray(prog) ? prog : []);
       })
       .finally(() => setLoading(false));
   }, [moduleSlug]);
 
+  const progressMap = useMemo(() => {
+    const m = new Map();
+    for (const p of progress) m.set(p.lessonId, p);
+    return m;
+  }, [progress]);
+
   function getStatus(id) {
-    const p = progress.find(pr => pr.lessonId === id);
+    const p = progressMap.get(id);
     if (!p) return "none";
     if (p.completed) return "done";
     if (p.completedTasks?.length > 0) return "progress";
     return "none";
   }
+
+  const continueLesson = useMemo(() => {
+    if (!module) return null;
+    // First: in-progress lesson
+    const inProg = module.lessons.find(l => getStatus(l.id) === "progress");
+    if (inProg) return inProg;
+    // Second: first not-done lesson
+    return module.lessons.find(l => getStatus(l.id) !== "done") ?? null;
+  }, [module, progressMap]);
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-indigo-50">
@@ -52,6 +70,7 @@ export default function ModulePage() {
 
   const bg = MOD_BG[moduleSlug] || "from-indigo-500 to-purple-600";
   const done = module.lessons.filter(l => getStatus(l.id) === "done").length;
+  const inProgressCount = module.lessons.filter(l => getStatus(l.id) === "progress").length;
   const pct = module.lessons.length > 0 ? Math.round((done / module.lessons.length) * 100) : 0;
 
   return (
@@ -72,13 +91,31 @@ export default function ModulePage() {
               <p className="text-white/60 text-xs">{done}/{module.lessons.length} lecții</p>
             </div>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2">
+          <div className="w-full bg-white/20 rounded-full h-2 mb-4">
             <div className="h-2 rounded-full bg-yellow-300 transition-all" style={{ width: `${pct}%` }}/>
           </div>
+          {continueLesson && pct < 100 && (
+            <Link href={`/modules/${moduleSlug}/lessons/${continueLesson.id}`}
+              className="inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 transition-colors px-4 py-2 rounded-xl font-bold text-sm text-white">
+              <Play className="w-4 h-4 fill-current"/>
+              {getStatus(continueLesson.id) === "progress" ? "Continuă lecția curentă" : "Începe lecția"}
+              <span className="text-white/70 text-xs font-normal truncate max-w-[160px]">{continueLesson.title}</span>
+            </Link>
+          )}
+          {pct === 100 && (
+            <div className="inline-flex items-center gap-2 bg-white/20 px-4 py-2 rounded-xl font-bold text-sm text-white">
+              <CheckCircle className="w-4 h-4"/> Modul completat!
+            </div>
+          )}
         </div>
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-6">
+        {inProgressCount > 0 && (
+          <p className="text-xs text-amber-600 font-semibold mb-3 flex items-center gap-1">
+            <Clock className="w-3.5 h-3.5"/> {inProgressCount} lecț{inProgressCount === 1 ? "ie" : "ii"} în curs
+          </p>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {module.lessons.map((lesson, idx) => {
             const status = getStatus(lesson.id);

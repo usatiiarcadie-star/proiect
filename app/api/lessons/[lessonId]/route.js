@@ -17,5 +17,18 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(lesson);
+  const [prev, next] = await Promise.all([
+    prisma.lesson.findFirst({
+      where: { moduleId: lesson.moduleId, order: { lt: lesson.order } },
+      orderBy: { order: "desc" },
+      select: { id: true, title: true },
+    }),
+    prisma.lesson.findFirst({
+      where: { moduleId: lesson.moduleId, order: { gt: lesson.order } },
+      orderBy: { order: "asc" },
+      select: { id: true, title: true },
+    }),
+  ]);
+
+  return NextResponse.json({ ...lesson, prevLesson: prev ?? null, nextLesson: next ?? null });
 }

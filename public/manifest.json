@@ -4,8 +4,8 @@
   "description": "Platformă personală de învățare programare",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#4f46e5",
-  "theme_color": "#4f46e5",
+  "background_color": "#0d1228",
+  "theme_color": "#7c3aed",
   "icons": [
     {
       "src": "/icon-192.png",

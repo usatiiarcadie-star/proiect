@@ -1,7 +1,7 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { Dumbbell, CheckCircle, Clock, BookMarked, ChevronRight } from "lucide-react";
+import { Dumbbell, CheckCircle, Clock, BookMarked, ChevronRight, Play } from "lucide-react";
 import AntrenamentModal from "@/components/AntrenamentModal";
 
 const MOD_ICONS = {
@@ -38,17 +38,51 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
+  // Pre-compute lookup maps — O(1) per lesson instead of O(n) filter per module
+  const progressMap = useMemo(() => {
+    const m = new Map();
+    for (const p of progress) m.set(p.lessonId, p);
+    return m;
+  }, [progress]);
+
   function stats(mod) {
-    const ids = mod.lessons.map(l => l.id);
-    return {
-      done: progress.filter(p => ids.includes(p.lessonId) && p.completed).length,
-      inProgress: progress.filter(p => ids.includes(p.lessonId) && !p.completed && p.completedTasks?.length > 0).length,
-      total: ids.length,
-    };
+    let done = 0, inProgress = 0;
+    for (const l of mod.lessons) {
+      const p = progressMap.get(l.id);
+      if (!p) continue;
+      if (p.completed) done++;
+      else if (p.completedTasks?.length > 0) inProgress++;
+    }
+    return { done, inProgress, total: mod.lessons.length };
   }
 
-  const totalDone = progress.filter(p => p.completed).length;
-  const totalInProgress = progress.filter(p => !p.completed && p.completedTasks?.length > 0).length;
+  // Find most recent in-progress lesson across all modules
+  const continueLesson = useMemo(() => {
+    if (!modules.length || !progress.length) return null;
+    // Build a map lessonId → module
+    const lessonToMod = new Map();
+    for (const mod of modules) {
+      for (const l of mod.lessons) lessonToMod.set(l.id, { mod, lesson: l });
+    }
+    // Find in-progress progress entries, pick the one with most completedTasks
+    let best = null;
+    for (const p of progress) {
+      if (p.completed) continue;
+      if (!p.completedTasks?.length) continue;
+      const entry = lessonToMod.get(p.lessonId);
+      if (!entry) continue;
+      if (!best || p.completedTasks.length > best.p.completedTasks.length) {
+        best = { p, ...entry };
+      }
+    }
+    return best;
+  }, [modules, progress]);
+
+  const totalDone = useMemo(() => progress.filter(p => p.completed).length, [progress]);
+  const totalInProgress = useMemo(
+    () => progress.filter(p => !p.completed && p.completedTasks?.length > 0).length,
+    [progress]
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
@@ -56,7 +90,7 @@ export default function Home() {
       <header className="bg-gradient-to-r from-indigo-700 to-purple-700 text-white shadow-lg sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/20 rounded-xl flex items-center justify-center font-black text-base">TF</div>
+            <img src="/favicon.svg" alt="TaskForge" className="w-9 h-9 rounded-xl"/>
             <span className="font-black text-lg tracking-tight">TaskForge</span>
           </div>
           <button onClick={() => setModal(true)}
@@ -68,7 +102,7 @@ export default function Home() {
 
       <main className="max-w-5xl mx-auto px-4 py-8">
         {/* Profile card */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-6 mb-8 text-white shadow-xl">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-6 mb-6 text-white shadow-xl">
           <div className="flex items-center gap-5">
             <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-black shadow-inner">C</div>
             <div className="flex-1">
@@ -92,6 +126,28 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/* Continue where you left off */}
+        {!loading && continueLesson && (
+          <div className="mb-6">
+            <div className={`bg-gradient-to-r ${MOD_BG[continueLesson.mod.slug] || "from-indigo-500 to-purple-600"} rounded-2xl p-4 flex items-center gap-4 shadow-lg`}>
+              <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                {MOD_ICONS[continueLesson.mod.slug] || "◆"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white/70 text-xs font-bold uppercase tracking-wider">{continueLesson.mod.title} · Continuă</p>
+                <p className="text-white font-black text-sm truncate mt-0.5">{continueLesson.lesson.title}</p>
+                <p className="text-white/60 text-xs mt-0.5">
+                  {continueLesson.p.completedTasks.length} din {continueLesson.p.completedTasks.length + (continueLesson.p.wrongTasks?.length ?? 0)} întrebări rezolvate
+                </p>
+              </div>
+              <Link href={`/modules/${continueLesson.mod.slug}/lessons/${continueLesson.lesson.id}`}
+                className="bg-white text-indigo-700 px-4 py-2 rounded-xl font-black text-sm hover:bg-indigo-50 transition-colors flex items-center gap-2 flex-shrink-0 shadow-sm">
+                <Play className="w-4 h-4 fill-current"/> Continuă
+              </Link>
+            </div>
+          </div>
+        )}
 
         {/* Modules */}
         <h2 className="text-lg font-black text-indigo-900 mb-4 flex items-center gap-2">

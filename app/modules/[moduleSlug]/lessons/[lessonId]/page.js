@@ -128,6 +128,21 @@ export default function LessonPage() {
     };
   }, [lessonId, completed, wrong, taskIdx, finished, loading, lesson]);
 
+  useEffect(() => {
+    function onKey(e) {
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+      if (view !== "tasks" || retryMode) return;
+      if (e.key === "Enter") {
+        if (finished) return;
+        if (!submitted && selected) submit();
+        else if (submitted) next();
+      }
+      if (e.key === "ArrowRight" && submitted && !finished) next();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [view, submitted, selected, finished, retryMode, taskIdx, task]);
+
   function submit() {
     if (!selected || submitted || !lesson) return;
     setSubmitted(true);
@@ -560,9 +575,15 @@ parent.postMessage({logs:_log},'*');
                       className="flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition-colors text-sm">
                       <RotateCcw className="w-4 h-4"/> Reia
                     </button>
+                    {lesson.nextLesson && (
+                      <Link href={`/modules/${moduleSlug}/lessons/${lesson.nextLesson.id}`}
+                        className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-5 py-2.5 rounded-xl font-bold hover:opacity-90 transition-opacity text-sm shadow-md">
+                        <Play className="w-4 h-4"/> Lecția următoare <ChevronRight className="w-4 h-4"/>
+                      </Link>
+                    )}
                     <Link href={`/modules/${moduleSlug}`}
-                      className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-5 py-2.5 rounded-xl font-bold hover:opacity-90 transition-opacity text-sm shadow-md">
-                      Înapoi <ChevronRight className="w-4 h-4"/>
+                      className="flex items-center gap-2 bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl font-bold hover:bg-slate-200 transition-colors text-sm">
+                      <ChevronLeft className="w-4 h-4"/> Înapoi la modul
                     </Link>
                   </div>
                 </div>
@@ -959,12 +980,24 @@ function TheoryContent({ content }) {
         <div key={i} className="space-y-1.5">
           {p.text.split("\n").map((line, j) => {
             if (!line.trim()) return <div key={j} className="h-1"/>;
-            if (line.startsWith("• ")) return (
-              <div key={j} className="flex gap-2 text-sm text-slate-700">
-                <span className="text-indigo-500 flex-shrink-0 font-black mt-0.5">•</span>
-                <span dangerouslySetInnerHTML={{ __html: fmt(line.slice(2)) }}/>
-              </div>
+            if (line.startsWith("### ")) return (
+              <h4 key={j} className="text-sm font-black text-indigo-700 mt-3 mb-1">{line.slice(4)}</h4>
             );
+            if (line.startsWith("## ")) return (
+              <h3 key={j} className="text-base font-black text-slate-800 mt-4 mb-1 border-b border-slate-200 pb-1">{line.slice(3)}</h3>
+            );
+            if (line.startsWith("# ")) return (
+              <h2 key={j} className="text-lg font-black text-slate-900 mt-4 mb-2">{line.slice(2)}</h2>
+            );
+            if (line.startsWith("• ") || line.startsWith("- ")) {
+              const content = line.startsWith("• ") ? line.slice(2) : line.slice(2);
+              return (
+                <div key={j} className="flex gap-2 text-sm text-slate-700">
+                  <span className="text-indigo-500 flex-shrink-0 font-black mt-0.5">•</span>
+                  <span dangerouslySetInnerHTML={{ __html: fmt(content) }}/>
+                </div>
+              );
+            }
             return <p key={j} className="text-sm text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: fmt(line) }}/>;
           })}
         </div>
