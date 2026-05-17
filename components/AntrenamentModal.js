@@ -1,6 +1,25 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Play, RotateCcw, Trophy, ChevronRight, Zap, CheckCircle, Sparkles, Globe, Library } from "lucide-react";
+
+function fmt(t) {
+  return t
+    .replace(/\*\*(.+?)\*\*/g, "<strong class='text-slate-900'>$1</strong>")
+    .replace(/`(.+?)`/g, "<code class='bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded font-mono text-xs'>$1</code>");
+}
+
+function fmtQuestion(text) {
+  const parts = [];
+  const re = /```(?:\w*)\n?([\s\S]*?)```/g;
+  let last = 0, m;
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) parts.push(`<span>${fmt(text.slice(last, m.index))}</span>`);
+    parts.push(`<pre class="bg-gray-900 text-green-300 rounded-xl p-3 text-xs font-mono overflow-x-auto my-2 leading-relaxed whitespace-pre">${m[1].trim()}</pre>`);
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) parts.push(`<span>${fmt(text.slice(last))}</span>`);
+  return parts.join("");
+}
 
 const DIFF = {
   easy:   { label: "Ușor",  cls: "bg-green-100 text-green-700 border-green-200" },
@@ -57,6 +76,18 @@ export default function AntrenamentModal({ modules, onClose }) {
   }
 
   function restart() { setTasks(null); setDone(false); setScore(0); }
+
+  useEffect(() => {
+    if (!tasks || done) return;
+    function onKey(e) {
+      if (e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+      if (e.key === "Enter") {
+        if (submitted) nextTask();
+      }
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [tasks, done, submitted]);
 
   const task = tasks?.[idx];
   const diff = DIFF[task?.difficulty ?? "easy"];
@@ -185,7 +216,7 @@ export default function AntrenamentModal({ modules, onClose }) {
               </div>
               <div className="w-full bg-slate-100 rounded-full h-1.5 mb-5">
                 <div className="h-1.5 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all"
-                  style={{ width: `${(idx / tasks.length) * 100}%` }}/>
+                  style={{ width: `${((idx + 1) / tasks.length) * 100}%` }}/>
               </div>
 
               {task?.lesson && <p className="text-xs text-slate-400 mb-2 font-semibold">{task.lesson.title}</p>}
@@ -195,9 +226,9 @@ export default function AntrenamentModal({ modules, onClose }) {
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full border flex-shrink-0 ${diff.cls}`}>{diff.label}</span>
               </div>
 
-              <p className="text-slate-700 text-sm leading-relaxed mb-4 whitespace-pre-wrap bg-slate-50 rounded-xl p-3">
-                {task?.question}
-              </p>
+              <div className="text-slate-700 text-sm leading-relaxed mb-4 bg-slate-50 rounded-xl p-3"
+                dangerouslySetInnerHTML={{ __html: fmtQuestion(task?.question || "") }}/>
+
 
               <div className="space-y-2.5">
                 {task?.options.map(opt => {
@@ -229,6 +260,7 @@ export default function AntrenamentModal({ modules, onClose }) {
                     className="mt-2 bg-indigo-500 text-white px-4 py-1.5 rounded-full text-xs font-black hover:bg-indigo-600 transition-colors flex items-center gap-1">
                     {idx + 1 >= tasks.length ? <><Trophy className="w-3 h-3"/> Finalizează</> : <>Următoarea <ChevronRight className="w-3 h-3"/></>}
                   </button>
+                  <p className="text-xs text-slate-400 mt-1.5">Enter ↵ = următoarea</p>
                 </div>
               )}
             </div>

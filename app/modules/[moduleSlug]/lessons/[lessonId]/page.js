@@ -385,7 +385,6 @@ parent.postMessage({logs:_log},'*');
   );
 
   const tasks = lesson?.tasks ?? [];
-  const theory = lesson?.theory ?? [];
   const task = tasks[taskIdx] ?? null;
   const diff = DIFF[task?.difficulty ?? "easy"];
 
