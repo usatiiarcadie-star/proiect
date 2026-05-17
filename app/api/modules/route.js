@@ -12,7 +12,9 @@ export async function GET() {
         },
       },
     });
-    return NextResponse.json(modules);
+    return NextResponse.json(modules, {
+      headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" },
+    });
   } catch {
     return NextResponse.json([]);
   }

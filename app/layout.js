@@ -13,7 +13,24 @@ const geistMono = Geist_Mono({
 
 export const metadata = {
   title: "DevZone",
-  description: "Platformă personală de învățare programare",
+  description: "Platformă personală de învățare programare — Python, JavaScript, React, Next.js, SQL, C++, Cybersecurity și mai mult.",
+  keywords: ["programare", "invatare", "python", "javascript", "react", "nextjs", "sql", "cursuri"],
+  metadataBase: new URL("https://devzone.vercel.app"),
+  openGraph: {
+    title: "DevZone — Învață Programare",
+    description: "Lecții practice cu teorie + exerciții pentru Python, JS, React, Next.js, SQL, C++, Cybersecurity și altele.",
+    url: "https://devzone.vercel.app",
+    siteName: "DevZone",
+    images: [{ url: "/image.png", width: 1254, height: 1254, alt: "DevZone" }],
+    locale: "ro_RO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DevZone — Învață Programare",
+    description: "Platformă personală de învățare programare.",
+    images: ["/image.png"],
+  },
   icons: {
     icon: [
       { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },

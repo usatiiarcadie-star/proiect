@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import AIAssistant from "@/components/AIAssistant";
@@ -30,9 +30,6 @@ export default function LessonPage() {
   const [submitted, setSubmitted] = useState(false);
   const [finished, setFinished] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const saveTimer = useRef(null);
-
-  // Review state
   // Review state
   const [reviewTasks, setReviewTasks] = useState(null);
   const [reviewIdx, setReviewIdx] = useState(0);
@@ -236,9 +233,14 @@ parent.postMessage({logs:_log},'*');
     }
   }
 
+  function scrollTop() {
+    document.querySelector(".flex-1.overflow-y-auto")?.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   function next() {
     if (!lesson?.tasks) return;
     resetCodingState();
+    scrollTop();
 
     if (retryMode) {
       const ni = retryIdx + 1;
@@ -315,6 +317,7 @@ parent.postMessage({logs:_log},'*');
     setTaskIdx(idx);
     save({ currentTaskIdx: idx });
     restoreTaskState(idx, tasks, completed);
+    scrollTop();
   }
 
   async function runCode(code, language) {
@@ -482,6 +485,15 @@ parent.postMessage({logs:_log},'*');
               <p className="text-xs text-slate-400 font-semibold">{lesson.module?.title}</p>
               <p className="text-sm font-black text-slate-800 truncate">{lesson.title}</p>
             </div>
+            {view === "tasks" && !finished && totalTasks > 0 && (
+              <div className="lg:hidden flex items-center gap-1.5 bg-indigo-50 px-3 py-1.5 rounded-xl flex-shrink-0">
+                <span className="text-xs font-black text-indigo-600">{doneCount}/{totalTasks}</span>
+                <div className="w-16 bg-indigo-100 rounded-full h-1.5">
+                  <div className="h-1.5 rounded-full bg-indigo-500 transition-all"
+                    style={{ width: `${totalTasks > 0 ? (doneCount / totalTasks) * 100 : 0}%` }}/>
+                </div>
+              </div>
+            )}
             {finished && (
               <span className="bg-emerald-500 text-white text-xs font-black px-3 py-1 rounded-full flex items-center gap-1">
                 <Trophy className="w-3.5 h-3.5"/> Finalizat!
@@ -932,19 +944,24 @@ parent.postMessage({logs:_log},'*');
                         <ChevronLeft className="w-4 h-4"/> Anterior
                       </button>
 
-                      {!submitted ? (
-                        <button onClick={submit} disabled={!selected}
-                          className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
-                          <Send className="w-4 h-4"/> Trimite răspunsul
-                        </button>
-                      ) : (
-                        <button onClick={next}
-                          className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity shadow-md">
-                          {taskIdx + 1 >= totalTasks
-                            ? <><Trophy className="w-4 h-4"/> Finalizează</>
-                            : <>Următoarea <ChevronRight className="w-4 h-4"/></>}
-                        </button>
-                      )}
+                      <div className="flex flex-col items-end gap-1">
+                        {!submitted ? (
+                          <button onClick={submit} disabled={!selected}
+                            className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed shadow-md">
+                            <Send className="w-4 h-4"/> Trimite răspunsul
+                          </button>
+                        ) : (
+                          <button onClick={next}
+                            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-6 py-2.5 rounded-xl font-black text-sm hover:opacity-90 transition-opacity shadow-md">
+                            {taskIdx + 1 >= totalTasks
+                              ? <><Trophy className="w-4 h-4"/> Finalizează</>
+                              : <>Următoarea <ChevronRight className="w-4 h-4"/></>}
+                          </button>
+                        )}
+                        <p className="text-xs text-slate-400 hidden sm:block">
+                          {!submitted ? "Enter ↵ = verifică" : "Enter ↵ = următoarea"}
+                        </p>
+                      </div>
                     </div>
                   </>
                 )}

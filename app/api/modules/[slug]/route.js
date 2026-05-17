@@ -14,7 +14,9 @@ export async function GET(request, { params }) {
       },
     });
     if (!mod) return NextResponse.json({ error: "Not found" }, { status: 404 });
-    return NextResponse.json(mod);
+    return NextResponse.json(mod, {
+      headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120" },
+    });
   } catch {
     return NextResponse.json({ error: "Error" }, { status: 500 });
   }

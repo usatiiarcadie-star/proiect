@@ -34,12 +34,13 @@ export async function GET(request) {
 
     const completedLessonIds = completedProgress.map(p => p.lessonId);
 
-    // All tasks from completed lessons
+    // Sample tasks from completed lessons (limit to avoid heavy queries)
     const allTasks = await prisma.task.findMany({
       where: { lessonId: { in: completedLessonIds } },
       include: {
         lesson: { include: { module: { select: { title: true, slug: true } } } },
       },
+      take: count * 20,
     });
 
     if (allTasks.length === 0) return NextResponse.json([]);

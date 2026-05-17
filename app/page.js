@@ -83,6 +83,8 @@ export default function Home() {
     () => progress.filter(p => !p.completed && p.completedTasks?.length > 0).length,
     [progress]
   );
+  const totalLessons = useMemo(() => modules.reduce((acc, m) => acc + m.lessons.length, 0), [modules]);
+  const overallPct = totalLessons > 0 ? Math.round((totalDone / totalLessons) * 100) : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-blue-50 to-purple-50">
@@ -103,25 +105,40 @@ export default function Home() {
       <main className="max-w-5xl mx-auto px-4 py-8">
         {/* Profile card */}
         <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-6 mb-6 text-white shadow-xl">
-          <div className="flex items-center gap-5">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center text-3xl font-black shadow-inner">C</div>
-            <div className="flex-1">
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-2xl font-black shadow-inner flex-shrink-0">C</div>
+            <div className="flex-1 min-w-0">
               <p className="text-indigo-200 text-xs font-semibold uppercase tracking-widest mb-0.5">Bine ai venit în</p>
-              <h1 className="text-2xl font-black">DevZone, Cristi!</h1>
-              <p className="text-indigo-200 text-sm">{totalDone + totalInProgress} lecții active</p>
+              <h1 className="text-xl font-black">DevZone, Cristi!</h1>
+              {!loading && totalLessons > 0 && (
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-indigo-200 text-xs">{totalDone}/{totalLessons} lecții finalizate</p>
+                    <p className="text-yellow-300 text-xs font-black">{overallPct}%</p>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-1.5">
+                    <div className="h-1.5 rounded-full bg-gradient-to-r from-yellow-300 to-emerald-300 transition-all duration-500"
+                      style={{ width: `${overallPct}%` }}/>
+                  </div>
+                </div>
+              )}
             </div>
-            <div className="hidden sm:grid grid-cols-2 gap-3 text-center">
-              <div className="bg-white/15 rounded-2xl px-5 py-3">
-                <p className="text-2xl font-black text-yellow-300">{totalDone}</p>
+            <div className="hidden sm:grid grid-cols-3 gap-2 text-center flex-shrink-0">
+              <div className="bg-white/15 rounded-2xl px-3 py-2.5">
+                <p className="text-xl font-black text-yellow-300">{totalDone}</p>
                 <p className="text-xs text-indigo-200 mt-0.5 flex items-center justify-center gap-1">
-                  <CheckCircle className="w-3 h-3"/> Finalizate
+                  <CheckCircle className="w-3 h-3"/> Gata
                 </p>
               </div>
-              <div className="bg-white/15 rounded-2xl px-5 py-3">
-                <p className="text-2xl font-black text-emerald-300">{totalInProgress}</p>
+              <div className="bg-white/15 rounded-2xl px-3 py-2.5">
+                <p className="text-xl font-black text-emerald-300">{totalInProgress}</p>
                 <p className="text-xs text-indigo-200 mt-0.5 flex items-center justify-center gap-1">
-                  <Clock className="w-3 h-3"/> În curs
+                  <Clock className="w-3 h-3"/> Activ
                 </p>
+              </div>
+              <div className="bg-white/15 rounded-2xl px-3 py-2.5">
+                <p className="text-xl font-black text-cyan-300">{loading ? "—" : totalLessons - totalDone}</p>
+                <p className="text-xs text-indigo-200 mt-0.5">Rămase</p>
               </div>
             </div>
           </div>
@@ -156,7 +173,15 @@ export default function Home() {
 
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[...Array(6)].map((_, i) => <div key={i} className="bg-white rounded-2xl h-36 animate-pulse"/>)}
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl overflow-hidden shadow-sm animate-pulse">
+                <div className="h-16 bg-gradient-to-r from-slate-200 to-slate-100"/>
+                <div className="p-4 space-y-2">
+                  <div className="h-3 bg-slate-100 rounded-full w-3/4"/>
+                  <div className="h-2 bg-slate-100 rounded-full w-full"/>
+                </div>
+              </div>
+            ))}
           </div>
         ) : modules.length === 0 ? (
           <div className="bg-white rounded-2xl p-10 text-center shadow-sm">
